@@ -56,7 +56,7 @@
 | GAP-S05 | 壳 | Open Quickly | done | P0 |
 | GAP-S06 | 壳 | Details 面板 | done | P0 |
 | GAP-S07 | 壳 | 分屏树 UI | done | P0 |
-| GAP-S08 | 壳 | 文件 / 文件夹 / URL pane | open | P1 |
+| GAP-S08 | 壳 | 文件 / 文件夹 / URL pane | done | P1 |
 | GAP-S09 | 壳 | 多窗口 / 撕 tab / 合并 | open | P1 |
 | GAP-S10 | 壳 | 徽章与 tab 规则 | partial | P1 |
 | GAP-S11 | 壳 | 原版 tab 分组与 divider | partial | P1 |
@@ -247,12 +247,12 @@
 
 ### GAP-S08 文件 / 文件夹 / URL pane
 
-- **status:** open
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §1。文件窗：syntect、Markdown/reST/SVG/HTML 预览、Mermaid、图片缩放、Quick Look、二进制 hex、agent transcript。⌘S 存、⌘R 丢弃重载、外部修改出横幅。大文件流式只读。文件夹窗只搜文件名。URL 窗 WKWebView，非持久 store。`otty view` / `otty edit` 打开。
 - **DMG:** `syntaxes.bin`、`mermaid.min.js`（GAP-K05）。`syntect` + `pulldown_cmark` + `otty_markdown`（11 符号）。action `new_editor`、`new_folder_pane`、`switch_pane_to_folder`、`switch_pane_to_terminal`、`view_as_agent_history`、`view_as_jsonl`。
 - **原实现:** pane 类型由打开方式决定。tab-rule 的 `file=` 只匹配文件/文件夹/URL pane，永不匹配终端 pane。agent jsonl 按路径识别成 transcript，其它 `.jsonl` 当普通文本。
-- **当前:** 只有终端 pane。CLI `view`/`edit` 有 clap，壳不执行。
+- **当前:** `PaneKind::{File,Folder,Url}`；`Dispatcher::open_view` 新 tab 只读文本 / 列目录名。壳读 `otty view PATH` argv。预览/编辑/hex 未做。
 - **落点:** `otty-ui` 给 pane 加 kind；文件只读先做，编辑后做。语法库见 GAP-K05。
 - **完成:** `otty view README.md` 在新 tab 打开只读文本；文件夹能列出名字。
 

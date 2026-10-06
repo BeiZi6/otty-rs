@@ -29,7 +29,8 @@ use otty_ui::view::TerminalView;
 use otty_config::SaveScope;
 use otty_ui::{
     context_rows, details_info, filter_palette, palette_entries, palette_rows, pane_hit,
-    query_quickly, quickly_rows, set_setting, shell_menu_models, Dispatcher, QuicklySources,
+    query_quickly, quickly_rows, set_setting, shell_menu_models, view_target_from_args, Dispatcher,
+    QuicklySources,
 };
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
 
@@ -316,6 +317,12 @@ pub fn run(config: Config) -> Result<(), ShellError> {
     ui.window().set_size(window_size);
 
     let dispatch = Rc::new(std::cell::RefCell::new(Dispatcher::new()));
+    {
+        let args: Vec<String> = std::env::args().skip(1).collect();
+        if let Some(target) = view_target_from_args(&args) {
+            let _ = dispatch.borrow_mut().open_view(target);
+        }
+    }
     bind_menu(&ui, &config, dispatch.clone());
     bind_palette(&ui, &config, dispatch.clone());
     bind_quickly(&ui, dispatch.clone());

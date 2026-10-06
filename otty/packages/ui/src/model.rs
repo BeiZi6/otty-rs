@@ -235,6 +235,17 @@ pub struct Pane {
     pub zoomed: bool,
     /// Last OSC 7 working directory, which Details → Info shows.
     pub cwd: Option<String>,
+    /// Terminal unless `otty view` / `otty edit` opened a file, folder or URL.
+    pub kind: PaneKind,
+}
+
+/// What a pane shows. `tab-rule` `file=` matches File / Folder / Url only.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PaneKind {
+    Terminal,
+    File { path: String, body: String },
+    Folder { path: String, names: Vec<String> },
+    Url { url: String },
 }
 
 impl Pane {
@@ -247,6 +258,7 @@ impl Pane {
             shell_title: None,
             zoomed: false,
             cwd: None,
+            kind: PaneKind::Terminal,
         }
     }
 

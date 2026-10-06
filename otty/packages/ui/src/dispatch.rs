@@ -13,6 +13,7 @@ use otty_core::{PaneId, TabId, WindowId};
 use crate::context::ContextHit;
 use crate::details::DetailsTab;
 use crate::model::App;
+use crate::pane_view::load_view;
 use crate::quickly::{open_directory, OpenFilter};
 use otty_state::Store;
 
@@ -210,6 +211,28 @@ impl Dispatcher {
         let Some(w) = self.app.active_window_mut() else { return false };
         let Some(id) = w.tabs().get(index).map(|t| t.id) else { return false };
         w.close_tab(id)
+    }
+
+    /// Open `path` in a new tab as a file, folder or URL pane.
+    pub fn open_view(&mut self, path: &str) -> bool {
+        let Ok(kind) = load_view(path) else { return false };
+        let Some(wid) = self.app.active_window().map(|w| w.id) else { return false };
+        let tab = TabId::new(self.next_tab);
+        let pane = PaneId::new(self.next_pane);
+        self.next_tab += 1;
+        self.next_pane += 1;
+        if !self.app.add_tab(wid, tab, pane) {
+            return false;
+        }
+        if let Some(p) = self.app.pane_mut(pane) {
+            p.kind = kind;
+            p.custom_title = Some(path.trim().to_owned());
+        }
+        true
+    }
+
+    pub fn focused_pane_id(&self) -> Option<PaneId> {
+        self.focused_pane()
     }
 
     fn cycle_tab(&mut self, delta: isize) {
