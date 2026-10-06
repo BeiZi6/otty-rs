@@ -21,6 +21,11 @@
 
 import { VerticalBox, HorizontalBox } from "std-widgets.slint";
 
+export struct MenuRow {
+    title: string,
+    action: string,
+}
+
 // What Otty 1.5.4 opens on, from the shipped themes, so the window is usable for
 // the first frame before the Rust side has loaded anything.
 export global Theme {
@@ -153,6 +158,13 @@ export component OttyWindow inherits Window {
     in property <int> active-tab: 0;
     in property <[string]> folders;
     in property <bool> sidebar-visible: true;
+    in property <[MenuRow]> menu-file;
+    in property <[MenuRow]> menu-edit;
+    in property <[MenuRow]> menu-view;
+    in property <[MenuRow]> menu-shell;
+    in property <[MenuRow]> menu-window;
+    in property <[MenuRow]> menu-commands;
+    callback menu-activated(string);
 
     // The pointer's position over the grid, in the grid image's coordinates, so
     // Rust can turn it into a cell without knowing about Slint.
@@ -174,6 +186,51 @@ export component OttyWindow inherits Window {
     preferred-height: 640px;
     default-font-size: 12px;
     forward-focus: key-catcher;
+
+    MenuBar {
+        Menu {
+            title: "File";
+            for row in root.menu-file: MenuItem {
+                title: row.title;
+                activated => { root.menu-activated(row.action); }
+            }
+        }
+        Menu {
+            title: "Edit";
+            for row in root.menu-edit: MenuItem {
+                title: row.title;
+                activated => { root.menu-activated(row.action); }
+            }
+        }
+        Menu {
+            title: "View";
+            for row in root.menu-view: MenuItem {
+                title: row.title;
+                activated => { root.menu-activated(row.action); }
+            }
+        }
+        Menu {
+            title: "Shell";
+            for row in root.menu-shell: MenuItem {
+                title: row.title;
+                activated => { root.menu-activated(row.action); }
+            }
+        }
+        Menu {
+            title: "Window";
+            for row in root.menu-window: MenuItem {
+                title: row.title;
+                activated => { root.menu-activated(row.action); }
+            }
+        }
+        Menu {
+            title: "Commands";
+            for row in root.menu-commands: MenuItem {
+                title: row.title;
+                activated => { root.menu-activated(row.action); }
+            }
+        }
+    }
 
     // The rounded corner, when the theme asks for one. A `Rectangle` rather than
     // a window-level property, because Slint has no cross-platform window radius.

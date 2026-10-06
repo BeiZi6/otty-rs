@@ -13,12 +13,14 @@
 //! the model, and asserting it against a windowing system would be a worse test
 //! in every way.
 
+pub mod dispatch;
 pub mod layout;
 pub mod session;
 pub mod syntax;
 pub mod view;
 pub mod model;
 
+pub use dispatch::{shell_menu, shell_menu_models, Dispatcher};
 pub use layout::{cell_at, grid_dimensions, layout, layout_single, Divider, Layout, LayoutOptions};
 pub use session::Session;
 pub use view::{pty_config, term_config, TerminalView, ViewError};

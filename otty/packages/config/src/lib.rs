@@ -31,6 +31,7 @@
 pub mod actions;
 pub mod catalog;
 pub mod export;
+pub mod menu;
 pub mod import;
 pub mod keys;
 pub mod keybind;
@@ -47,6 +48,7 @@ use std::path::{Path, PathBuf};
 use otty_core::{expand_path, Color, Platform};
 
 pub use catalog::{Catalog, CatalogError, ResolvedLanguage, UiLanguage};
+pub use menu::{clickable_actions, menu_bar, Menu, MenuItem};
 pub use palette::{BoldColor, Palette, ResolvedColors};
 pub use rules::{DetailsView, QuickAccess, TabRule};
 pub use spec::{Default as KeyDefault, KeySpec, ListStyle};

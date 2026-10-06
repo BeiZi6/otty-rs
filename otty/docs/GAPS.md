@@ -49,7 +49,7 @@
 | GAP-K03 | 知识 | Settings 单页 `settings-ui.html` | done | P0 |
 | GAP-K04 | 知识 | 补全库 `completions-client.db` | done | P1 |
 | GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | done | P2 |
-| GAP-S01 | 壳 | 原生菜单栏 | open | P0 |
+| GAP-S01 | 壳 | 原生菜单栏 | done | P0 |
 | GAP-S02 | 壳 | 右键菜单 | open | P0 |
 | GAP-S03 | 壳 | Settings 窗 | open | P0 |
 | GAP-S04 | 壳 | Command Palette | open | P0 |
@@ -170,12 +170,12 @@
 
 ### GAP-S01 原生菜单栏
 
-- **status:** open
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §3 Shell Menu；§6 默认 keymap。File / Edit / View / Shell / Window。Shell 每次打开现场拼 About This Line / Ports / Git / Agent。
 - **DMG:** 菜单文案在 `en.json`。action 表即菜单命令。Swift `NSMenu`。AppleScript 标准套件也假设有菜单。
 - **原实现:** 菜单项 = action id。动态段（端口、git、agent）打开时查当前 pane。Windows 把 Ports/Git 做成对话框。Linux 无 Ports。
-- **当前:** Electron/Slint 都没有菜单栏。
+- **当前:** `packages/config/src/menu.rs` 菜单表；`packages/ui/src/dispatch.rs` 点击分发；`packages/shell/ui/app.slint` MenuBar 绑 File/Edit/View/Shell/Window/Commands。动态 Ports/Git/Agent 段还没现场拼。
 - **落点:** `packages/shell` 建菜单，点击走同一套 action 分发（GAP-C03）。
 - **完成:** 默认 keymap 表里的菜单命令都能点到；无 shortcut 的项也在。
 

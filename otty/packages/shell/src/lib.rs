@@ -26,6 +26,7 @@ use otty_config::Config;
 use otty_core::PaneId;
 use otty_render::theme::Chrome;
 use otty_ui::view::TerminalView;
+use otty_ui::{shell_menu_models, Dispatcher};
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
 
 slint::include_modules!();
@@ -131,6 +132,41 @@ fn logical_px(v: f32) -> u32 {
     v.round().max(0.0) as u32
 }
 
+fn menu_model(rows: &[(String, String)]) -> ModelRc<MenuRow> {
+    let items: Vec<MenuRow> = rows
+        .iter()
+        .map(|(title, action)| MenuRow {
+            title: title.as_str().into(),
+            action: action.as_str().into(),
+        })
+        .collect();
+    ModelRc::new(VecModel::from(items))
+}
+
+/// Fill the native MenuBar from `menu_bar()` and send clicks to `dispatch`.
+fn bind_menu(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<Dispatcher>>) {
+    let models = shell_menu_models(None, &config.keymap());
+    for (title, rows) in &models {
+        let model = menu_model(rows);
+        match *title {
+            "File" => ui.set_menu_file(model),
+            "Edit" => ui.set_menu_edit(model),
+            "View" => ui.set_menu_view(model),
+            "Shell" => ui.set_menu_shell(model),
+            "Window" => ui.set_menu_window(model),
+            "Commands" => ui.set_menu_commands(model),
+            _ => {}
+        }
+    }
+    ui.on_menu_activated(move |action| {
+        let mut d = dispatch.borrow_mut();
+        let _ = d.activate(action.as_str());
+        if d.quit {
+            let _ = slint::quit_event_loop();
+        }
+    });
+}
+
 /// Build the window around a view, and run until the window closes.
 pub fn run(config: Config) -> Result<(), ShellError> {
     let ui = OttyWindow::new()?;
@@ -144,6 +180,9 @@ pub fn run(config: Config) -> Result<(), ShellError> {
     );
     ui.set_sidebar_visible(config.get_bool("sidebar-visible").unwrap_or(true));
     ui.window().set_size(window_size);
+
+    let dispatch = Rc::new(std::cell::RefCell::new(Dispatcher::new()));
+    bind_menu(&ui, &config, dispatch.clone());
 
     let pane = PaneId::new(1);
     let chrome_preview = {
@@ -307,4 +346,21 @@ fn blink_phase() -> bool {
         .map(|d| d.as_millis())
         .unwrap_or(0);
     (millis / 500) % 2 == 0
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn slint_binds_native_menubar_from_menu_bar() {
+        let src = include_str!("../ui/app.slint");
+        assert!(src.contains("MenuBar"), "OttyWindow needs a native MenuBar");
+        for title in ["File", "Edit", "View", "Shell", "Window", "Commands"] {
+            assert!(
+                src.contains(&format!("title: \"{title}\"")),
+                "MenuBar missing {title}"
+            );
+        }
+        assert!(src.contains("menu-activated"));
+        assert!(src.contains("for row in root.menu-file"));
+    }
 }
