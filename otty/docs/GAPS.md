@@ -55,7 +55,7 @@
 | GAP-S04 | 壳 | Command Palette | done | P0 |
 | GAP-S05 | 壳 | Open Quickly | done | P0 |
 | GAP-S06 | 壳 | Details 面板 | done | P0 |
-| GAP-S07 | 壳 | 分屏树 UI | partial | P0 |
+| GAP-S07 | 壳 | 分屏树 UI | done | P0 |
 | GAP-S08 | 壳 | 文件 / 文件夹 / URL pane | open | P1 |
 | GAP-S09 | 壳 | 多窗口 / 撕 tab / 合并 | open | P1 |
 | GAP-S10 | 壳 | 徽章与 tab 规则 | partial | P1 |
@@ -236,12 +236,12 @@
 
 ### GAP-S07 分屏树 UI
 
-- **status:** partial
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §2。⌘D 右、⌘⌥D 左、⌘⇧D 下、⌘⌥⇧D 上。⌘W 先关 focused pane。拖到目标 pane 任一边 = 四向 split，相对整 tab 结算（比 Ghostty 邻居交换更强）。双击 divider 均分。⌘⌃⇧+方向微移。⌘⌃= Equalize。⌘⇧↩ zoom。未聚焦 pane 按 `unfocused-split-opacity`（默认 0.6）变淡。单 pane 时 pane-cycle 快捷键放行。
 - **DMG:** action `split_*`、`equalize_splits`、`zoom_split`、`move_divider_*`、`focus_pane_*`。模型是树不是列。
 - **原实现:** 每 pane 自己一块 Metal layer，所以能把一层提出去做 PiP / 撕 tab。树规则：关 pane 折叠父 split、兄弟接手。
-- **当前:** `packages/ui/src/model.rs` 树、split/close/zoom 有测试。`layout.rs` 有几何。Electron 一 tab 一 PTY；Slint 一窗一 grid。UI 没画 divider、没接快捷键。
+- **当前:** Dispatcher `split_right`/`split_down`/`close_tab`（多 pane 先关 focused）/`zoom_split`。壳接 ⌘D / ⌘⇧D / ⌘⌥D / ⌘⌥⇧D / ⌘⇧↩。像素仍一窗一 grid（GAP-T04）。
 - **落点:** 把 `otty-ui::model` 接到 shell：一个 tab 多 `TerminalView`。不要在 Electron 另写一棵树。
 - **完成:** 一个 tab 能左右再上下分成三格；关中间那格树仍连通；zoom 能切回。
 

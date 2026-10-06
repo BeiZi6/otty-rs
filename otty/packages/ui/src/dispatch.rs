@@ -130,7 +130,16 @@ impl Dispatcher {
                 self.app.add_window(w, t, p);
             }
             "close_tab" => {
-                if let Some(tid) = self
+                let multi = self
+                    .app
+                    .active_window()
+                    .and_then(|w| w.active_tab())
+                    .is_some_and(|t| t.tree.len() > 1);
+                if multi {
+                    if let Some(p) = self.focused_pane() {
+                        let _ = self.app.close_pane(p);
+                    }
+                } else if let Some(tid) = self
                     .app
                     .active_window()
                     .and_then(|w| w.active_tab().map(|t| t.id))
@@ -332,5 +341,28 @@ mod tests {
         assert!(!d.settings_open);
         assert!(d.activate("open_settings"));
         assert!(d.settings_open);
+    }
+
+    #[test]
+    fn split_right_then_down_close_middle_zoom_toggles_back() {
+        let mut d = Dispatcher::new();
+        assert!(d.activate("split_right"));
+        assert!(d.activate("split_down"));
+        let tab = d.app.active_window().unwrap().active_tab().unwrap();
+        assert_eq!(tab.tree.len(), 3, "left then down is three panes");
+        let panes = tab.tree.panes();
+        let middle = panes[1];
+        assert!(d.app.focus_pane(middle));
+        assert!(d.activate("close_tab"));
+        let tab = d.app.active_window().unwrap().active_tab().unwrap();
+        assert_eq!(tab.tree.len(), 2);
+        assert!(tab.tree.contains(tab.focused), "tree stays connected");
+
+        assert!(d.activate("zoom_split"));
+        let tab = d.app.active_window().unwrap().active_tab().unwrap();
+        assert_eq!(tab.zoomed, Some(tab.focused));
+        assert!(d.activate("zoom_split"));
+        let tab = d.app.active_window().unwrap().active_tab().unwrap();
+        assert_eq!(tab.zoomed, None, "zoom toggles back");
     }
 }
