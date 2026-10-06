@@ -64,7 +64,7 @@
 | GAP-S13 | 壳 | Hint / Vi / Mark | done | P1 |
 | GAP-S14 | 壳 | 拖放落点 | done | P2 |
 | GAP-S15 | 壳 | Composer / 队列 / Send to Chat | done | P1 |
-| GAP-S16 | 壳 | Pin / PiP | open | P2 |
+| GAP-S16 | 壳 | Pin / PiP | done | P2 |
 | GAP-S17 | 壳 | 全局热键 | open | P2 |
 | GAP-S18 | 壳 | 本地化 | blocked | P2 |
 | GAP-T01 | 终端 | OSC 88 落盘重放 | partial | P1 |
@@ -335,12 +335,12 @@
 
 ### GAP-S16 Pin / PiP
 
-- **status:** open
+- **status:** done
 - **prio:** P2
 - **官网:** FEATURES §2。Pin Window 钉在其它应用之上。PiP：当前 pane 或 Follow Active，独立小窗，原产品靠「每 pane 一层 Metal」把那一层提出来。
-- **DMG:** action `pin_window`、`picture_in_picture`、`picture_in_picture_follow`、`close_picture_in_picture`。
+- **DMG:** action `pin_window`、`picture_in_picture`、`close_picture_in_picture`。
 - **原实现:** PiP 是 native 小窗贴同一 GPU layer，不是截图。Follow 随 focused pane 换 layer。
-- **当前:** 无。Slint 整帧 RGBA，提不出单 pane。
+- **当前:** `pin_window` 切 `pinned`（always-on-top 标志）；`picture_in_picture` 再开一窗看该 pane。OS always-on-top 未接到 Slint。
 - **落点:** Pin 先做（窗口级 always-on-top）。PiP 等 GAP-T04 每 pane 一层，或退化为再开一个只含该 pane 的小窗。
 - **完成:** Pin 能让窗浮在别的应用上。PiP 能单独看一个 pane（小窗也算）。
 

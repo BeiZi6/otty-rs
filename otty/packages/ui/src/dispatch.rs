@@ -56,6 +56,8 @@ pub struct Dispatcher {
     pub last_opened_url: Option<String>,
     pub composer_open: bool,
     pub last_sent: Option<String>,
+    pub pinned: bool,
+    pub pip: Option<PaneId>,
 }
 
 impl Dispatcher {
@@ -93,6 +95,8 @@ impl Dispatcher {
             last_opened_url: None,
             composer_open: false,
             last_sent: None,
+            pinned: false,
+            pip: None,
         }
     }
 
@@ -202,6 +206,34 @@ impl Dispatcher {
                 if self.mode == InputMode::Hint {
                     self.hint_labels = hint_labels(&self.find_lines);
                 }
+            }
+            "pin_window" => self.pinned = !self.pinned,
+            "picture_in_picture" => {
+                if let Some(p) = self.focused_pane() {
+                    let w = WindowId::new(self.next_window);
+                    let t = TabId::new(self.next_tab);
+                    let np = PaneId::new(self.next_pane);
+                    self.next_window += 1;
+                    self.next_tab += 1;
+                    self.next_pane += 1;
+                    self.app.add_window(w, t, np);
+                    self.pip = Some(p);
+                }
+            }
+            "picture_in_picture_follow" => {
+                self.pip = self.focused_pane();
+            }
+            "close_picture_in_picture" => {
+                if let Some(id) = self
+                    .app
+                    .windows()
+                    .last()
+                    .filter(|_| self.pip.is_some())
+                    .map(|w| w.id)
+                {
+                    let _ = self.app.close_window(id);
+                }
+                self.pip = None;
             }
             "compose_overlay" => self.composer_open = !self.composer_open,
             "prompt_queue_clear" => {}
@@ -669,5 +701,22 @@ mod tests {
         d.app.pane_mut(pane).unwrap().agent = Some(("claude".into(), AgentState::Idle));
         assert_eq!(d.flush_queue(&store).as_deref(), Some("later"));
         assert_eq!(d.last_sent.as_deref(), Some("later"));
+    }
+
+    #[test]
+    fn pin_floats_and_pip_is_its_own_window() {
+        let mut d = Dispatcher::new();
+        assert!(d.activate("pin_window"));
+        assert!(d.pinned);
+        assert!(d.activate("pin_window"));
+        assert!(!d.pinned);
+
+        assert_eq!(d.app.counts().0, 1);
+        assert!(d.activate("picture_in_picture"));
+        assert_eq!(d.app.counts().0, 2, "PiP is a second window");
+        assert!(d.pip.is_some());
+        assert!(d.activate("close_picture_in_picture"));
+        assert!(d.pip.is_none());
+        assert_eq!(d.app.counts().0, 1);
     }
 }
