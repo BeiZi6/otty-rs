@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, dialog } = require('electron');
 const { spawn } = require('node:child_process');
 const readline = require('node:readline');
 const path = require('node:path');
@@ -287,6 +287,20 @@ ipcMain.on('engine:resize', (event, payload) => {
 ipcMain.on('tabs:new', (event) => {
   const state = sessionFor(event);
   if (state) createTab(state);
+});
+
+ipcMain.handle('projects:open', async (event) => {
+  const state = sessionFor(event);
+  if (!state) return;
+  const result = await dialog.showOpenDialog(state.window, {
+    title: 'Open project',
+    buttonLabel: 'Open',
+    defaultPath: activeTab(state)?.cwd || app.getPath('home'),
+    properties: ['openDirectory'],
+  });
+  const cwd = result.filePaths && result.filePaths[0];
+  if (result.canceled || !cwd) return;
+  createTab(state, { cwd });
 });
 
 ipcMain.on('tabs:activate', (event, tabId) => {

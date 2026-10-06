@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('otty', {
   resize: (tabId, width, height) => ipcRenderer.send('engine:resize', { tabId, width, height }),
   windowAction: (action) => ipcRenderer.send('window:action', action),
   newTab: () => ipcRenderer.send('tabs:new'),
+  openProject: () => ipcRenderer.invoke('projects:open'),
   activateTab: (tabId) => ipcRenderer.send('tabs:activate', tabId),
   closeTab: (tabId) => ipcRenderer.send('tabs:close', tabId),
   reopenTab: () => ipcRenderer.send('tabs:reopen'),

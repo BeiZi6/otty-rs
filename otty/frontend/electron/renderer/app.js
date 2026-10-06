@@ -468,7 +468,7 @@ for (const button of document.querySelectorAll('[data-window-action]')) {
   button.addEventListener('click', () => window.otty.windowAction(button.dataset.windowAction));
 }
 document.querySelector('#new-tab-top').addEventListener('click', () => window.otty.newTab());
-document.querySelector('#new-tab-side').addEventListener('click', () => window.otty.newTab());
+document.querySelector('#new-tab-side').addEventListener('click', () => window.otty.openProject());
 document.querySelector('#sidebar-toggle').addEventListener('click', () => window.otty.toggleTabsPanel());
 document.querySelector('#titlebar').addEventListener('dblclick', (event) => {
   if (!event.target.closest('button')) window.otty.windowAction('toggle-maximize');
