@@ -63,7 +63,7 @@
 | GAP-S12 | 壳 | Find / 全局搜索 / Search in Files | done | P1 |
 | GAP-S13 | 壳 | Hint / Vi / Mark | done | P1 |
 | GAP-S14 | 壳 | 拖放落点 | done | P2 |
-| GAP-S15 | 壳 | Composer / 队列 / Send to Chat | open | P1 |
+| GAP-S15 | 壳 | Composer / 队列 / Send to Chat | done | P1 |
 | GAP-S16 | 壳 | Pin / PiP | open | P2 |
 | GAP-S17 | 壳 | 全局热键 | open | P2 |
 | GAP-S18 | 壳 | 本地化 | blocked | P2 |
@@ -324,12 +324,12 @@
 
 ### GAP-S15 Composer / 队列 / Send to Chat
 
-- **status:** open
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §4。Composer 是叠在 pane 上的多行输入，把一段 prompt 交给正在跑的 agent。Prompt Queue 在 agent busy 时排队，idle 再送。Send to Chat 把选区或文件丢进对话。
 - **DMG:** action `compose_overlay`、`prompt_queue_add`、`prompt_queue_clear`、`paste_continue_composer`、`send_to_chat`。符号里有 `CREATE TABLE IF NOT EXISTS prompt_queue`。
 - **原实现:** 队列在 SQLite（`otty_state` 一侧）。Composer 不经过 shell 历史，直接 `send-text` 进 pane。要过 IPC 闸门 `ipc-allow-send-keys`。
-- **当前:** action 有。state 无 `prompt_queue` 表（schema v3 只有 session / frecency / agent_session）。无 overlay。
+- **当前:** schema v4 `prompt_queue`；`compose_overlay` 开；`send_composer` idle 直送、Processing 入队；`flush_queue` idle 后送。Send to Chat 未做。
 - **落点:** 表加进 `otty-state`；发送走 GAP-I02。UI overlay 在 shell。
 - **完成:** 能打开 Composer 打一行回车送进当前 pane；agent busy 时进队列，idle 后自动送（需 GAP-A02 状态）。
 

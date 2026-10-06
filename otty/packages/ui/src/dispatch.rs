@@ -8,7 +8,7 @@ use otty_config::actions::ACTIONS;
 use otty_config::keybind::Keymap;
 use otty_config::menu::{menu_bar, Menu};
 use otty_config::Catalog;
-use otty_core::{PaneId, TabId, WindowId};
+use otty_core::{AgentState, PaneId, TabId, WindowId};
 
 use crate::context::ContextHit;
 use crate::details::DetailsTab;
@@ -54,6 +54,8 @@ pub struct Dispatcher {
     pub hint_labels: Vec<crate::mode::HintLabel>,
     pub vi: ViState,
     pub last_opened_url: Option<String>,
+    pub composer_open: bool,
+    pub last_sent: Option<String>,
 }
 
 impl Dispatcher {
@@ -89,6 +91,8 @@ impl Dispatcher {
             hint_labels: Vec::new(),
             vi: ViState::new(0),
             last_opened_url: None,
+            composer_open: false,
+            last_sent: None,
         }
     }
 
@@ -199,6 +203,8 @@ impl Dispatcher {
                     self.hint_labels = hint_labels(&self.find_lines);
                 }
             }
+            "compose_overlay" => self.composer_open = !self.composer_open,
+            "prompt_queue_clear" => {}
             "toggle_vi_mode" => {
                 self.mode = if self.mode == InputMode::Vi {
                     InputMode::Shell
@@ -313,6 +319,40 @@ impl Dispatcher {
         let Some(w) = self.app.active_window_mut() else { return false };
         let Some(id) = w.tabs().get(index).map(|t| t.id) else { return false };
         w.close_tab(id)
+    }
+
+    /// Enter in Composer: send now, or queue while the agent is processing.
+    pub fn send_composer(&mut self, text: &str, store: Option<&Store>, now: i64) -> bool {
+        let pane = self.focused_pane();
+        let busy = pane
+            .and_then(|id| self.app.pane(id))
+            .and_then(|p| p.agent.as_ref())
+            .is_some_and(|(_, s)| *s == AgentState::Processing);
+        if busy {
+            if let (Some(store), Some(id)) = (store, pane) {
+                let _ = store.enqueue_prompt(id.get() as i64, text, now);
+            }
+            return true;
+        }
+        self.last_sent = Some(text.to_owned());
+        self.composer_open = false;
+        true
+    }
+
+    /// Drain one queued prompt when the agent is idle.
+    pub fn flush_queue(&mut self, store: &Store) -> Option<String> {
+        let pane = self.focused_pane()?;
+        let idle = self
+            .app
+            .pane(pane)
+            .and_then(|p| p.agent.as_ref())
+            .is_none_or(|(_, s)| *s == AgentState::Idle);
+        if !idle {
+            return None;
+        }
+        let text = store.dequeue_prompt(pane.get() as i64).ok().flatten()?;
+        self.last_sent = Some(text.clone());
+        Some(text)
     }
 
     /// Drop a folder onto an edge: new terminal pane with that cwd.
@@ -609,5 +649,25 @@ mod tests {
         d.hit.selection = Some("bar".into());
         assert!(d.activate("use_selection_for_find"));
         assert_eq!(d.find_query, "bar");
+    }
+
+    #[test]
+    fn composer_sends_or_queues_while_busy() {
+        let mut d = Dispatcher::new();
+        assert!(d.activate("compose_overlay"));
+        assert!(d.composer_open);
+        assert!(d.send_composer("hello", None, 0));
+        assert_eq!(d.last_sent.as_deref(), Some("hello"));
+        assert!(!d.composer_open);
+
+        let store = Store::in_memory().unwrap();
+        let pane = d.focused_pane_id().unwrap();
+        d.app.pane_mut(pane).unwrap().agent = Some(("claude".into(), AgentState::Processing));
+        d.activate("compose_overlay");
+        assert!(d.send_composer("later", Some(&store), 1));
+        assert_eq!(d.last_sent.as_deref(), Some("hello"), "busy: queued, not sent");
+        d.app.pane_mut(pane).unwrap().agent = Some(("claude".into(), AgentState::Idle));
+        assert_eq!(d.flush_queue(&store).as_deref(), Some("later"));
+        assert_eq!(d.last_sent.as_deref(), Some("later"));
     }
 }

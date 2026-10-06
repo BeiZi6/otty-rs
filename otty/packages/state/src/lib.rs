@@ -22,7 +22,7 @@ use otty_core::{AgentId, AgentState, PaneId};
 use rusqlite::{params, Connection, OptionalExtension};
 
 /// The schema version this build writes.
-pub const SCHEMA_VERSION: i32 = 3;
+pub const SCHEMA_VERSION: i32 = 4;
 
 /// A failure coming out of the store.
 #[derive(Debug, thiserror::Error)]
@@ -106,6 +106,9 @@ impl Store {
         }
         if found < 3 {
             tx.execute_batch(DDL_V3)?;
+        }
+        if found < 4 {
+            tx.execute_batch(DDL_V4)?;
         }
         tx.pragma_update(None, "user_version", SCHEMA_VERSION)?;
         tx.commit()?;
@@ -249,6 +252,29 @@ impl Store {
     }
 
     /// `otty ignore` — stop ranking a directory without forgetting its history.
+    pub fn enqueue_prompt(&self, pane: i64, text: &str, now: i64) -> Result<i64, StateError> {
+        self.conn.execute(
+            "INSERT INTO prompt_queue (pane, text, created) VALUES (?1, ?2, ?3)",
+            params![pane, text, now],
+        )?;
+        Ok(self.conn.last_insert_rowid())
+    }
+
+    pub fn dequeue_prompt(&self, pane: i64) -> Result<Option<String>, StateError> {
+        let row: Option<(i64, String)> = self
+            .conn
+            .query_row(
+                "SELECT id, text FROM prompt_queue WHERE pane = ?1 ORDER BY id ASC LIMIT 1",
+                params![pane],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )
+            .optional()?;
+        let Some((id, text)) = row else { return Ok(None) };
+        self.conn
+            .execute("DELETE FROM prompt_queue WHERE id = ?1", params![id])?;
+        Ok(Some(text))
+    }
+
     pub fn ignore_path(&self, path: &str) -> Result<bool, StateError> {
         let n = self.conn.execute(
             "UPDATE frecency SET ignored = 1 WHERE path = ?1",
@@ -587,6 +613,15 @@ CREATE INDEX IF NOT EXISTS agent_session_updated ON agent_session (updated_at DE
 -- The pair is the key: an agent's session id is scoped to that agent.
 CREATE UNIQUE INDEX IF NOT EXISTS agent_session_key ON agent_session (agent, id);
 CREATE INDEX IF NOT EXISTS agent_session_pane ON agent_session (pane);
+"#;
+
+const DDL_V4: &str = r#"
+CREATE TABLE IF NOT EXISTS prompt_queue (
+    id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    pane    INTEGER NOT NULL,
+    text    TEXT NOT NULL,
+    created INTEGER NOT NULL DEFAULT 0
+);
 "#;
 
 #[cfg(test)]
