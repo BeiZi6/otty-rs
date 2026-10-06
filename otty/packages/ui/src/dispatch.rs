@@ -12,8 +12,9 @@ use otty_core::{PaneId, TabId, WindowId};
 
 use crate::context::ContextHit;
 use crate::details::DetailsTab;
+use crate::drop::DropZone;
 use crate::mode::{hint_labels, open_hint, InputMode, ViState};
-use crate::model::App;
+use crate::model::{App, PaneKind};
 use crate::tabs::TabGroupMode;
 use crate::pane_view::load_view;
 use crate::quickly::{open_directory, OpenFilter};
@@ -312,6 +313,30 @@ impl Dispatcher {
         let Some(w) = self.app.active_window_mut() else { return false };
         let Some(id) = w.tabs().get(index).map(|t| t.id) else { return false };
         w.close_tab(id)
+    }
+
+    /// Drop a folder onto an edge: new terminal pane with that cwd.
+    pub fn drop_path(&mut self, path: &str, zone: DropZone) -> bool {
+        match zone {
+            DropZone::Pane => self.open_view(path),
+            DropZone::Top | DropZone::Bottom | DropZone::Left | DropZone::Right => {
+                let Some(wid) = self.app.active_window().map(|w| w.id) else {
+                    return false;
+                };
+                let tab = TabId::new(self.next_tab);
+                let pane = PaneId::new(self.next_pane);
+                self.next_tab += 1;
+                self.next_pane += 1;
+                if !self.app.add_tab(wid, tab, pane) {
+                    return false;
+                }
+                if let Some(p) = self.app.pane_mut(pane) {
+                    p.cwd = Some(path.to_owned());
+                    p.kind = PaneKind::Terminal;
+                }
+                true
+            }
+        }
     }
 
     /// Open `path` in a new tab as a file, folder or URL pane.

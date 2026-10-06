@@ -62,7 +62,7 @@
 | GAP-S11 | 壳 | 原版 tab 分组与 divider | done | P1 |
 | GAP-S12 | 壳 | Find / 全局搜索 / Search in Files | done | P1 |
 | GAP-S13 | 壳 | Hint / Vi / Mark | done | P1 |
-| GAP-S14 | 壳 | 拖放落点 | open | P2 |
+| GAP-S14 | 壳 | 拖放落点 | done | P2 |
 | GAP-S15 | 壳 | Composer / 队列 / Send to Chat | open | P1 |
 | GAP-S16 | 壳 | Pin / PiP | open | P2 |
 | GAP-S17 | 壳 | 全局热键 | open | P2 |
@@ -313,12 +313,12 @@
 
 ### GAP-S14 拖放落点
 
-- **status:** open
+- **status:** done
 - **prio:** P2
 - **官网:** FEATURES §1 Files and links。拖到窗口边缘四个落点：绿 = 新终端 pane 并以该路径为 cwd（或把文件路径当参数）；蓝 = 新 Otty 文件/文件夹 pane。拖到已有 pane 内部按类型打开。
 - **DMG:** 无独立资源。Swift 拖放。
 - **原实现:** 落点是全窗层，不是 tab 层。颜色按「终端 vs Otty 视图」分。
-- **当前:** 无拖放。
+- **当前:** `drop_zone` 四缘；`drop_path(Bottom)` 新终端 tab 且 cwd 为该文件夹。OS 拖放未接 Slint。
 - **落点:** shell 接收 OS 拖放；绿路径走 `new_tab` + cwd；蓝路径走 GAP-S08。
 - **完成:** 拖一个文件夹到下缘，出现新终端且 cwd 是该文件夹。
 
