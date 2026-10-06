@@ -51,7 +51,7 @@
 | GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | done | P2 |
 | GAP-S01 | 壳 | 原生菜单栏 | done | P0 |
 | GAP-S02 | 壳 | 右键菜单 | done | P0 |
-| GAP-S03 | 壳 | Settings 窗 | open | P0 |
+| GAP-S03 | 壳 | Settings 窗 | done | P0 |
 | GAP-S04 | 壳 | Command Palette | open | P0 |
 | GAP-S05 | 壳 | Open Quickly | open | P0 |
 | GAP-S06 | 壳 | Details 面板 | open | P0 |
@@ -192,12 +192,12 @@
 
 ### GAP-S03 Settings 窗
 
-- **status:** open
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §6 整节。分组：Font、Cursor、Shell、VT、Scrollback、Restore、Window、Transparency、Colors、Keybindings、Agents、Recipes。就地写文件。Reset 写成注释 `(reset to default)`。
 - **DMG:** GAP-K03 的 HTML。`dotfiles-catalog.json` 已在 `resources/`。
 - **原实现:** UI 不生成新 toml，只改已有行。`config.local.toml` 优先。list 类 key 整表替换。alias 写入时改成真名（`shell` → `command`）。
-- **当前:** `otty-config` 读写与 119 测在。无窗。
+- **当前:** `otty-ui::set_setting` 走 `Config::set_value`；`apply_font_size` 立刻重算格子。壳 Settings 浮层改 font-size。`origin_line` / `--show-origin` 指出文件。
 - **落点:** 先 GAP-K03 有材料，再做窗。写盘只走 `otty-config`，禁止 UI 自己拼 toml。
 - **完成:** 改 `font-size` 能在运行中看到；`otty config get font-size --show-origin` 指出是哪份文件。
 

@@ -168,6 +168,9 @@ export component OttyWindow inherits Window {
     callback menu-activated(string);
     callback context-prepare(length, length);
     callback close-tab-at(int);
+    in-out property <bool> settings-open: false;
+    in-out property <int> settings-font-size: 13;
+    callback settings-apply-font(int);
 
     // The pointer's position over the grid, in the grid image's coordinates, so
     // Rust can turn it into a cell without knowing about Slint.
@@ -338,6 +341,73 @@ export component OttyWindow inherits Window {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    if root.settings-open : Rectangle {
+        x: parent.width - 340px;
+        y: Theme.titlebar-height + 8px;
+        width: 320px;
+        height: 140px;
+        background: Theme.panel-background;
+        border-width: 1px;
+        border-color: Theme.panel-border;
+        border-radius: Theme.panel-radius;
+
+        VerticalLayout {
+            padding: 12px;
+            spacing: 8px;
+
+            HorizontalLayout {
+                Text {
+                    text: "Settings";
+                    color: Theme.panel-foreground;
+                    font-size: 14px;
+                    vertical-alignment: center;
+                }
+                TouchArea {
+                    width: 24px;
+                    height: 24px;
+                    clicked => { root.settings-open = false; }
+                    Text {
+                        text: "×";
+                        color: Theme.panel-foreground;
+                        horizontal-alignment: center;
+                    }
+                }
+            }
+
+            Text {
+                text: "Font size: " + root.settings-font-size;
+                color: Theme.panel-foreground;
+                font-size: 12px;
+            }
+
+            HorizontalLayout {
+                spacing: 8px;
+                TouchArea {
+                    width: 32px;
+                    height: 28px;
+                    clicked => {
+                        if (root.settings-font-size > 8) {
+                            root.settings-font-size -= 1;
+                            root.settings-apply-font(root.settings-font-size);
+                        }
+                    }
+                    Text { text: "−"; color: Theme.panel-foreground; horizontal-alignment: center; }
+                }
+                TouchArea {
+                    width: 32px;
+                    height: 28px;
+                    clicked => {
+                        if (root.settings-font-size < 72) {
+                            root.settings-font-size += 1;
+                            root.settings-apply-font(root.settings-font-size);
+                        }
+                    }
+                    Text { text: "+"; color: Theme.panel-foreground; horizontal-alignment: center; }
                 }
             }
         }

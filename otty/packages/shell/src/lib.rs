@@ -26,7 +26,8 @@ use otty_config::Config;
 use otty_core::PaneId;
 use otty_render::theme::Chrome;
 use otty_ui::view::TerminalView;
-use otty_ui::{context_rows, pane_hit, shell_menu_models, Dispatcher};
+use otty_config::SaveScope;
+use otty_ui::{context_rows, pane_hit, set_setting, shell_menu_models, Dispatcher};
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
 
 slint::include_modules!();
@@ -158,9 +159,17 @@ fn bind_menu(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<D
             _ => {}
         }
     }
+    let ui_weak = ui.as_weak();
+    let font = config.get_float("font-size").unwrap_or(13.0) as i32;
     ui.on_menu_activated(move |action| {
         let mut d = dispatch.borrow_mut();
         let _ = d.activate(action.as_str());
+        if d.settings_open {
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_settings_open(true);
+                ui.set_settings_font_size(font);
+            }
+        }
         if d.quit {
             let _ = slint::quit_event_loop();
         }
@@ -234,6 +243,18 @@ pub fn run(config: Config) -> Result<(), ShellError> {
 
     let view = Rc::new(std::cell::RefCell::new(view));
     bind_context(&ui, view.clone(), dispatch.clone());
+    {
+        let dir = config.dir().to_path_buf();
+        let view = view.clone();
+        let scale = ui.window().scale_factor();
+        ui.on_settings_apply_font(move |size| {
+            let mut cfg = Config::load_from(&dir);
+            let raw = size.to_string();
+            if set_setting(&mut cfg, "font-size", &raw, SaveScope::Auto).is_ok() {
+                let _ = view.borrow_mut().apply_font_size(&cfg, scale);
+            }
+        });
+    }
 
     // Pointer motion and clicks both arrive as a position; the view turns them
     // into a cell, which is the only thing that needs the layout.
@@ -392,5 +413,7 @@ mod tests {
         assert!(src.contains("ContextMenuArea"), "pane/tab need a context menu");
         assert!(src.contains("Close Tab"));
         assert!(src.contains("ctx-pane"));
+        assert!(src.contains("settings-open"), "Settings window");
+        assert!(src.contains("settings-apply-font"));
     }
 }

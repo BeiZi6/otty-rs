@@ -15,6 +15,7 @@
 
 pub mod context;
 pub mod dispatch;
+pub mod settings;
 pub mod layout;
 pub mod session;
 pub mod syntax;
@@ -23,6 +24,8 @@ pub mod model;
 
 pub use context::{context_items, context_rows, pane_hit, tab_hit, ContextHit, ContextItem};
 pub use dispatch::{shell_menu, shell_menu_models, Dispatcher};
+pub use settings::{set_setting, show_origin};
+pub use view::cell_size_for_font;
 pub use layout::{cell_at, grid_dimensions, layout, layout_single, Divider, Layout, LayoutOptions};
 pub use session::Session;
 pub use view::{pty_config, term_config, TerminalView, ViewError};

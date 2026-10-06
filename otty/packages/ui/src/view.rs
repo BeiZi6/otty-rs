@@ -407,6 +407,16 @@ impl TerminalView {
         &self.chrome
     }
 
+    /// Rebuild glyphs at the config's `font-size` so Settings is visible live.
+    pub fn apply_font_size(&mut self, config: &Config, scale: f32) -> Result<(), ViewError> {
+        let font_px = config.get_float("font-size").unwrap_or(13.0) as f32 * scale;
+        let (glyphs, cell) = load_glyphs(config, font_px)?;
+        self.glyphs = Box::new(glyphs);
+        self.cell = cell;
+        self.resize(self.buffer.0, self.buffer.1, true);
+        Ok(())
+    }
+
     /// Swap the theme, which changes both the grid's palette and the chrome.
     pub fn set_theme(&mut self, theme: &otty_config::theme::Theme) {
         self.palette = Palette::from_theme(theme);
@@ -453,6 +463,13 @@ impl TerminalView {
 /// monospaced family changes the grid measurement. When nothing in the chain is
 /// installed the bundled faces are used, and the substitution is logged rather
 /// than made silently — the same rule the font crate follows.
+/// Cell metrics at the configured `font-size`. Settings uses this to show the
+/// change without opening a PTY.
+pub fn cell_size_for_font(config: &Config, scale: f32) -> Result<CellSize, ViewError> {
+    let font_px = config.get_float("font-size").unwrap_or(13.0) as f32 * scale;
+    load_glyphs(config, font_px).map(|(_, cell)| cell)
+}
+
 fn load_glyphs(config: &Config, size_px: f32) -> Result<(SwashGlyphs, CellSize), ViewError> {
     let stack = otty_fonts::TypeStack::from_theme(&config.active_theme(false));
     let catalog = otty_fonts::FontCatalog::discover_default();

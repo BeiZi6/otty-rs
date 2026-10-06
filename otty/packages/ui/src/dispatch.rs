@@ -27,6 +27,7 @@ pub struct Dispatcher {
     pub hit: ContextHit,
     /// Last Copy / Copy Path payload.
     pub clipboard: Option<String>,
+    pub settings_open: bool,
 }
 
 impl Dispatcher {
@@ -42,6 +43,7 @@ impl Dispatcher {
             quit: false,
             hit: ContextHit::default(),
             clipboard: None,
+            settings_open: false,
         }
     }
 
@@ -62,6 +64,7 @@ impl Dispatcher {
                     self.clipboard = Some(p.clone());
                 }
             }
+            "open_settings" => self.settings_open = true,
             "quit" => self.quit = true,
             "new_tab" => {
                 if let Some(wid) = self.app.active_window().map(|w| w.id) {
@@ -222,5 +225,13 @@ mod tests {
         let n: usize = models.iter().map(|(_, rows)| rows.len()).sum();
         assert_eq!(n, ACTIONS.len());
         assert!(models[5].1.iter().any(|(title, _)| !title.contains('\t')));
+    }
+
+    #[test]
+    fn open_settings_opens_the_panel() {
+        let mut d = Dispatcher::new();
+        assert!(!d.settings_open);
+        assert!(d.activate("open_settings"));
+        assert!(d.settings_open);
     }
 }

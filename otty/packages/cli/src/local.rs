@@ -17,6 +17,13 @@ use crate::{
     ConfigCmd, FontCmd, Global, KeybindCmd, Placement, SshCmd, ThemeCmd,
 };
 
+/// The origin `otty config get KEY --show-origin` prints.
+fn origin_line(cfg: &Config, key: &str) -> String {
+    cfg.key_origin(key)
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|| "(default)".to_owned())
+}
+
 /// The config a command should operate on.
 fn load(global: &Global) -> Result<Config, CliError> {
     match &global.config_file {
@@ -201,11 +208,7 @@ pub fn config(global: &Global, cmd: &ConfigCmd, opts: OutputOptions) -> Result<i
                 }
             }
             if *show_origin {
-                let origin = cfg
-                    .key_origin(spec.key)
-                    .map(|p| p.display().to_string())
-                    .unwrap_or_else(|| "(default)".to_owned());
-                writeln!(out, "# {origin}")?;
+                writeln!(out, "# {}", origin_line(&cfg, spec.key))?;
             }
             let _ = local;
             Ok(exit::OK)
@@ -963,5 +966,19 @@ mod tests {
     fn an_agent_name_round_trips() {
         assert_eq!(agent_of("claude"), AgentId::Claude);
         assert_eq!(agent_of("something-else").as_str(), "something-else");
+    }
+
+    #[test]
+    fn config_get_show_origin_names_the_file_after_a_settings_write() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("config.toml"), "font-size = 13\n").unwrap();
+        let mut cfg = Config::load_from(dir.path());
+        cfg.set_value("font-size", "20", SaveScope::Auto).unwrap();
+        let origin = origin_line(&cfg, "font-size");
+        assert!(
+            origin.ends_with("config.toml"),
+            "show-origin should name the written file, got {origin}"
+        );
+        assert_eq!(cfg.get_float("font-size"), Some(20.0));
     }
 }
