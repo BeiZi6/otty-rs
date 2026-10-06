@@ -12,6 +12,7 @@ use otty_core::{PaneId, TabId, WindowId};
 
 use crate::context::ContextHit;
 use crate::details::DetailsTab;
+use crate::mode::{hint_labels, open_hint, InputMode, ViState};
 use crate::model::App;
 use crate::tabs::TabGroupMode;
 use crate::pane_view::load_view;
@@ -48,6 +49,10 @@ pub struct Dispatcher {
     pub find_query: String,
     pub find_hit: Option<otty_term::FindHit>,
     pub find_lines: Vec<String>,
+    pub mode: InputMode,
+    pub hint_labels: Vec<crate::mode::HintLabel>,
+    pub vi: ViState,
+    pub last_opened_url: Option<String>,
 }
 
 impl Dispatcher {
@@ -79,6 +84,10 @@ impl Dispatcher {
             find_query: String::new(),
             find_hit: None,
             find_lines: Vec::new(),
+            mode: InputMode::Shell,
+            hint_labels: Vec::new(),
+            vi: ViState::new(0),
+            last_opened_url: None,
         }
     }
 
@@ -177,6 +186,26 @@ impl Dispatcher {
                 if let Some(s) = self.hit.selection.clone().filter(|s| !s.is_empty()) {
                     self.find_query = s;
                     self.find_open = true;
+                }
+            }
+            "toggle_hint_mode" => {
+                self.mode = if self.mode == InputMode::Hint {
+                    InputMode::Shell
+                } else {
+                    InputMode::Hint
+                };
+                if self.mode == InputMode::Hint {
+                    self.hint_labels = hint_labels(&self.find_lines);
+                }
+            }
+            "toggle_vi_mode" => {
+                self.mode = if self.mode == InputMode::Vi {
+                    InputMode::Shell
+                } else {
+                    InputMode::Vi
+                };
+                if self.mode == InputMode::Vi {
+                    self.vi = ViState::new(self.find_lines.len().max(1));
                 }
             }
             "find_next" => {
@@ -305,6 +334,38 @@ impl Dispatcher {
 
     pub fn focused_pane_id(&self) -> Option<PaneId> {
         self.focused_pane()
+    }
+
+    pub fn open_hint(&mut self, tag: &str) -> Option<String> {
+        let url = open_hint(&self.hint_labels, tag).map(str::to_string)?;
+        self.last_opened_url = Some(url.clone());
+        self.mode = InputMode::Shell;
+        Some(url)
+    }
+
+    /// True when the key is consumed by Hint/Vi and must not go to the PTY.
+    pub fn handle_mode_key(&mut self, key: &str) -> bool {
+        match self.mode {
+            InputMode::Hint => {
+                if let Some(url) = open_hint(&self.hint_labels, key) {
+                    self.last_opened_url = Some(url.to_string());
+                    self.mode = InputMode::Shell;
+                }
+                true
+            }
+            InputMode::Vi => {
+                let swallowed = self.vi.handle(key);
+                if key == "y" || key == "enter" || key == "\n" {
+                    if let Some(s) = self.hit.selection.clone() {
+                        self.clipboard = Some(s);
+                    }
+                    self.mode = InputMode::Shell;
+                }
+                swallowed
+            }
+            InputMode::Mark => true,
+            InputMode::Shell => false,
+        }
     }
 
     /// Clear Badge — the titlebar dropdown action (not an ACTIONS id).

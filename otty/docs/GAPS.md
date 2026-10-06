@@ -61,7 +61,7 @@
 | GAP-S10 | 壳 | 徽章与 tab 规则 | done | P1 |
 | GAP-S11 | 壳 | 原版 tab 分组与 divider | done | P1 |
 | GAP-S12 | 壳 | Find / 全局搜索 / Search in Files | done | P1 |
-| GAP-S13 | 壳 | Hint / Vi / Mark | open | P1 |
+| GAP-S13 | 壳 | Hint / Vi / Mark | done | P1 |
 | GAP-S14 | 壳 | 拖放落点 | open | P2 |
 | GAP-S15 | 壳 | Composer / 队列 / Send to Chat | open | P1 |
 | GAP-S16 | 壳 | Pin / PiP | open | P2 |
@@ -302,12 +302,12 @@
 
 ### GAP-S13 Hint / Vi / Mark
 
-- **status:** open
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §3 Hint Mode、Vi Mode。Hint：覆盖可点链接/路径，字母标签。Vi：⌃⇧Space 进入，键不再进 shell，在 scrollback 里动。Mark Mode 无默认绑定，箭头+Shift 选。`5j` 带 count。`/` `?` 开 Find 再 `n` `N`。`f` 进 Hint。`y` / Enter 复制并退出。
 - **DMG:** action `toggle_hint_mode`、`toggle_vi_mode`、`toggle_vi_mode_help`、`toggle_mark_mode`。还有 `hint_copy`、`hint:word:paste`、`hint:ticket:open:<url>` 这类特殊 action。
 - **原实现:** 模式在壳里，不在 PTY。进入后拦截 keydown。Hint 源：OSC 8、URL 正则、路径检测。Vi 无 config key，只 remap 这三个命令。
-- **当前:** 键全部送给 PTY。无模式 pill。
+- **当前:** `otty-ui::mode` Hint 给 URL 打 `a` 并 `open_hint`；Vi `gg` 到顶、`y` 复制并退出；`handle_mode_key` 吞掉 `j`。Mark 未做。
 - **落点:** 模式状态在 `otty-ui`；命中列表从当前 grid 抽。先做 Hint 开链接，再做 Vi 移动。
 - **完成:** Hint 能给一个 URL 打标签并打开；Vi 能 `gg` 到顶、`y` 复制选区且期间 shell 收不到 `j`。
 

@@ -21,6 +21,7 @@ pub mod pane_view;
 pub mod quickly;
 pub mod settings;
 pub mod layout;
+pub mod mode;
 pub mod session;
 pub mod syntax;
 pub mod tabs;
