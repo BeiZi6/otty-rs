@@ -22,6 +22,7 @@ installers**, not written for this rebuild. Each file was extracted from
 | `en.json`, `zh.json` | UI catalog (menus, Settings, palette, 152 action labels) | `Resources/` |
 | `settings-ui.html` | Vite-built Settings page the shell loads | `Resources/` |
 | `completions-client.db` | Fig spec SQLite (**gitignored**, 11 MB). Copy from the DMG or set `OTTY_COMPLETIONS_DB`. | `Resources/` |
+| `syntaxes.bin` | syntect grammar dump (~120) for file-pane highlighting | `Resources/` |
 
 ## The one deliberate deviation
 

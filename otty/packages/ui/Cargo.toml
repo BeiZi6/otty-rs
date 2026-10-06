@@ -44,6 +44,7 @@ which = { workspace = true }
 walkdir = { workspace = true }
 regex = { workspace = true }
 unicode-segmentation = { workspace = true }
+syntect = { workspace = true }
 
 
 [dev-dependencies]

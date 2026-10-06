@@ -48,7 +48,7 @@
 | GAP-K02 | 知识 | `en.json` / `zh.json` | done | P0 |
 | GAP-K03 | 知识 | Settings 单页 `settings-ui.html` | done | P0 |
 | GAP-K04 | 知识 | 补全库 `completions-client.db` | done | P1 |
-| GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | blocked | P2 |
+| GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | done | P2 |
 | GAP-S01 | 壳 | 原生菜单栏 | open | P0 |
 | GAP-S02 | 壳 | 右键菜单 | open | P0 |
 | GAP-S03 | 壳 | Settings 窗 | open | P0 |
@@ -153,12 +153,12 @@
 
 ### GAP-K05 语法、Mermaid、图集、图标
 
-- **status:** blocked
+- **status:** done
 - **prio:** P2
 - **官网:** 文件窗 syntect ~120 grammars；Markdown/reST/SVG/HTML 预览；Mermaid。
 - **DMG:** `syntaxes.bin` 644 632 B；`mermaid.min.js` 3 572 661 B；`Assets.car` 1 389 688 B；`otty.icns` 53 632 B；`Grid.metallib` 68 810 B（Metal IR，wgpu 不能加载，见 GAP-T04）。
 - **原实现:** `syntect` 54 符号 + `pulldown_cmark` 54 符号读 `syntaxes.bin`。文件窗 Markdown 预览加载 mermaid。App 图标与部分 UI 图在 Assets.car。可再用的 SVG 已在 `resources/tab-icons/`、`view-icons/`。
-- **当前:** SVG 图标在。bin/js/car/icns/metallib 都不在仓库。
+- **当前:** `resources/syntaxes.bin`；`otty-ui::syntax::highlight_file` 能高亮 `*.rs`。SVG 图标沿用。未搬 mermaid.js / Assets.car / icns / metallib。Markdown 预览见 GAP-S08。
 - **落点:** 文件窗做起来再抽 `syntaxes.bin` 与 mermaid。图标继续用 SVG。不要搬 metallib。
 - **完成:** 文件窗能高亮一份 `*.rs`；Markdown 能渲染一个 mermaid 块（若做预览）。
 

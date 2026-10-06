@@ -15,6 +15,7 @@
 
 pub mod layout;
 pub mod session;
+pub mod syntax;
 pub mod view;
 pub mod model;
 

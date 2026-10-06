@@ -22,3 +22,5 @@ output/
 
 # Bundled Fig spec DB (11 MB). Copy from the DMG; see otty/resources/README.md
 otty/resources/completions-client.db
+*.db-wal
+*.db-shm
