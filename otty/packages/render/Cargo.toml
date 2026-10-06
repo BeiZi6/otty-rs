@@ -1,0 +1,31 @@
+[package]
+name = "otty-render"
+description = "The GPU renderer: wgpu pipelines, glyph atlas, box-drawing geometry."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+otty-core = { workspace = true }
+otty-term = { workspace = true }
+otty-fonts = { workspace = true }
+otty-config = { workspace = true }
+wgpu = { workspace = true }
+thiserror = { workspace = true }
+bytemuck = { workspace = true }
+fontdb = { workspace = true }
+swash = { workspace = true }
+pollster = { workspace = true }
+image = { workspace = true }
+log = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+
+[dev-dependencies]
+serde_json = { workspace = true }
+

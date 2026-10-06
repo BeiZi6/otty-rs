@@ -1,0 +1,16 @@
+─
+  var lastRatio = -1, scrollTick = false;
+  function onScroll() {
+    updateSticky();
+    if (!scrollTick) {
+      scrollTick = true;
+      setTimeout(function () {
+        scrollTick = false;
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        var ratio = max > 0 ? window.scrollY / max : 0;
+        if (Math.abs(ratio - lastRatio) > 0.01) { lastRatio = ratio; post({ type: "scroll", ratio: ratio }); }
+      }, 120);
+    }
+  }
+
+  // 

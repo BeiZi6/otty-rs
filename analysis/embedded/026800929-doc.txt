@@ -1,0 +1,16 @@
+—
+# not a trade worth making in a file every interactive shell sources.
+__otty_osc7() {
+    (( ZSH_SUBSHELL == 0 )) && [[ -t 1 ]] || return 0
+    builtin printf '\e]7;%s\a' "$1"
+}
+
+# CWD reporting (fires on every directory change).
+__otty_chpwd() {
+    __otty_osc7 "file://${HOST}${PWD}"
+}
+chpwd_functions+=(__otty_chpwd)
+# Emit initial CWD so the sidebar knows the starting directory.
+__otty_chpwd
+
+# 

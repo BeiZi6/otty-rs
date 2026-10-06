@@ -1,0 +1,17 @@
+— goes straight to the binary.
+__otty_should_wrap otty && function otty {
+    if [[ "$1" == jump ]]; then
+        shift
+        __otty_jump "$@"
+    else
+        command otty "$@"
+    fi
+}
+__otty_should_wrap learn && function learn {
+    if [[ -n "$OTTY_FLAGS_DIR" && -f "$OTTY_FLAGS_DIR/omit_prefix" ]]; then
+        command otty learn "$@"
+    else
+        command learn "$@"
+    fi
+}
+# `watch:<agent>` 

@@ -1,0 +1,9 @@
+— it can be large and we
+# don't want to delay the relaunch.
+if [ -d "$TRASH" ]; then
+  ( /bin/rm -rf "$TRASH" ) &
+fi
+
+echo "relaunching..."
+/usr/bin/open "$OLD"
+echo "--- helper done $(date) ---"

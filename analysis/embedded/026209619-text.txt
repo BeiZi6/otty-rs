@@ -1,0 +1,56 @@
+key_path rule on a file this build cannot parse structurally.toml.yaml.json[[]]indexlabelscopevalueoffsyncedUPDATE app SET enabled = ?2, backup_only = ?3, decided_at = ?4, state = ?5
+             WHERE id = ?1DELETE FROM meta WHERE key = ?1INSERT INTO staged(item_id, version, at, device, attribution)
+             VALUES (?1,?2,?3,?4,?5)
+             ON CONFLICT(item_id) DO UPDATE SET
+                version = excluded.version, at = excluded.at,
+                device = excluded.device, attribution = excluded.attributionSELECT id FROM tombstone ORDER BY at, id LIMIT ?1SELECT app, pattern, to_kind, at FROM user_rule ORDER BY app, patternSELECT json FROM adjustment ORDER BY app, jsonDELETE FROM item WHERE id = ?1DELETE FROM staged WHERE item_id = ?1DELETE FROM chain WHERE id = ?1INSERT INTO command(cmdline, started_ms, finished_ms, cwd) VALUES (?1,?2,?3,?4)DELETE FROM command WHERE seq <= (
+                 SELECT MAX(seq) FROM command
+             ) - ?1SELECT COUNT(*) FROM stagedINSERT INTO tombstone(id, at) VALUES (?1, ?2) ON CONFLICT(id) DO NOTHINGSELECT id, app, kind, path, scope, side_effect, size, status, version, base_hash, machine_lines, stripped, reason, last_at, last_device, last_attribution, meta_sent, backup, newer_item, newer_version, newer_at, newer_device, newer_hash, dismissed_at, refusal FROM itemINSERT INTO seen_binary(name, last_ms) VALUES (?1, ?2)
+                 ON CONFLICT(name) DO UPDATE SET last_ms = MAX(last_ms, excluded.last_ms)DELETE FROM seen_binary WHERE name NOT IN (
+                 SELECT name FROM seen_binary ORDER BY last_ms DESC, name LIMIT ?1
+             )INSERT INTO user_rule(app, pattern, to_kind, at) VALUES (?1, ?2, ?3, ?4)
+             ON CONFLICT(app, pattern) DO UPDATE SET to_kind = excluded.to_kind, at = excluded.atSELECT name FROM seen_binary ORDER BY namependingnewrefusednewerUPDATE app SET state = ?2 WHERE id = ?1UPDATE item SET meta_sent = version WHERE id = ?1SELECT id, item, app, path, kind, owner, version, hash, size, at, device, attribution, sent_hash, body FROM chainDELETE FROM tombstone WHERE id = ?1INSERT OR IGNORE INTO adjustment(app, json) VALUES (?1, ?2)UPDATE app SET enabled = ?2 WHERE id = ?1INSERT OR IGNORE INTO app(id, name, enabled, state, inferred, rule,
+                                       backup_only, decided_at, found_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)SELECT id FROM item WHERE version > 0 AND meta_sent != version ORDER BY id LIMIT ?1
+            DELETE FROM item;
+            DELETE FROM staged;
+            DELETE FROM tombstone;
+            DELETE FROM chain;
+            DELETE FROM user_rule;
+            DELETE FROM meta WHERE key IN ('list_cursor', 'last_sync_at', 'rules_sent', 'account_key_fingerprint');
+            SELECT id, name, enabled, state, inferred, rule, backup_only, decided_at, found_at FROM appSELECT value FROM meta WHERE key = ?1SELECT item_id, version, at, device, attribution FROM staged ORDER BY item_id
+            PRAGMA journal_mode = WAL;
+            CREATE TABLE IF NOT EXISTS meta (
+                key   TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS app (
+                id       TEXT PRIMARY KEY,
+                name     TEXT NOT NULL,
+                enabled  INTEGER NOT NULL DEFAULT 0,
+                state    TEXT NOT NULL DEFAULT 'new',
+                inferred INTEGER NOT NULL DEFAULT 0,
+                rule     TEXT
+            );
+            CREATE TABLE IF NOT EXISTS item (
+                id               TEXT PRIMARY KEY,
+                app              TEXT NOT NULL,
+                kind             TEXT NOT NULL,
+                path             TEXT NOT NULL,
+                scope            TEXT NOT NULL,
+                side_effect      INTEGER NOT NULL,
+                size             INTEGER NOT NULL DEFAULT 0,
+                status           TEXT NOT NULL DEFAULT 'clean',
+                version          INTEGER NOT NULL DEFAULT 0,
+                base_hash        TEXT,
+                machine_lines    INTEGER NOT NULL DEFAULT 0,
+                stripped         TEXT NOT NULL DEFAULT '[]',
+                reason           TEXT,
+                last_at          INTEGER,
+                last_device      TEXT,
+                last_attribution TEXT,
+                meta_sent        INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE INDEX IF NOT EXISTS item_by_app ON item(app);
+            -- A file this machine deleted, waiting to be reported to the server
+            -- (DOTFILES_SYNC_SPEC

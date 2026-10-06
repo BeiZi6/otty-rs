@@ -1,0 +1,10 @@
+— the material is the
+# NAVIGATION column and the content column is an opaque plate beside it, both
+# running the full height of the window, with the title strip being nothing but
+# the top of those two columns. Scoping the material to `[windows.sidebar]`
+# instead of `[windows]` is how a theme says that: the window itself stays
+# opaque, so `MainBackground` keeps its fill all the way up through the title
+# row, and only the chrome columns are punched through to the acrylic.
+#
+# The one-surface version (material on `[windows]`) left the title strip on the
+# window tint while the grid below it sat on #202020 

@@ -1,0 +1,9 @@
+— which reads as
+                    # "ssh froze". It only bit on the first connection to a host
+                    # (later ones hit the terminfo cache and skipped this probe
+                    # entirely), which is what made it look intermittent.
+                    # ControlPath=none keeps the probe off the socket so the
+                    # interactive ssh below stays the master.
+                    # The remote command is handed to the REMOTE account's
+                    # LOGIN SHELL, which is not necessarily POSIX. A fish login
+                    # shell rejects a leading `otty_term=

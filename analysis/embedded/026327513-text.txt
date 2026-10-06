@@ -1,0 +1,6 @@
+; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Pane actions (resume / send-to-chat / raw JSONL / close) */
+.acts { display:flex; align-items:center; gap:2px; flex:none; margin-left:auto; }
+.act { display:flex; align-items:center; justify-content:center; width:24px; height:24px;
+  padding:0; background:none; border:none; border-radius:4px; color:

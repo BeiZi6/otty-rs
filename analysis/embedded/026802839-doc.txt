@@ -1,0 +1,29 @@
+— taking OSC markers, CWD reporting and SSH integration down with it. The
+# `__otty_should_wrap view &&` guard on the same line cannot save us: the entire
+# `A && B` list is parsed before any of it runs. The keyword form suppresses
+# alias expansion of the name, so the definition parses no matter what the user
+# has aliased. Don't "simplify" it back to `view() {`.
+__otty_should_wrap edit && function edit {
+    if [[ -n "$OTTY_FLAGS_DIR" && -f "$OTTY_FLAGS_DIR/omit_prefix" ]]; then
+        command otty edit "$@"
+    else
+        command edit "$@"
+    fi
+}
+__otty_should_wrap view && function view {
+    if [[ -n "$OTTY_FLAGS_DIR" && -f "$OTTY_FLAGS_DIR/omit_prefix" ]]; then
+        command otty view "$@"
+    else
+        command view "$@"
+    fi
+}
+__otty_should_wrap watch && function watch {
+    if [[ -n "$OTTY_FLAGS_DIR" && -f "$OTTY_FLAGS_DIR/omit_prefix" ]]; then
+        command otty watch "$@"
+    else
+        command watch "$@"
+    fi
+}
+# The one jump implementation, behind `otty jump`, the bare `jump` wrapper and
+# any `cli-alias` mapped to jump. The CLI is a child process and cannot move
+# this shell, so left alone it has the app type `cd '<path>'` into the pane 

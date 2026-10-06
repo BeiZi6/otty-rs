@@ -1,0 +1,4 @@
+; }
+.summary { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.middle { padding:2px 32px 4px; display:flex; flex-direction:column; gap:3px; }
+.mi-text { color:

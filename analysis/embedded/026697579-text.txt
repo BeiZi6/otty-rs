@@ -1,0 +1,7 @@
+— there is no matching allow rule.  Listing them as
+;; explicit denies above the targeted allows would override the allows
+;; due to last-match-wins precedence, hence the omission.
+(deny default)
+
+;; --- Process control ---
+;; Allow exec only for the target binary itself 

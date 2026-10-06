@@ -1,0 +1,8 @@
+…'` leaves the login shell
+                    # three plain words and one single-quoted token to parse,
+                    # which fish, csh and every POSIX shell agree on, and the
+                    # POSIX syntax inside is parsed by /bin/sh where it belongs.
+                    #
+                    # $TERM is spliced into that single-quoted string, so a
+                    # value carrying a quote would break out of it. Belt and
+                    # braces 

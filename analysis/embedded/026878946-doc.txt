@@ -1,0 +1,10 @@
+— never shadow a standard
+                    #      name like xterm-256color with our copy.
+                    #   2. Otherwise install via `tic`, then verify the fresh
+                    #      entry actually has `clear=`; a truncated transfer can
+                    #      compile a stub that lacks clear/cup and breaks tput &
+                    #      tmux. If incomplete, remove it and fail so we fall back
+                    #      to the system database instead of a broken shadow.
+                    # The remote command is handed to the REMOTE account's
+                    # LOGIN SHELL, which is not necessarily POSIX. A fish login
+                    # shell rejects a leading `otty_term=

@@ -1,0 +1,6 @@
+— HISTFILE is already read, so
+#     reading here is correct and must happen NOW: a function appended to
+#     precmd_functions while zsh is iterating that array runs on the NEXT
+#     prompt, one prompt too late for the first Up.
+#   * from the managed .zshrc block (the tmux fallback, dev builds without a
+#     bundle 

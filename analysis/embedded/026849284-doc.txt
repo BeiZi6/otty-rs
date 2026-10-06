@@ -1,0 +1,11 @@
+— foreign command FIRST:
+#   - `$_` (last argument of the previous command) is what bash-preexec's
+#     handler reads, and any command of ours running before it would
+#     overwrite it. Our handler only reads $BASH_COMMAND, which bash pins
+#     to the trap-triggering command for the whole handler, so running
+#     second costs us nothing.
+#   - Joined with a newline, not `;`, so a foreign command ending in a
+#     comment cannot swallow ours.
+# Idempotent via the *__otty_debug_trap* guard: one chain per thief, no
+# growth loop, and a thief that preserved our chained command is left
+# alone entirely. A bare `trap '' DEBUG` (explicit ignore) is reclaimed 

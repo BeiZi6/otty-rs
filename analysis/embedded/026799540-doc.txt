@@ -1,0 +1,5 @@
+─
+# Every OSC 7 goes through here. Both guards are load-bearing and neither
+# subsumes the other; see scripts/test-shell-integration.sh for the matrix.
+#
+# ZSH_SUBSHELL 

@@ -1,0 +1,5 @@
+…) = bash`: an unrecorded host prints
+                # nothing, and in fish an empty substitution is zero arguments,
+                # so `test` saw `= bash` and printed "Missing argument at index
+                # 3" on every first ssh to a host (reported against 1.5.1).
+                # Not `string match` either 

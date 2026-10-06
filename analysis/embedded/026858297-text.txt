@@ -1,0 +1,16 @@
+─
+if [[ -n "$OTTY_CLI_ALIASES" ]]; then
+    __otty_install_aliases() {
+        local IFS='|'
+        local pair name cmd
+        for pair in $OTTY_CLI_ALIASES; do
+            [[ -z "$pair" ]] && continue
+            name="${pair%%=*}"
+            cmd="${pair#*=}"
+            [[ -z "$name" || -z "$cmd" || "$name" == "$pair" ]] && continue
+            [[ "$name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+            [[ "$cmd"  =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+            __otty_should_wrap "$name" || continue
+            # jump needs the local cd: `command otty jump` would re-introduce
+            # the visible `cd '<path>'` echo plus a spurious shell-history
+            # entry. Call __otty_jump, not the bare `jump` wrapper 

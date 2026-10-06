@@ -1,0 +1,5 @@
+─
+# Every OSC 7 goes through here. fish has no forked subshell and its
+# `--on-variable PWD` handler writes to the real stdout rather than into a
+# command substitution's capture buffer, so the cwd path was never exposed the
+# way zsh's chpwd hook was 

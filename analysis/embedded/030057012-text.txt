@@ -1,0 +1,5 @@
+fatal runtime error: Rust panics must be rethrown, aborting
+fatal runtime error: Rust cannot catch foreign exceptions, aborting
+fatal runtime error: thread local panicked on drop, aborting
+thread name may not contain interior null bytes
+      

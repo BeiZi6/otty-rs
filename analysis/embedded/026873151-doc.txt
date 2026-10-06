@@ -1,0 +1,7 @@
+— and it is answered in ONE
+        # place, `otty ssh scan-argv` (packages/ssh-argv), which the macOS app
+        # also reaches through the FFI. It used to be four transcriptions of
+        # the same rules in four languages, and they drifted: OpenSSH 9.4's
+        # `-P tag` took a value in none of them.
+        #
+        # `otty` is on PATH here 

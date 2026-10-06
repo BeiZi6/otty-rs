@@ -1,0 +1,3 @@
+— the hook would point inside the image and stop working the moment you eject it.
+
+Drag Otty into your Applications folder, open it from there, then try again.

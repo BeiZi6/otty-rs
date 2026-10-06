@@ -1,0 +1,6 @@
+─
+        # `ssh host cmd` folds every trailing argument into ONE remote command
+        # string, so anything appended after the user's own arguments lands as
+        # arguments OF their command. The terminfo probe below used to pass
+        # $argv and then append its script, which made the remote run
+        #     <user command> otty_term=

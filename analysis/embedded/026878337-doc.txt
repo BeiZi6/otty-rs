@@ -1,0 +1,9 @@
+— which reads as
+                    # "ssh froze". It only bit on the first connection to a host
+                    # (later ones hit the terminfo cache and skipped this probe
+                    # entirely), which is what made it look intermittent.
+                    # ControlPath=none keeps the probe off the socket so the
+                    # interactive ssh below stays the master.
+                    # Remote command (TERM injected via the leading assignment):
+                    #   1. If the remote already resolves this TERM (system DB or
+                    #      a user entry), do nothing 

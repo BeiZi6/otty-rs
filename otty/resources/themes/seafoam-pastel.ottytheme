@@ -1,0 +1,25 @@
+# Otty theme — Seafoam Pastel
+# The shipped Otty 1.5.4 theme text, comments and all. Sole deliberate deviation:
+# [token].font-ui = ["Styrene B", "Styrene A"] (appended here); the shipped build named the
+# platform UI stack there (Segoe UI / SF Pro / -apple-system / Inter).
+# Shipped palette repeats, do not "fix": 7:15.
+[meta]
+name = "Seafoam Pastel"
+mode = "dark"
+
+[terminal]
+foreground           = "#D4E7D4"
+background           = "#243435"
+cursor               = "#57647A"
+cursor-text          = "#323232"
+selection-foreground = "#9E8B13"
+selection-background = "#FFFFFF"
+palette = [
+    "#757575", "#825D4D", "#728C62", "#ADA16D",
+    "#4D7B82", "#8A7267", "#729494", "#E0E0E0",
+    "#8A8A8A", "#CF937A", "#98D9AA", "#FAE79D",
+    "#7AC3CF", "#D6B2A1", "#ADE0E0", "#E0E0E0",
+]
+
+[token]
+font-ui = ["Styrene B", "Styrene A"]

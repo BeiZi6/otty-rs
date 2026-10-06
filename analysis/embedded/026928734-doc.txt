@@ -1,0 +1,17 @@
+…"
+                # rather than adding to it, so the login shell throws our
+                # directory away and `otty view` is "command not found".
+                # (RHEL, Arch, Alpine and macOS all extend PATH instead, which
+                # is why this looked fine until it was run on Debian.)
+                #
+                # So: stage one runs the login shell with `-l -c`, letting the
+                # whole profile chain do its worst, and its last act is to
+                # re-prepend our directory and `exec` an INTERACTIVE shell.
+                # `.profile`/`.zprofile` run once in stage one, `.bashrc`/
+                # `.zshrc` once in stage two (a login `-c` shell is not
+                # interactive, so the `case $- in *i*` guard at the top of a
+                # stock .bashrc returns immediately). zsh's `.zlogin` now runs
+                # before `.zshrc`; accepted.
+                #
+                # Only for shells whose `-l -c` and `-i` spellings we know.
+                # An unrecognized login shell (csh, tcsh, nu, 

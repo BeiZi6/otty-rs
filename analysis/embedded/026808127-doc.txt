@@ -1,0 +1,19 @@
+— that one falls
+            # through to a system `jump` whenever omit_prefix is off.
+            case "$cmd" in
+                jump)
+                    functions[$name]='__otty_jump "$@"'
+                    ;;
+                *)
+                    functions[$name]="command otty $cmd \"\$@\""
+                    ;;
+            esac
+        done
+    }
+fi
+
+unfunction __otty_should_wrap
+
+# Dump aliases + the resolved interactive $PATH to temp files so the
+# autocomplete engine can read them without spawning a shell. The app
+# process only inherits the bare launchd PATH (/usr/bin:/bin:

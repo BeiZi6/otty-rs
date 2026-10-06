@@ -1,0 +1,20 @@
+─
+# Shared base for `[tabs-panel]` (left session list) and
+# `[details-panel]` (right inspector). Only set those sub-sections if
+# the two sides should differ.
+
+[sidebar]
+background   = "#2E3440"
+border-right = "1px solid #434C5E"
+width        = 220
+material     = "none"
+
+# [tabs-panel]
+# width = 240
+# material = "vibrancy-regular"
+#
+# [details-panel]
+# width = 320
+# background = "surface"
+
+# 

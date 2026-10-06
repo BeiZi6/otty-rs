@@ -1,0 +1,18 @@
+— that one falls
+        # through to a system `jump` whenever omit_prefix is off.
+        switch $__otty_cmd
+            case jump
+                eval "function $__otty_name; __otty_jump \$argv; end"
+            case '*'
+                eval "function $__otty_name; command otty $__otty_cmd \$argv; end"
+        end
+    end
+    set -e __otty_pair
+    set -e __otty_name
+    set -e __otty_cmd
+end
+
+    functions -e __otty_should_wrap
+end
+
+# 

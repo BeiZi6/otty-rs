@@ -1,0 +1,7 @@
+
+Patched with 'Nerd Fonts Patcher' (https://github.com/ryanoasis/nerd-fonts)
+
+* Website: https://www.nerdfonts.com
+* Version: 3.3.0
+* Development Website: https://github.com/ryanoasis/nerd-fonts
+* Changelog: https://github.com/ryanoasis/nerd-fonts/blob/-/changelog.md

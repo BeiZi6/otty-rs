@@ -1,0 +1,22 @@
+— overrides for the elevated floating-pill look. The
+# left tabs panel keeps `[tab]` above; `[tab-bar.tab]` inherits from
+# `[tab]` per field, so we only restate what the bar should change.
+
+[tab-bar]
+height  = 44
+padding = 8
+
+[tab-bar.tab]
+radius = 14
+height = 32
+
+[tab-bar.tab.active]
+shadow = "0 1px 4px rgba(0,0,0,0.06)"
+
+[container]
+radius = 0
+#FBF7F6#CC8595[meta]
+name        = "Pink"
+author      = "Otty"
+mode        = "light"
+description = "Warm cream paper with dusty pink accents 

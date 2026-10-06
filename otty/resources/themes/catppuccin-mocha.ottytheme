@@ -1,0 +1,21 @@
+# Otty theme — Catppuccin Mocha
+# The shipped Otty 1.5.4 theme text, comments and all. Sole deliberate deviation:
+# [token].font-ui = ["Styrene B", "Styrene A"] (appended here); the shipped build named the
+# platform UI stack there (Segoe UI / SF Pro / -apple-system / Inter).
+# Shipped palette repeats, do not "fix": 1:9, 2:10, 3:11, 4:12, 5:13, 6:14.
+[meta]
+name = "Catppuccin Mocha"
+mode = "dark"
+
+[terminal]
+foreground = "#CDD6F4"
+background = "#1E1E2E"
+palette = [
+    "#45475A", "#F38BA8", "#A6E3A1", "#F9E2AF",
+    "#89B4FA", "#F5C2E7", "#94E2D5", "#BAC2DE",
+    "#585B70", "#F38BA8", "#A6E3A1", "#F9E2AF",
+    "#89B4FA", "#F5C2E7", "#94E2D5", "#A6ADC8",
+]
+
+[token]
+font-ui = ["Styrene B", "Styrene A"]

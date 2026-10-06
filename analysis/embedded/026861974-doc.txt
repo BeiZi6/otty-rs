@@ -1,0 +1,22 @@
+─
+# readline's `history-search-*` filters by what is already typed, which is the
+# bash equivalent of zsh's `up-line-or-beginning-search`. Both the normal
+# (`\e[A`) and application-mode (`\eOA`) encodings are bound.
+if [[ $- == *i* ]]; then
+    case "${OTTY_HISTORY_UP_ARROW:-}" in
+        prefix-search)
+            bind '"\e[A": history-search-backward' 2>/dev/null
+            bind '"\eOA": history-search-backward' 2>/dev/null
+            bind '"\e[B": history-search-forward' 2>/dev/null
+            bind '"\eOB": history-search-forward' 2>/dev/null
+            ;;
+        sequential)
+            bind '"\e[A": previous-history' 2>/dev/null
+            bind '"\eOA": previous-history' 2>/dev/null
+            bind '"\e[B": next-history' 2>/dev/null
+            bind '"\eOB": next-history' 2>/dev/null
+            ;;
+    esac
+fi
+
+# 

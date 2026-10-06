@@ -1,0 +1,19 @@
+— a nested shell inherits the same token
+      # and the multiplexer may forward marks outward, which would let an inner
+      # prompt authenticate against the outer terminal. See the zsh payload.
+      if ($env:OTTY_PROMPT_TOKEN -and -not $env:TMUX -and -not $env:STY -and -not $env:ZELLIJ) {
+        $out += "$e]133;A;otty=$($env:OTTY_PROMPT_TOKEN)$b"
+      } else {
+        $out += "$e]133;A$b"
+      }
+      [Console]::Write($out)
+    } catch {}
+    # Render the user's original prompt (or a sane default), then OSC 133 B.
+    $up = ''
+    try { if ($global:__OttyOrigPrompt) { $up = & $global:__OttyOrigPrompt } } catch {}
+    if ([string]::IsNullOrEmpty($up)) { $up = 'PS ' + (Get-Location).Path + '> ' }
+    $global:LASTEXITCODE = $__otty_exit
+    "$up$([char]27)]133;B$([char]7)"
+  }
+
+  # OSC 133 C 

@@ -1,0 +1,21 @@
+— stdout redirected to a file or pipe means the escape would be injected
+# into that target instead of reaching the terminal.
+__otty_osc7() {
+    (( BASH_SUBSHELL == 0 )) && [[ -t 1 ]] || return 1
+    printf '\e]7;%s\a' "$1"
+}
+
+__otty_last_reported_cwd=""
+__otty_report_cwd() {
+    # The memo only advances on an emission that actually went out; advancing it
+    # on a suppressed one would mark the directory reported and stop the next
+    # prompt from retrying it.
+    if [[ "$PWD" != "$__otty_last_reported_cwd" ]]; then
+        __otty_osc7 "file://${HOSTNAME}${PWD}" && __otty_last_reported_cwd="$PWD"
+    fi
+    return 0
+}
+# Emit initial CWD.
+__otty_report_cwd
+
+# 

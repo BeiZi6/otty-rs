@@ -1,0 +1,24 @@
+(function() {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
+    return { text: '', startLine: -1, endLine: -1 };
+  }
+  const r = sel.getRangeAt(0);
+  function lineFor(node) {
+    let n = node;
+    if (n && n.nodeType === 3) n = n.parentNode;
+    while (n && n !== document.body) {
+      if (n.nodeType === 1 && n.hasAttribute && n.hasAttribute('data-source-line')) {
+        const v = parseInt(n.getAttribute('data-source-line'), 10);
+        if (!isNaN(v)) return v;
+      }
+      n = n.parentNode;
+    }
+    return -1;
+  }
+  return {
+    text: sel.toString(),
+    startLine: lineFor(r.startContainer),
+    endLine: lineFor(r.endContainer)
+  };
+})();

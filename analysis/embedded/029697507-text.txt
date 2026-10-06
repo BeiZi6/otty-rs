@@ -1,0 +1,2 @@
+Teddy does not support zero-length patternsTeddy requires at least one patternassertion failed: self.by_id.len() <= u16::MAX as usizeassertion failed: !bytes.is_empty()assertion failed: patterns.len() >= 1assertion failed: hash_len >= 1   >* *>D ()mid > lencalled `Result::unwrap()` on an `Err` valueOwneddfa::DFA(
+)

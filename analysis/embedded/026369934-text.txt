@@ -1,0 +1,8 @@
+﻿meta_scopemeta_content_scopemeta_include_prototypeclear_scopesContextIdsyntax_indexcontext_indexwith_prototypeNamedByScopeInlineDirectregex string should be pre-tested__startno entry found for key
+__start:
+    - meta_include_prototype: false
+    - match: ''
+      push: __main
+__main:
+    - include: main
+\n(?:\n)?(?:$|)(?m:$)(?:|$)[:alpha:]\p{L}[:alnum:]\p{L}\p{N}[:lower:]\p{Ll}[:upper:]\p{Lu}[:digit:]\p{Nd}includescope:.sublime-syntaxvariables\{\{([A-Za-z0-9_]+)\}\}file_extensionshidden_file_extensionsUnnamedhiddenmatchpopsetembedembed_scopeescapeescape_captures__mainInvalidYamlEmptyFileMissingMandatoryKeyRegexCompileErrorInvalidScopeBadFileRefMainMissingTypeMismatchThe file must contain at least one YAML documentInvalid file referenceContext 'main' is missingType mismatch -Lazy instance has previously been poisonedmarkTopNpush

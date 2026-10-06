@@ -1,0 +1,4 @@
+— unexpected exit, writing crash reportotty_ffi::crashType: Unexpected process exit (atexit handler)
+The process exited without applicationWillTerminate running.
+Possible causes: std::process::exit(), system kill (SIGKILL), or uncaught exception.
+atexit handler 

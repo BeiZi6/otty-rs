@@ -1,0 +1,13 @@
+─
+# fish is already per-pane by design: a session reads the history file at
+# startup and then keeps its own commands in memory, so a sibling's commands
+# never appear mid-session. Upstream declined to make cross-session syncing a
+# config option (fish-shell#825), which is why `history merge` exists as a
+# manual verb. `per-pane` therefore needs no action; only `shared` does work.
+if test "$OTTY_HISTORY_SCOPE" = shared
+    function __otty_history_merge --on-event fish_prompt
+        history merge
+    end
+end
+
+# 

@@ -1,0 +1,3 @@
+— silently, and since a failed probe is
+                    # deliberately not cached, on every single connection.
+                    # Wrapping it in `/bin/sh -c '

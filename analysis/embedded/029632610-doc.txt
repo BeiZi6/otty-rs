@@ -1,0 +1,40 @@
+─
+# `[tab]` styles items inside the sidebar list. `[tab-bar]` is the
+# horizontal strip used by tabs-top / tabs-bottom layouts and
+# `[tab-bar.tab]` inherits per-field from `[tab]`, so you only restate
+# the fields that should differ on the strip.
+
+[tab]
+background  = "transparent"
+foreground  = "#C0C7D3"
+radius      = 6
+font-size   = 13
+font-weight = 400
+padding     = 10
+indicator-color = "#7B8294"
+
+[tab.hover]
+background = "rgba(255,255,255,0.05)"
+
+[tab.active]
+background  = "#3B4252"
+foreground  = "#ECEFF4"
+font-weight = 500
+shadow      = "0 1px 2px rgba(0,0,0,0.25)"
+indicator-color = "#88C0D0"
+
+[tab.active.unfocused]
+background = "#3B4252"
+foreground = "#C0C7D3"
+shadow     = "none"
+
+[tab-bar]
+height        = 36
+padding       = 8
+border-bottom = "1px solid rgba(255,255,255,0.06)"
+
+[tab-bar.tab]
+radius = 8
+height = 28
+
+# 

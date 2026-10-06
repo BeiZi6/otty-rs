@@ -1,0 +1,9 @@
+─
+  function lineH() { return Math.ceil(parseFloat(getComputedStyle(document.body).lineHeight) || 20); }
+  function pageH() { return Math.max(lineH(), window.innerHeight - lineH()); }
+  function halfH() { return Math.max(lineH(), window.innerHeight / 2); }
+  function by(dy) { window.scrollBy({ top: dy, behavior: "auto" }); }
+  function toTop() { window.scrollTo({ top: 0 }); }
+  function toBottom() { window.scrollTo({ top: document.documentElement.scrollHeight }); }
+
+  // 

@@ -1,0 +1,8 @@
+— sending TERM"
+  kill -TERM "$WAIT_PID" 2>/dev/null || true
+  sleep 1
+  kill -KILL "$WAIT_PID" 2>/dev/null || true
+fi
+
+if [ ! -d "$NEW" ]; then
+  echo "new bundle missing: $NEW 

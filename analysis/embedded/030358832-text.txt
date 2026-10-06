@@ -1,0 +1,5 @@
+SELECT id, tab_id, cwd, program_type, resume_key,
+       closed_at, closed_label, shell, content_type, content_url,
+       view_mode, scroll_y, selection_start, selection_length,
+       cols, rows, running_command, resume_spec, extra
+FROM pane WHERE id = ?

@@ -1,0 +1,4 @@
+─
+# Chrome backdrop and elevated surfaces shared by the sidebar, titlebar,
+# tab bar, and floating dialogs (Command Palette / Open Quickly /
+# Global Search). `background` is NOT the visible app background 

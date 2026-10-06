@@ -1,0 +1,20 @@
+Retry the missing commanduvxpoetrypdmhatchryebundlegemfilepathsfoldershiddendata did not match any variant of untagged enum OneOrManydata did not match any variant of untagged enum StringOrSuggestionsuggestionsuser-data.dbcompletions.dbTMPDIROTTY_COMPLETIONS_DBcompletions-client.db../share/otty/completions-client.db../../packages/autocomplete-web/data/completions-client.db/usr/share/otty/completions-client.db/usr/local/share/otty/completions-client.db://zhREADME.mdReadme.mdreadme.mdREADME.MDREADME.markdownREADMEshellconsolesh-sessionshell-sessionksh$	% %	> >	$(${
+./_~-passwdsecrettokenapikeyapi_keyapi-keycredentialaccess_keyaccess-keyprivate_keyprivate-key--password--pass--token--access-token--api-key--secret-key--key--private-key--auth--authorization--credential--credentialssk-github_pat_glpat-xoxb-xoxp-xoxa-xoxs-ya29.bearer authorization:CREATE TABLE IF NOT EXISTS command_history (
+             context   TEXT NOT NULL,
+             argument  TEXT NOT NULL,
+             score     REAL NOT NULL DEFAULT 1.0,
+             last_used INTEGER NOT NULL,
+             PRIMARY KEY (context, argument));
+         CREATE INDEX IF NOT EXISTS idx_history_context ON command_history(context);
+         CREATE TABLE IF NOT EXISTS full_command_history (
+             cwd       TEXT NOT NULL,
+             command   TEXT NOT NULL,
+             score     REAL NOT NULL DEFAULT 1.0,
+             last_used INTEGER NOT NULL,
+             PRIMARY KEY (cwd, command));
+         CREATE INDEX IF NOT EXISTS idx_fullline_cwd ON full_command_history(cwd);
+         CREATE TABLE IF NOT EXISTS argument_paths (
+             command     TEXT PRIMARY KEY,
+             takes_paths INTEGER NOT NULL,
+             word_streak INTEGER NOT NULL DEFAULT 0,
+             updated_at  INTEGER NOT NULL);SELECT word_streak FROM argument_paths LIMIT 0ALTER TABLE argument_paths ADD COLUMN word_streak INTEGER NOT NULL DEFAULT 0DELETE FROM command_history WHERE context = ? AND argument = ?SELECT takes_paths FROM argument_paths WHERE command = ?DELETE FROM full_command_historyDELETE FROM full_command_history WHERE cwd = ? AND command = ?

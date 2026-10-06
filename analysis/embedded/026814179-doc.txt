@@ -1,0 +1,7 @@
+— so a `fc -R` from inside .zshrc lands the entries
+# BEFORE the global history rather than after it, and Up hits whatever a
+# sibling pane wrote last (hundreds of presses from this pane's own commands,
+# not "a few"). The payload has two load points and only one of them is late
+# enough:
+#
+#   * from our .zshenv's first-precmd loader 

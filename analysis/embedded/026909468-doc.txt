@@ -1,0 +1,24 @@
+— scanning argv can only ever see the `-o` form, so a
+        # ControlPath set in a config file was invisible and the wrapper minted
+        # a competing socket over it, replacing the user's multiplexing setup
+        # and cutting their ControlPersist down to its own 60s. Reported
+        # against 1.4.1; on a ProxyJump setup it meant re-authenticating and
+        # re-resolving the jump on every single ssh.
+        #
+        # The early `break` this loop used to have is what made that
+        # unfixable-looking: `controlpath` is printed well after user and
+        # hostname, so bailing out once those two were set skipped it every
+        # time. Reading ~80 more lines of already-generated output costs
+        # nothing measurable.
+        #
+        # `-m 1` on the split: a ControlPath may contain spaces, and splitting
+        # on every space would keep only the first word of it.
+        set -l _otty_user ""
+        set -l _otty_hostname ""
+        set -l _otty_ctl_path ""
+        set -l _otty_ctl_master ""
+        set -l _otty_alias ""
+        # Read for the remote `otty` bootstrap below, not for the connection:
+        # these three are how ssh_config (not just argv) says "this is not an
+        # interactive session". Absent on OpenSSH < 8.7, which reads as "no
+        # objection" 

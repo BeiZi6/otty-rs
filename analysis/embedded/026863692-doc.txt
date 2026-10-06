@@ -1,0 +1,5 @@
+…` are tokens this must not react to. Returns 0 = blocked.
+    #
+    # `shopt -u nocasematch` around the walk, restored after: this payload is
+    # SOURCED into the user's shell and inherits their options, and with
+    # nocasematch set every `case` pattern here turns case-insensitive 

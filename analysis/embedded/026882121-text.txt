@@ -1,0 +1,22 @@
+…)`.
+                        printf '%s\n' "otty: terminfo probe failed for $_otty_target; TERM stays xterm-256color" >&2
+                    fi
+                fi
+            fi
+
+            # Write metadata file so Otty's Swift side can find the resolved
+            # session info (user, hostname, socket) even when ~/.ssh/config
+            # aliases the user or hostname. Under umask 077: the app refuses a
+            # file others could have written, and Debian's default umask 002
+            # would make this one group-writable.
+            (
+                builtin umask 077
+                {
+                    echo "user=${_otty_user}"
+                    echo "hostname=${_otty_hostname}"
+                    echo "socket=${_otty_ctl_path}"
+                } > "$_otty_meta_file"
+            ) 2>/dev/null
+        fi
+
+        # 

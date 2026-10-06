@@ -1,0 +1,27 @@
+— this payload prepends $OTTY_BIN_DIR at the
+        # top. When it is not (a hand-installed payload with no app behind it),
+        # the safe degradation is the one already used for a ControlPath we
+        # cannot mint: skip the extras and let plain ssh run.
+        set -l _otty_conn
+        set -l _otty_has_cmd 0
+        set -l _otty_scan_ok 0
+        set -l _otty_scan (command otty ssh scan-argv -- $argv 2>/dev/null)
+        set -l _otty_fields (string match -r '^conn=(\d+) cmd=([01])$' -- "$_otty_scan")
+        if test (count $_otty_fields) -eq 3
+            set _otty_has_cmd $_otty_fields[3]
+            set _otty_scan_ok 1
+            # `$argv[1..0]` is an error in fish, so an empty connection list
+            # (no destination) is spelled out rather than sliced.
+            if test $_otty_fields[2] -gt 0
+                set _otty_conn $argv[1..$_otty_fields[2]]
+            end
+        end
+
+        # `_otty_scan_ok` too: without a scan we do not know where the
+        # user's remote command begins, so neither the probe nor a
+        # ControlMaster (whose teardown needs the same split) may run.
+        if test -n "$_otty_hostname" -a $_otty_scan_ok -eq 1
+            # Set up a ControlMaster socket so the main connection can be reused
+            # for SFTP/exec by the file/git panels.
+            #
+            # A ControlPath already in effect 

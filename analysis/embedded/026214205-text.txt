@@ -1,0 +1,30 @@
+」). Dropped once the tombstone is in, so
+            -- a delete made offline still goes out after a restart.
+            CREATE TABLE IF NOT EXISTS tombstone (
+                id TEXT PRIMARY KEY,
+                at INTEGER NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS staged (
+                item_id     TEXT PRIMARY KEY,
+                version     INTEGER NOT NULL,
+                at          INTEGER NOT NULL,
+                device      TEXT NOT NULL DEFAULT '',
+                attribution TEXT
+            );
+            CREATE TABLE IF NOT EXISTS adjustment (
+                app  TEXT NOT NULL,
+                json TEXT NOT NULL,
+                PRIMARY KEY (app, json)
+            );
+            CREATE TABLE IF NOT EXISTS command (
+                seq         INTEGER PRIMARY KEY AUTOINCREMENT,
+                cmdline     TEXT NOT NULL,
+                started_ms  INTEGER NOT NULL,
+                finished_ms INTEGER NOT NULL,
+                cwd         TEXT NOT NULL DEFAULT ''
+            );
+            CREATE TABLE IF NOT EXISTS seen_binary (
+                name    TEXT PRIMARY KEY,
+                last_ms INTEGER NOT NULL
+            );
+            -- sync-v2-contract 

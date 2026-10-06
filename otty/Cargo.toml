@@ -1,0 +1,113 @@
+[workspace]
+resolver = "2"
+members = [
+    "packages/core",
+    "packages/config",
+    "packages/term",
+    "packages/pty",
+    "packages/state",
+    "packages/ipc",
+    "packages/fonts",
+    "packages/agent",
+    "packages/autocomplete",
+    "packages/ssh",
+    "packages/render",
+    "packages/ui",
+    "packages/shell",
+    "packages/bridge",
+    "packages/cli",
+    "packages/helper",
+]
+default-members = ["packages/cli"]
+
+[workspace.package]
+version = "1.5.4"
+edition = "2021"
+rust-version = "1.80"
+license = "MIT"
+repository = "https://github.com/otty-sh/otty"
+homepage = "https://otty.sh"
+authors = ["appmakes"]
+
+[workspace.dependencies]
+otty-core = { path = "packages/core", version = "1.5.4" }
+otty-config = { path = "packages/config", version = "1.5.4" }
+otty-term = { path = "packages/term", version = "1.5.4" }
+otty-pty = { path = "packages/pty", version = "1.5.4" }
+otty-state = { path = "packages/state", version = "1.5.4" }
+otty-ipc = { path = "packages/ipc", version = "1.5.4" }
+otty-fonts = { path = "packages/fonts", version = "1.5.4" }
+otty-agent = { path = "packages/agent", version = "1.5.4" }
+otty-autocomplete = { path = "packages/autocomplete", version = "1.5.4" }
+otty-ssh = { path = "packages/ssh", version = "1.5.4" }
+otty-render = { path = "packages/render", version = "1.5.4" }
+otty-ui = { path = "packages/ui", version = "1.5.4" }
+otty-shell = { path = "packages/shell", version = "1.5.4" }
+# The Slint shell's UI toolkit. `femtovg` rather than `wgpu`: this build already
+# composites the grid on the CPU into an RGBA buffer (`otty-render::raster`), so
+# the toolkit only has to put that buffer on screen — a GPU renderer would be a
+# second graphics stack for no gain, and femtovg's software backend also keeps the
+# binary working where a GPU is absent.
+
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+toml_edit = "0.22"
+clap = { version = "4", features = ["derive", "wrap_help"] }
+clap_complete = "4"
+portable-pty = "0.9"
+vte = "0.15"
+unicode-width = "0.2"
+unicode-segmentation = "1"
+unicode-bidi = "0.3"
+rusqlite = { version = "0.32", features = ["bundled"] }
+log = "0.4"
+env_logger = "0.11"
+tempfile = "3"
+regex = "1"
+base64 = "0.22"
+notify = "6"
+dirs = "6"
+libc = "0.2"
+bytemuck = "1"
+pollster = "0.4"
+image = "0.25"
+syntect = "5"
+pulldown-cmark = "0.12"
+qrcode = "0.14"
+which = "7"
+jiff = "0.2"
+url = "2"
+percent-encoding = "2"
+walkdir = "2"
+glob = "0.3"
+aho-corasick = "1"
+fontdb = "0.23"
+swash = "0.2"
+wgpu = "26"
+winit = "0.30"
+crossbeam-channel = "0.5"
+rfd = "0.15"
+arboard = "3"
+
+# The Slint shell's UI toolkit. `femtovg` rather than `wgpu`: this build already
+# composites the grid on the CPU into an RGBA buffer (`otty-render::raster`), so
+# the toolkit only has to put that buffer on screen — a second graphics stack
+# would buy nothing, and femtovg's software path also works where no GPU exists.
+slint = { version = "1.8", default-features = false, features = ["compat-1-2", "std", "backend-winit", "renderer-femtovg"] }
+# The layout compiler, run from `build.rs` so a layout error is a build error.
+slint-build = "1.8"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+panic = "abort"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

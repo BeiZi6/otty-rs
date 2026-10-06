@@ -1,0 +1,10 @@
+— payload (sourced from ~/.bashrc managed block)
+#
+# Idempotent: re-sourcing in the same shell is a no-op.
+[[ -n "$__otty_loaded" ]] && return
+__otty_loaded=1
+
+# Guard: only for interactive shells.
+[[ "$-" == *i* ]] || return 0
+
+# 

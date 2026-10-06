@@ -1,0 +1,14 @@
+─
+# Sits above the terminal grid. Inherits its (background, material)
+# from `[panel]` when both are unset.
+
+[titlebar]
+foreground  = "#C0C7D3"
+font-size   = 13
+font-weight = 500
+height      = 40
+
+[titlebar.unfocused]
+foreground = "#7B8294"
+
+# 

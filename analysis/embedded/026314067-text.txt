@@ -1,0 +1,23 @@
+─
+  var sticky = document.getElementById("sticky");
+  var userCards = [];
+  function indexUsers() {
+    userCards = Array.prototype.slice.call(document.querySelectorAll(".user-card"));
+  }
+  function firstLine(card) {
+    var body = card.querySelector(".user-body");
+    if (!body) return "";
+    var t = body.textContent || "";
+    var nl = t.indexOf("\n");
+    return (nl >= 0 ? t.slice(0, nl) : t).trim();
+  }
+  function updateSticky() {
+    if (!sticky || !userCards.length) return;
+    var top = 0, active = null;
+    for (var i = 0; i < userCards.length; i++) {
+      var r = userCards[i].getBoundingClientRect();
+      if (r.top <= 56) active = userCards[i]; else break;
+    }
+    if (active && active.getBoundingClientRect().bottom < 0) {
+      var text = firstLine(active);
+      sticky.textContent = "You 

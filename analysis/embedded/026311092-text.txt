@@ -1,0 +1,10 @@
+─
+  function fmtTimes() {
+    var heads = document.querySelectorAll(".user-head[data-ts]");
+    for (var i = 0; i < heads.length; i++) {
+      var iso = heads[i].getAttribute("data-ts");
+      // Numeric = unix epoch milliseconds (OpenCode/Kimi/pi); else ISO string.
+      var d = /^\d+$/.test(iso) ? new Date(Number(iso)) : new Date(iso);
+      var el = heads[i].querySelector(".time");
+      if (el && !isNaN(d.getTime())) {
+        el.textContent = "

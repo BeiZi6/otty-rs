@@ -1,0 +1,7 @@
+; font-size:12px;
+  display:flex; align-items:center; gap:6px; user-select:none; }
+.turn-head.static { cursor:default; }
+.turn-head::-webkit-details-marker { display:none; }
+.fold > summary::before { content:'\25B8'; display:inline-block; transition:transform .15s; font-size:10px; }
+.fold[open] > summary::before { transform:rotate(90deg); }
+.turn-head:hover { color:

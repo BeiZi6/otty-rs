@@ -1,0 +1,11 @@
+→ Appearance** in Otty. The next time the panel opens,
+   the font appears in the **Font Family** picker.
+3. If Otty was already running with Settings open when you dropped the
+   file, close and reopen the Settings panel to trigger a rescan.
+
+Fonts dropped here are registered process-wide via CoreText, so you do
+**not** need to install them in macOS Font Book.
+
+## Choosing a font
+
+In **Settings 

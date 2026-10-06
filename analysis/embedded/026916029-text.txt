@@ -1,0 +1,5 @@
+— the user's command executed a second time, in the probe connection,
+        # with a stray argument glued on (`ssh host 'echo TOKEN'` printed
+        # "TOKEN otty_term=xterm-256color" and then "TOKEN").
+        #
+        # Where the connection arguments end is a getopt(3) question 

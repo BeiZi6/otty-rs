@@ -1,0 +1,4 @@
+─
+# Every OSC 7 goes through here. bash reports CWD from PROMPT_COMMAND, which
+# never runs inside a command substitution, so the cwd path was never exposed
+# the way zsh's chpwd hook was 

@@ -1,0 +1,186 @@
+— no sidebar in tabs-top / tabs-bottom layouts, so the
+# card needs symmetric breathing room on every side instead of the
+# asymmetric "0 left because sidebar already pads it" inset used above.
+[container.tabs-top]
+margin = 12
+
+[container.tabs-bottom]
+margin = 12
+#40434b#b4d979Glass Darkglass-dark[meta]
+name        = "Glass Dark"
+author      = "Otty"
+mode        = "dark"
+description = "Liquid Glass dark theme with smoky blue chrome and translucent side panels."
+
+[terminal]
+foreground           = "#F7F8FF"
+background           = "none"
+palette = ["#252A35", "#FF8A8A", "#A8D46F", "#E8C778", "#8DB7FF", "#D1A3FF", "#7FD6C2", "#E3E6F0", "#747B8E", "#FFB0A8", "#C8EA90", "#F2DA9A", "#B2CCFF", "#E0C2FF", "#A3E6D8", "#FFFFFF"]
+cursor               = "#F7F8FF"
+selection-background = "#bbc9ed"
+
+[token]
+foreground = "#F7F8FF"
+secondary  = "#C9CEDB"
+tertiary   = "#8E95A8"
+accent = "#b4d979"
+radius    = 12
+shadow    = "0 22px 60px rgba(0,0,0,0.34)"
+font-ui   = ["-apple-system", "BlinkMacSystemFont", "SF Pro", "sans-serif"]
+font-mono = ["JetBrains Mono", "Menlo", "monospace"]
+font-size = 13
+
+[panel]
+background = "#444445"
+surface = "#40434b"
+border     = "#6B7286"
+
+[window]
+material   = "vibrancy-regular"
+
+[sidebar]
+background   = "#2528325d"
+border-right = "none"
+
+[details-panel]
+background   = "rgba(53,58,73,0.0)"
+border-right = "none"
+
+[titlebar]
+foreground = "#DCE0EA"
+
+[tab]
+radius      = 8
+foreground  = "#C9CEDB"
+font-weight = 400
+
+[tab.active]
+background  = "rgba(255,255,255,0.16)"
+foreground  = "#FFFFFF"
+border      = "1px solid rgba(255,255,255,0.18)"
+font-weight = 500
+
+[tab.hover]
+background = "rgba(255,255,255,0.10)"
+
+[container]
+radius     = 0
+shadow     = "none"
+margin     = 0
+padding    = 8
+#F7FBFD#4B8FB7Glass Lightglass-light[meta]
+name        = "Glass Light"
+author      = "Otty"
+mode        = "light"
+description = "Liquid Glass light theme with gitlab light terminal colors"
+
+[terminal]
+foreground           = "#303030"
+background           = "none"
+cursor               = "#303030"
+cursor-text          = "#565656"
+selection-foreground = "#FAFAFF"
+selection-background = "#AD95E9"
+palette = [
+    "#303030", "#A31700", "#0A7F3D", "#AF551D",
+    "#006CD8", "#583CAC", "#00798A", "#494949",
+    "#8c8c8c", "#A31700", "#0A7F3D", "#AF551D",
+    "#006CD8", "#583CAC", "#00798A", "#1C1C1C",
+]
+
+[token]
+primary   = "#25313B"
+secondary = "#5D6872"
+tertiary  = "#93A0A9"
+accent    = "#4B8FB7"
+radius    = 12
+shadow    = "0 24px 64px rgba(44,68,86,0.18)"
+font-ui   = ["-apple-system", "BlinkMacSystemFont", "SF Pro", "sans-serif"]
+font-size = 13
+
+[panel]
+background = "#ffffff"
+surface = "#F7FBFD"
+border     = "rgba(46,62,74,0.16)"
+
+[window]
+material = "glass"
+background = "none"
+
+[sidebar]
+background = "#eaeaea00"
+border-right = "none"
+material = "glass"
+
+[details-panel]
+background = "none"
+border-right = "none"
+
+[titlebar]
+
+[tab]
+radius = 4.0
+foreground = "#5D6872"
+font-weight = 400
+
+[tab.active]
+background = "#aaaaaa3a"
+border      = "1px solid rgba(46,62,74,0.14)"
+shadow = "none"
+font-weight = 500
+
+[tab.hover]
+background = "rgba(255,255,255,0.38)"
+
+[container]
+radius = 0
+shadow = "none"
+margin = 0
+padding    = 8
+
+[tab-bar]
+
+[tab-bar.tab]
+
+[tab-bar.tab.active]
+border = "1px solid #d6d6d6cf"
+shadow = "none"
+background = "#8d8d8d43"
+
+[tab-bar.tab.hover]
+background = "#c0c0c061"
+Gruvbox Darkgruvbox-dark[meta]
+name = "Gruvbox Dark"
+mode = "dark"
+
+[terminal]
+foreground = "#EBDBB2"
+background = "#282828"
+palette = [
+    "#282828", "#CC241D", "#98971A", "#D79921",
+    "#458588", "#B16286", "#689D6A", "#A89984",
+    "#928374", "#FB4934", "#B8BB26", "#FABD2F",
+    "#83A598", "#D3869B", "#8EC07C", "#EBDBB2",
+]
+Monokai Classicmonokai-classic[meta]
+name = "Monokai Classic"
+mode = "dark"
+
+[terminal]
+foreground           = "#FDFFF1"
+background           = "#272822"
+cursor               = "#C0C1B5"
+cursor-text          = "#8D8E82"
+selection-foreground = "#FDFFF1"
+selection-background = "#57584F"
+palette = [
+    "#272822", "#F92672", "#A6E22E", "#E6DB74",
+    "#FD971F", "#AE81FF", "#66D9EF", "#FDFFF1",
+    "#6E7066", "#F92672", "#A6E22E", "#E6DB74",
+    "#FD971F", "#AE81FF", "#66D9EF", "#FDFFF1",
+]
+#F4F1EA#2F5F8ANewsprintnewsprint[meta]
+name        = "Newsprint"
+author      = "Otty"
+mode        = "light"
+description = "Warm cream paper with deep ink 

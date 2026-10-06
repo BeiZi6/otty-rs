@@ -1,0 +1,23 @@
+(function() {
+  function linkURLFor(target) {
+    var el = target;
+    while (el && el !== document.documentElement) {
+      if (el.tagName === 'A' && el.href) return el.href;
+      el = el.parentElement;
+    }
+    return '';
+  }
+  function post(target) {
+    try {
+      window.webkit.messageHandlers.ottyLinkContext.postMessage(linkURLFor(target));
+    } catch (e) {}
+  }
+  // Capture phase + mousedown fire before contextmenu, so the script-message
+  // typically lands in native before willOpenMenu runs.
+  document.addEventListener('mousedown', function(e) {
+    if (e.button === 2) post(e.target);
+  }, true);
+  document.addEventListener('contextmenu', function(e) {
+    post(e.target);
+  }, true);
+})();

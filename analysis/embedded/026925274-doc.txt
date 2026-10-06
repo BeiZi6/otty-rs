@@ -1,0 +1,4 @@
+— which means a
+                        # permanently failing probe re-runs on every connection.
+                        # Opt-in only: an unconditional line here would land in
+                        # the middle of `set logs (ssh host 

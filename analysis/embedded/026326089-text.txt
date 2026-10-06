@@ -1,0 +1,8 @@
+— `.find` below sets `display:flex`, which left the find overlay
+   permanently on screen: it came up with the page and `closeFind()` (which only
+   flips the `hidden` attribute) could not take it back down. Author-level and
+   !important so every `hidden` in this document actually hides. */
+[hidden] { display:none !important; }
+html,body { margin:0; padding:0; }
+body {
+  background:

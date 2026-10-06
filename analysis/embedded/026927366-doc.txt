@@ -1,0 +1,14 @@
+— the flags, from
+        #     argv, and BatchMode / RequestTTY / SessionType, from `ssh -G`,
+        #     which also sees the user's ssh_config.
+        #   * the host is one the app has recorded, by the alias as typed or by
+        #     user@hostname. No file means no host, which is where a fresh
+        #     install starts.
+        set -l _otty_boot
+        if test $_otty_scan_ok -eq 1 -a $_otty_has_cmd -eq 0 \
+                -a "$_otty_batchmode" != "yes" -a "$_otty_requesttty" != "false" \
+                -a "$_otty_sessiontype" != "none" -a "$_otty_sessiontype" != "subsystem"
+            and isatty stdin
+            and not __otty_ssh_blocks_bootstrap $_otty_conn
+            if __otty_ssh_host_listed "$OTTY_HELPER_HOSTS" "$_otty_alias" "$_otty_target"
+                # One argument, handed to the remote account's LOGIN shell 

@@ -1,0 +1,43 @@
+─
+__otty_cmd_executed=""
+__otty_last_exit=0
+__otty_progress_active=""
+
+# Match the just-about-to-run command against $OTTY_PROGRESS_COMMANDS
+# (pipe-separated list of whitespace-delimited prefixes, e.g. "git push").
+__otty_progress_match() {
+    local cmd="$1"
+    [[ -z "$OTTY_PROGRESS_COMMANDS" ]] && return 1
+    # Strip leading `NAME=value` env assignments.
+    while [[ "$cmd" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; do
+        cmd="${cmd#* }"
+    done
+    local IFS='|'
+    local p
+    for p in $OTTY_PROGRESS_COMMANDS; do
+        [[ -z "$p" ]] && continue
+        if [[ "$cmd" == "$p" || "$cmd" == "$p "* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+__otty_prompt_command() {
+    # PROMPT_COMMAND saves status before rearming the DEBUG hook, whose eval
+    # would otherwise replace every command's real result with its own status.
+    __otty_last_exit=${1:-$?}
+    # D mark from previous command (skip first prompt).
+    if [[ -n "$__otty_cmd_executed" ]]; then
+        printf '\e]133;D;%d\a' "$__otty_last_exit"
+    fi
+    # OSC 9;4 completion for auto-progress commands.
+    if [[ -n "$__otty_progress_active" ]]; then
+        if (( __otty_last_exit == 0 )); then
+            printf '\e]9;4;5;0\a'
+        else
+            printf '\e]9;4;2\a'
+        fi
+        __otty_progress_active=""
+    fi
+    # A mark 

@@ -1,0 +1,22 @@
+[package]
+name = "otty-ssh"
+description = "SSH integration: argv scanning, ssh_config resolution, remote helper install."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+otty-core = { workspace = true }
+otty-config = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+regex = { workspace = true }
+log = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+

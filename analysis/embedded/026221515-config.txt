@@ -1,0 +1,132 @@
+-----BEGINcontains a JWTcontains a PEM private keycatalog.json has no readable appCatalogAppSpecRuleEntrySpecmatchmatcherMatchSpecdata did not match any variant of untagged enum RuleFileszshid       = "zsh"
+name     = "Zsh"
+homepage = "https://www.zsh.org"
+description = "A shell built for interactive use, with a scripting language to match."
+icon     = "theSVG:zsh"
+detect   = ["zsh"]
+platforms = ["macos", "linux"]
+
+# Startup files are read from $ZDOTDIR, defaulting to $HOME (zsh(1), STARTUP/
+# SHUTDOWN FILES). ~/.config/zsh is the conventional ZDOTDIR; both are listed
+# so a consumer picks up whichever exists.
+paths = [
+  "~/.zshenv",
+  "~/.zprofile",
+  "~/.zshrc",
+  "~/.zlogin",
+  "~/.zlogout",
+  "~/.config/zsh/",
+]
+
+exclude = [
+  "~/.zsh_history",
+  "~/.zsh_sessions/",
+  "~/.zcompdump*",
+  "~/.config/zsh/.zsh_history",
+  "~/.config/zsh/.zcompdump*",
+]
+
+secret = []
+
+[[machine_lines]]
+file  = "~/.zshrc"
+match = { prefix = ["export PATH=", "export HOMEBREW_PREFIX=", "export NVM_DIR=", "export JAVA_HOME="] }
+
+[[machine_lines]]
+file  = "~/.zshenv"
+match = { prefix = ["export PATH=", "export ZDOTDIR="] }
+id       = "bash"
+name     = "Bash"
+homepage = "https://www.gnu.org/software/bash/"
+description = "The GNU project's shell, and the login shell most Linux systems still start you in."
+icon     = "SimpleIcons:gnubash"
+detect   = ["bash"]
+platforms = ["macos", "linux"]
+
+# bash(1), INVOCATION: login shells read ~/.bash_profile, ~/.bash_login,
+# ~/.profile; interactive non-login shells read ~/.bashrc. Readline reads
+# ~/.inputrc (readline(3)).
+paths = [
+  "~/.bashrc",
+  "~/.bash_profile",
+  "~/.bash_login",
+  "~/.profile",
+  "~/.bash_logout",
+  "~/.inputrc",
+]
+
+exclude = ["~/.bash_history", "~/.bash_sessions/"]
+
+secret = []
+
+[[machine_lines]]
+file  = "~/.bashrc"
+match = { prefix = ["export PATH=", "export HOMEBREW_PREFIX=", "export NVM_DIR="] }
+
+[[machine_lines]]
+file  = "~/.bash_profile"
+match = { prefix = ["export PATH="] }
+id       = "fish"
+name     = "fish"
+homepage = "https://fishshell.com"
+description = "A command line shell that favours discoverability: autosuggestions and highlighting out of the box."
+icon     = "SimpleIcons:fishshell"
+detect   = ["fish"]
+platforms = ["macos", "linux"]
+
+# fish reads $XDG_CONFIG_HOME/fish, defaulting to ~/.config/fish
+# (https://fishshell.com/docs/current/language.html#configuration-files).
+paths = [
+  "~/.config/fish/config.fish",
+  "~/.config/fish/conf.d/",
+  "~/.config/fish/functions/",
+  "~/.config/fish/completions/",
+  "~/.config/fish/fish_plugins",
+  "~/.config/fish/themes/",
+]
+
+# fish_variables holds universal variables, which fish rewrites at runtime;
+# it is machine state, not configuration.
+exclude = [
+  "~/.config/fish/fish_variables",
+  "~/.config/fish/fish_history",
+  "~/.local/share/fish/",
+]
+
+secret = []
+
+[[machine_lines]]
+file  = "~/.config/fish/config.fish"
+match = { prefix = ["set -gx PATH", "fish_add_path", "set -gx JAVA_HOME"] }
+gitid       = "git"
+name     = "Git"
+homepage = "https://git-scm.com"
+description = "Distributed version control, built for speed and cheap branching."
+icon     = "theSVG:git"
+detect   = ["git"]
+
+# git-config(1): the per-user file is $XDG_CONFIG_HOME/git/config and
+# ~/.gitconfig; gitignore(5) and gitattributes(5) name the other two.
+paths = [
+  "~/.gitconfig",
+  "~/.config/git/config",
+  "~/.config/git/ignore",
+  "~/.config/git/attributes",
+]
+
+exclude = []
+
+# git-credential-store(1) writes plaintext credentials to these two files.
+secret = ["~/.git-credentials", "~/.config/git/credentials"]
+
+side_effect = true
+
+# Matched against the file as written, not against `git config --list`
+# output: inside [user] / [credential] the keys appear bare, so the prefix is
+# `signingkey` and `helper`, not `user.signingkey` / `credential.helper`.
+#
+# Both per-user files, because git merges them rather than picking one: a
+# machine can keep [user] in ~/.gitconfig and [pull] in the XDG file, or the
+# other way round. Naming only ~/.gitconfig would sync a signing key that
+# happens to live in the other half. The two names share no last segment, so
+# the sibling check cannot pair them 

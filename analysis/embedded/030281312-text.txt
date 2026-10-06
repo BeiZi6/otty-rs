@@ -1,0 +1,6 @@
+ 2>/dev/null | tail -n 1
+echo '##NETBSD'; netstat -ibn
+echo '##HOST'; hostname 2>/dev/null || uname -n
+echo '##CPUTOP'; top -l 2 -n 0 -s 1 | grep 'CPU usage' | tail -n 1
+;;
+esac

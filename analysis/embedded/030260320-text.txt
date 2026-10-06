@@ -1,0 +1,22 @@
+<script>
+(function() {
+  document.addEventListener('click', function(e) {
+    var n = e.target;
+    while (n && n !== document.body) {
+      if (n.tagName === 'A') {
+        var href = n.getAttribute('href') || '';
+        if (href.length > 1 && href.charAt(0) === '#') {
+          e.preventDefault();
+          try {
+            var id = decodeURIComponent(href.substring(1));
+            var el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } catch (_) {}
+          return;
+        }
+      }
+      n = n.parentNode;
+    }
+  }, true);
+})();
+</script>

@@ -1,0 +1,36 @@
+— $XDG_CONFIG_HOME/nvim on Unix,
+# $LOCALAPPDATA/nvim on Windows. Everything under it is configuration except
+# the caches plugin managers drop there.
+paths = ["~/.config/nvim/", "%LOCALAPPDATA%/nvim/"]
+
+# The first three repeat under %LOCALAPPDATA%: the Windows config tree grows
+# the same plugin-manager leftovers, and an exclude that names only the Unix
+# copy leaves them syncing from a Windows machine. The last three are the Unix
+# data/state/cache dirs, which have no counterpart under the config path.
+exclude = [
+  "~/.config/nvim/.git/",
+  "~/.config/nvim/spell/",
+  "~/.config/nvim/plugin/packer_compiled.lua",
+  "%LOCALAPPDATA%/nvim/.git/",
+  "%LOCALAPPDATA%/nvim/spell/",
+  "%LOCALAPPDATA%/nvim/plugin/packer_compiled.lua",
+  "~/.local/share/nvim/",
+  "~/.local/state/nvim/",
+  "~/.cache/nvim/",
+]
+
+secret = []
+
+# No machine_lines: a Neovim config is arbitrary Lua/Vimscript with no
+# reserved keyword at the start of a machine-local line. Absolute paths do
+# show up (provider binaries, LSP roots), but they appear mid-expression
+# where a prefix match cannot reach them. Left to the consumer's content
+# heuristics.
+vimid       = "vim"
+name     = "Vim"
+homepage = "https://www.vim.org"
+description = "The ubiquitous modal text editor, configured through a single vimrc."
+icon     = "theSVG:vim"
+detect   = ["vim"]
+
+# :help vimrc, :help vimfiles 

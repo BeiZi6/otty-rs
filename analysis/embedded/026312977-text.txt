@@ -1,0 +1,12 @@
+─
+  // These are the pane's controls, not the page's: each one posts to C++, which
+  // owns what happens next. They live here rather than in a XAML strip above
+  // the WebView so the whole pane chrome is ONE row (a XAML button can't be
+  // drawn over WebView2's windowed hosting, so a native one needs its own row).
+  var resumeBtn = document.getElementById("act-resume");
+  function wireActs() {
+    document.querySelectorAll(".act").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var act = b.getAttribute("data-act");
+        if (act === "chat") {
+          // Resolve the selection here 

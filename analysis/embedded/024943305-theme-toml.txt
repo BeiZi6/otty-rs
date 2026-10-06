@@ -1,0 +1,70 @@
+é Pine"
+mode = "dark"
+
+[terminal]
+foreground = "#E0DEF4"
+background = "#191724"
+palette = [
+    "#26233A", "#EB6F92", "#31748F", "#F6C177",
+    "#9CCFD8", "#C4A7E7", "#EBBCBA", "#E0DEF4",
+    "#6E6A86", "#EB6F92", "#31748F", "#F6C177",
+    "#9CCFD8", "#C4A7E7", "#EBBCBA", "#E0DEF4",
+]
+Seafoam Pastelseafoam-pastel[meta]
+name = "Seafoam Pastel"
+mode = "dark"
+
+[terminal]
+foreground           = "#D4E7D4"
+background           = "#243435"
+cursor               = "#57647A"
+cursor-text          = "#323232"
+selection-foreground = "#9E8B13"
+selection-background = "#FFFFFF"
+palette = [
+    "#757575", "#825D4D", "#728C62", "#ADA16D",
+    "#4D7B82", "#8A7267", "#729494", "#E0E0E0",
+    "#8A8A8A", "#CF937A", "#98D9AA", "#FAE79D",
+    "#7AC3CF", "#D6B2A1", "#ADE0E0", "#E0E0E0",
+]
+Solarized Darksolarized-dark[meta]
+name = "Solarized Dark"
+mode = "dark"
+
+[terminal]
+foreground = "#839496"
+background = "#002B36"
+palette = [
+    "#073642", "#DC322F", "#859900", "#B58900",
+    "#268BD2", "#D33682", "#2AA198", "#EEE8D5",
+    "#002B36", "#CB4B16", "#586E75", "#657B83",
+    "#839496", "#6C71C4", "#93A1A1", "#FDF6E3",
+]
+Solarized Lightsolarized-light[meta]
+name = "Solarized Light"
+mode = "light"
+
+[terminal]
+foreground = "#586E75"
+background = "#FDF6E3"
+palette = [
+    "#073642", "#DC322F", "#859900", "#B58900",
+    "#268BD2", "#D33682", "#2AA198", "#EEE8D5",
+    "#002B36", "#CB4B16", "#586E75", "#657B83",
+    "#839496", "#6C71C4", "#93A1A1", "#FDF6E3",
+]
+Tokyo Nighttokyo-night[meta]
+name = "Tokyo Night"
+mode = "dark"
+
+[terminal]
+foreground = "#C0CAF5"
+background = "#1A1B26"
+palette = [
+    "#15161E", "#F7768E", "#9ECE6A", "#E0AF68",
+    "#7AA2F7", "#BB9AF7", "#7DCFFF", "#A9B1D6",
+    "#414868", "#FF899D", "#9FE044", "#FABA4A",
+    "#8DB0FF", "#C7A9FF", "#A4DAFF", "#C0CAF5",
+]
+
+path is not valid UTF-8https://anywhere.otty.shOTTY_READER_STATS

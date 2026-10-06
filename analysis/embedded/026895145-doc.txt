@@ -1,0 +1,5 @@
+…)` runs it with stdout redirected into
+# the capture pipe, wrapping the captured output in OSC 7.
+#
+# `status is-command-substitution` reports the dynamic context, so it is true
+# inside a function called from a substitution 

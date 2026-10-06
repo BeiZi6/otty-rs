@@ -1,0 +1,15 @@
+— 0.8 is what Fluent's own base acrylic
+# uses, and lands the surface on ~#2C2C2C with a hint of wallpaper still in it.
+#
+# Deliberately no `[sidebar].background` / `[details-panel].background`: a
+# chrome column with no colour of its own inherits the window's, so the sidebar,
+# the details panel and the title strip are one unbroken surface rather than
+# separate fills that meet at a visible seam.
+
+[window]
+material   = "glass"
+background = "#2C2C2C"
+opacity    = 0.8
+radius     = 8
+
+# 

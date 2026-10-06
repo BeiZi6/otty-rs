@@ -1,0 +1,24 @@
+─
+# Typography, semantic state, and shape tokens. `foreground` /
+# `secondary` / `tertiary` cascade down to UI text colors. `accent`
+# colors prompts and active indicators. `success` / `warning` /
+# `danger` drive status dots, search highlights, and toasts. Fonts and
+# radius set the project-wide defaults that elements inherit.
+
+[token]
+foreground = "#E5E9F0"
+secondary  = "#C0C7D3"
+tertiary   = "#7B8294"
+accent     = "#88C0D0"
+success    = "#A3BE8C"
+warning    = "#EBCB8B"
+danger     = "#BF616A"
+hover-bg   = "rgba(255,255,255,0.06)"
+active-bg  = "rgba(136,192,208,0.18)"
+radius     = 6
+shadow     = "0 8px 24px rgba(0,0,0,0.35)"
+font-ui    = ["-apple-system", "BlinkMacSystemFont", "SF Pro", "sans-serif"]
+font-mono  = ["JetBrains Mono", "SF Mono", "Menlo", "monospace"]
+font-size  = 13
+
+# 

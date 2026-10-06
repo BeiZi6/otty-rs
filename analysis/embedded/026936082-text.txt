@@ -1,0 +1,3 @@
+
+
+.bashrcbashrc.zshrcXDG_CONFIG_HOMEconfig.fish.configMicrosoft.PowerShell_profile.ps1bash5powershell.exeflags-l-i-cTERMINFO_DIRS/usr/share/terminfo/etc/terminfo/lib/terminfo/usr/lib/terminfo/usr/local/share/terminfo/opt/homebrew/share/terminfopty: could not set O_NONBLOCK on the master; writes stay blockingotty-elevate--'.hushlogin-qflp/usr/bin/login-fc/bin/shCOLORTERMtruecolorCOLORFGBGTERM_PROGRAM1.5.4TERM_PROGRAM_VERSIONCW_TERMen_US.UTF-8FRotty-pty-spawncould not start the spawn thread

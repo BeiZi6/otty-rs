@@ -1,0 +1,36 @@
+— restart the shell for the toggle to take effect) opts into replacing
+# them.
+function __otty_should_wrap
+    if test -n "$OTTY_FLAGS_DIR" -a -f "$OTTY_FLAGS_DIR/allow_overwrite"
+        # `alias` in fish is implemented as a function of the same name, so
+        # removing the function covers both. Erase first so our wrapper wins.
+        functions -q $argv[1]; and functions -e $argv[1]
+        return 0
+    end
+    functions -q $argv[1]; and return 1
+    return 0
+end
+__otty_should_wrap edit; and function edit
+    if test -n "$OTTY_FLAGS_DIR" -a -f "$OTTY_FLAGS_DIR/omit_prefix"
+        command otty edit $argv
+    else
+        command edit $argv
+    end
+end
+__otty_should_wrap view; and function view
+    if test -n "$OTTY_FLAGS_DIR" -a -f "$OTTY_FLAGS_DIR/omit_prefix"
+        command otty view $argv
+    else
+        command view $argv
+    end
+end
+__otty_should_wrap watch; and function watch
+    if test -n "$OTTY_FLAGS_DIR" -a -f "$OTTY_FLAGS_DIR/omit_prefix"
+        command otty watch $argv
+    else
+        command watch $argv
+    end
+end
+# The one jump implementation, behind `otty jump`, the bare `jump` wrapper and
+# any `cli-alias` mapped to jump. The CLI is a child process and cannot move
+# this shell, so left alone it has the app type `cd '<path>'` into the pane 

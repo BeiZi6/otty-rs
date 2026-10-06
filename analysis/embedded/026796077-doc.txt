@@ -1,0 +1,9 @@
+— payload (sourced from ~/.zshrc managed block)
+#
+# Idempotent: re-sourcing in the same shell is a no-op. `__otty_loaded` is a
+# plain (non-exported) parameter, so each fresh shell process re-installs the
+# hooks while a second source within one shell is skipped.
+[[ -n "$__otty_loaded" ]] && return
+__otty_loaded=1
+
+# 

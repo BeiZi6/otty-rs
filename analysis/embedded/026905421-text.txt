@@ -1,0 +1,5 @@
+— `ssh -G` resolves those, and it sees ssh_config as well as argv.
+    #
+    # Walks each token letter by letter and stops at the first value-taking
+    # one, so an option's value can never be mistaken for a flag: `-i ~/id_T`
+    # and `-oCiphers=

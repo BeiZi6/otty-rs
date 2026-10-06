@@ -1,0 +1,4 @@
+=== Otty Crash Report ===
+Type: Rust panic
+(unknown payload)<unnamed>Backtrace:
+/crash-SIGSEGV (Segmentation fault)SIGBUS (Bus error)SIGABRT (Abort)SIGILL (Illegal instruction)SIGFPE (Floating point exception)SIGTRAP (Breakpoint / Swift assertion failure)SIGTERM (Terminated)SIGHUP (Hangup)Unknown signalType: Signal  

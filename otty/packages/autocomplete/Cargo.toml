@@ -1,0 +1,25 @@
+[package]
+name = "otty-autocomplete"
+description = "Fig-compatible spec database, inline suggestions and on-device learning."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+otty-core = { workspace = true }
+otty-config = { workspace = true }
+otty-state = { workspace = true }
+rusqlite = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+regex = { workspace = true }
+log = { workspace = true }
+
+
+[dev-dependencies]
+tempfile = { workspace = true }

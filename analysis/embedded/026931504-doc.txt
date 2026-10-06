@@ -1,0 +1,18 @@
+— nothing is written to that machine at
+                # all. bash only, and only when we already know the login shell
+                # IS bash: zsh and fish cannot inherit a function through the
+                # environment, and probing for the answer would cost a
+                # connection (and could raise an auth prompt).
+                #
+                # The function is the shim's logic minus its escaping: a
+                # backslash or a quote in a path is refused with a reason,
+                # because a wrong JSON escape would be a silently corrupted
+                # request and this is the route that has no helper to fall back
+                # on. `printf` and `base64` are all it needs.
+                set _otty_opts $_otty_opts -t
+                set _otty_boot 'bash -c \'export OTTY_REMOTE=1; otty() { case "${1:-}" in view|edit|jump|learn|ignore) ;; *) printf "otty %s is not available on a remote host: only view, edit, jump, learn and ignore travel over the terminal.\n" "${1:-}" >&2; return 1;; esac; case "$*$PWD" in *\\\\*|*\"*) printf "otty: this host has no Otty helper, so paths with quotes or backslashes cannot be sent.\n" >&2; return 1;; esac; local c=$1 s= a; shift; local j="{\"v\":1,\"cmd\":\"$c\",\"args\":["; for a in "$@"; do j="$j$s\"$a\""; s=,; done; j="$j],\"cwd\":\"$PWD\"}"; j=$(printf %s "$j" | base64 | tr -d "\n=" | tr "+/" "-_"); { printf "\033]8801;otty;%s\007" "$j" >/dev/tty; } 2>/dev/null || printf "\033]8801;otty;%s\007" "$j"; printf "Handed to Otty on your computer.\n"; }; export -f otty; exec bash -l\''
+            end
+        end
+
+        # Notify Otty we're entering an SSH session. Guarded like every other
+        # OSC 7: `set logs (ssh host cat 

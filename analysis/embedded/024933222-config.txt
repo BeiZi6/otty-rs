@@ -1,0 +1,19 @@
+─
+# Per-shape cursor overrides. The base color/text apply to all shapes;
+# the sub-tables only kick in when you want a specific shape to differ.
+
+[cursor]
+color = "#E5E9F0"
+text  = "#2E3440"
+
+[cursor.block]
+color = "#E5E9F0"
+text  = "#2E3440"
+
+[cursor.bar]
+color = "#88C0D0"
+
+[cursor.underline]
+color = "#88C0D0"
+
+# 

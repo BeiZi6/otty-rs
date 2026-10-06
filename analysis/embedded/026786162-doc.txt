@@ -1,0 +1,199 @@
+— if the
+  # buffer is an incomplete statement, insert a line break (PSReadLine's
+  # default behaviour) instead of submitting. Any failure falls through to
+  # the plain AcceptLine so Enter always works.
+  try {
+    if (Get-Command Set-PSReadLineKeyHandler -ErrorAction SilentlyContinue) {
+      Set-PSReadLineKeyHandler -Key Enter -BriefDescription OttyAcceptLine `
+        -LongDescription 'Otty: emit OSC 133 C, preserving multiline input' -ScriptBlock {
+        param($key, $arg)
+        try {
+          $line = $null; $cursor = $null
+          [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+          $errs = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseInput($line, [ref]$null, [ref]$errs)
+          $incomplete = $false
+          if ($errs) { foreach ($er in $errs) { if ($er.IncompleteInput) { $incomplete = $true; break } } }
+          if ($incomplete) {
+            [Microsoft.PowerShell.PSConsoleReadLine]::InsertLineBreak()
+            return
+          }
+          if (-not [string]::IsNullOrWhiteSpace($line)) {
+            [Console]::Write("$([char]27)]133;C$([char]7)")
+            $global:__OttyCmdRan = $true
+            # Baseline for the not-found check in the prompt: only an error this
+            # command ADDED may speak for it. A native command that exits non-zero
+            # writes no ErrorRecord, so $Error[0] would otherwise still be some
+            # earlier typo's CommandNotFoundException and a failed build would
+            # report 127.
+            try { $global:__OttyErrCount = $global:Error.Count } catch { $global:__OttyErrCount = 0 }
+            # Indeterminate spinner for the whole run. Wrapped on its own so a
+            # match failure cannot skip the AcceptLine below.
+            try {
+              if (__OttyProgressMatch $line) {
+                [Console]::Write("$([char]27)]9;4;3$([char]7)")
+                $global:__OttyProgressActive = $true
+              }
+            } catch {}
+          }
+        } catch {}
+        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+      }
+    }
+  } catch {}
+
+  # Two keys the app presses on the user's behalf when PSReadLine's prediction
+  # is kept, so Tab and Esc do over it what they do over Otty's ghost. The app
+  # sends them as win32-input key events, and only at a PowerShell prompt with
+  # something after the cursor. No layout types F23 / F24 and PSReadLine binds
+  # neither.
+  #   F23: Tab, where Tab accepts. Takes the prediction if one is up; otherwise
+  #        the text after the cursor was the user's own, and this does whatever
+  #        Tab is bound to (TabCompleteNext unless their profile says else).
+  #   F24: the first Esc. Hides the prediction and keeps the line -- PSReadLine's
+  #        own Esc (RevertLine) undoes every edit on it instead.
+  # AcceptSuggestion arrived with predictions (PSReadLine 2.1); without it there
+  # is nothing for either key to act on.
+  try {
+    if ((Get-Command Set-PSReadLineKeyHandler -ErrorAction SilentlyContinue) -and
+        [Microsoft.PowerShell.PSConsoleReadLine].GetMethod('AcceptSuggestion')) {
+      Set-PSReadLineKeyHandler -Chord F23 -BriefDescription OttyAcceptSuggestion `
+        -LongDescription 'Otty: accept the inline prediction, else complete as Tab does' -ScriptBlock {
+        param($key, $arg)
+        $rl = [Microsoft.PowerShell.PSConsoleReadLine]
+        $before = $null; $after = $null; $c = $null
+        $rl::GetBufferState([ref]$before, [ref]$c)
+        # Does nothing when no inline prediction is showing, which is how the
+        # line tells us whether there was one.
+        $rl::AcceptSuggestion($key, $arg)
+        $rl::GetBufferState([ref]$after, [ref]$c)
+        if (-not [string]::Equals($before, $after, [System.StringComparison]::Ordinal)) { return }
+        $tab = [ConsoleKeyInfo]::new([char]9, [ConsoleKey]::Tab, $false, $false, $false)
+        $fn = $null
+        try { $fn = (Get-PSReadLineKeyHandler -Chord Tab | Select-Object -First 1).Function } catch {}
+        $m = $null
+        if ($fn) { $m = $rl.GetMethod($fn, [type[]]@([Nullable[ConsoleKeyInfo]], [object])) }
+        if ($m) { $null = $m.Invoke($null, @($tab, $null)) } else { $rl::TabCompleteNext($tab, $null) }
+      }
+      Set-PSReadLineKeyHandler -Chord F24 -BriefDescription OttyHideSuggestion `
+        -LongDescription 'Otty: hide the inline prediction, keep the line' -ScriptBlock {
+        param($key, $arg)
+        $rl = [Microsoft.PowerShell.PSConsoleReadLine]
+        $src = (Get-PSReadLineOption).PredictionSource
+        if ("$src" -eq 'None') { return }
+        $line = $null; $cur = $null
+        $rl::GetBufferState([ref]$line, [ref]$cur)
+        if (-not $line) { return }
+        # PSReadLine asks for a prediction on every render and drops the one on
+        # screen while predictions are off. So: off, one render of the same
+        # text, back on. It returns with the next edit -- the same "until you
+        # edit the line" that Otty's own dismissed ghost follows.
+        try {
+          Set-PSReadLineOption -PredictionSource None
+          $rl::Replace(0, $line.Length, $line)
+          $rl::SetCursorPosition($cur)
+        } finally {
+          Set-PSReadLineOption -PredictionSource $src
+        }
+      }
+    }
+  } catch {}
+
+  # SSH (ANYWHERE_SPEC 6.2): on a host Otty has put its shim on, `otty view`
+  # typed over ssh should reach this Otty. Whether a connection qualifies, the
+  # metadata file the app identifies the connection by, and the ssh command
+  # line itself are all left to `otty ssh wrap`: the bootstrap it may append is
+  # full of double quotes, and Windows PowerShell 5.1 does not hand those to a
+  # native program intact. otty-ssh.ps1 only finds the two programs.
+  #
+  # The pane's own CLI is preferred to a PATH lookup: the GUI is otty.exe too,
+  # and it must not be the one handed `ssh wrap`.
+  function global:__OttyCliPath {
+    try {
+      if ($env:OTTY_BIN_DIR) {
+        foreach ($n in 'otty.exe', 'otty') {
+          $p = Join-Path $env:OTTY_BIN_DIR $n
+          if (Test-Path -LiteralPath $p -PathType Leaf) { return $p }
+        }
+      }
+      # Ignore, not SilentlyContinue: a miss must not land in $Error, where
+      # the prompt would read it as the line's command not being found.
+      $c = Get-Command otty -CommandType Application -ErrorAction Ignore |
+        Select-Object -First 1
+      if ($c) { return $c.Path }
+    } catch {}
+    return $null
+  }
+
+  # `ssh` is an alias to a script, not a function: after a function call `$?`
+  # is true whatever the native command inside returned, so the prompt above
+  # would report every failed ssh as a success. A script's `exit` sets it the
+  # way ssh.exe itself does. The price is precedence -- an alias outranks a
+  # function -- so an `ssh` function defined after this point needs
+  # `Remove-Item Alias:ssh` to take effect.
+  #
+  # Only with the integration on and the CLI there now, and never over an
+  # `ssh` function or alias the user's profile (which ran first) defined.
+  # Function: and Alias: are this session's own tables, so the check costs no
+  # module discovery at startup. (No variable for the path: this file is
+  # dot-sourced, so one would be left behind in the user's session.)
+  try {
+    if ($env:OTTY_SSH_INTEGRATION -eq '1' -and
+        -not (Test-Path Function:\ssh) -and -not (Test-Path Alias:\ssh) -and
+        (Test-Path -LiteralPath (Join-Path $PSScriptRoot 'otty-ssh.ps1') -PathType Leaf) -and
+        (__OttyCliPath)) {
+      Set-Alias -Name ssh -Value (Join-Path $PSScriptRoot 'otty-ssh.ps1') -Scope Global
+    }
+  } catch {}
+}
+otty-ssh.ps1# Otty: `ssh` in a PowerShell pane (aliased by otty.ps1). Hands the command
+# line to `otty ssh wrap`, which decides the remote `otty` bootstrap and writes
+# the connection metadata the app reads. Anything unexpected falls back to the
+# plain program with the arguments as given.
+
+# The program `ssh` meant before the alias existed. An Application lookup
+# never finds the alias or this script, and neither does the name `ssh.exe`.
+# Lookups here use -ErrorAction Ignore: the prompt reads a fresh
+# CommandNotFoundException in $Error as "this line was a typo" (exit 127), so
+# only the real failure below may leave one.
+$real = $null
+try {
+  $real = Get-Command ssh -CommandType Application -ErrorAction Ignore |
+    Select-Object -First 1
+} catch {}
+
+# Piped input belongs to this script (`$input`), so a native command inside it
+# would not see it; forward it, and leave the rest alone. There is no session
+# to bootstrap when stdin is not the terminal.
+if ($MyInvocation.ExpectingInput) {
+  if (-not $real) { $input | & ssh.exe @args; return }
+  $input | & $real.Path @args
+  exit $LASTEXITCODE
+}
+
+# No ssh at all: let PowerShell report it the way it would have.
+if (-not $real) { & ssh.exe @args; return }
+
+$cli = $null
+try { $cli = __OttyCliPath } catch {}
+if (-not $cli) {
+  & $real.Path @args
+  exit $LASTEXITCODE
+}
+
+# The app names the metadata file after this shell, not after the CLI
+# process, so the CLI is told whose it is -- for this one call only.
+$hadPid = Test-Path Env:OTTY_SHELL_PID
+$oldPid = $env:OTTY_SHELL_PID
+$env:OTTY_SHELL_PID = "$PID"
+try {
+  # `--` keeps ssh's own -q / -y away from otty's global flags. The CLI exits
+  # with ssh's status. PowerShell has already consumed a `--` the user typed,
+  # as it does for any script; ssh reads the arguments the same without it.
+  & $cli ssh wrap --ssh $real.Path -- @args
+} finally {
+  if ($hadPid) { $env:OTTY_SHELL_PID = $oldPid }
+  else { Remove-Item Env:OTTY_SHELL_PID -ErrorAction Ignore }
+}
+exit $LASTEXITCODE
+otty-integration.zshhistoryOTTY_SSH_INTEGRATIONaskpass-hostsOTTY_ASKPASS_HOSTShelper-hostsOTTY_HELPER_HOSTSOTTY_REMOTE_HELPER_POLICYOTTY_HISTORY_SCOPEsharedOTTY_HISTORY_UP_ARROWsequentialprefix-searchOTTY_PROGRESS_COMMANDSOTTY_BIN_DIRotty_core::pty::shell_integration# Otty zsh integration 

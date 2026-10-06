@@ -1,0 +1,5 @@
+⋯ " + btn.getAttribute("data-more") + " more lines";
+          btn.setAttribute("data-expanded", "0");
+        } else {
+          rest.hidden = false;
+          btn.textContent = "

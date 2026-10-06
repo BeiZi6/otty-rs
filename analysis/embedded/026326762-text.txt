@@ -1,0 +1,5 @@
+— ONE row: title, badge, chips, actions. Everything but the
+   chips is fixed-size; the chip run is what gives up space (and ellipsizes)
+   when the pane is narrow, so the title and the buttons never wrap away. */
+.meta { display:flex; align-items:center; gap:8px; padding:5px 10px 5px 16px;
+  border-bottom:1px solid 

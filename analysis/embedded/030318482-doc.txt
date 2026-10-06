@@ -1,0 +1,7 @@
+— replaces the running app with a newly-extracted
+# bundle and relaunches. Spawned detached from the main process just
+# before it terminates.
+set -u
+WAIT_PID="${1:-0}"
+# shellQuote() already wraps the path in single quotes, so do NOT
+# add outer double quotes here 

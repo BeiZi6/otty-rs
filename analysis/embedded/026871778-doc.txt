@@ -1,0 +1,13 @@
+— every panel SFTP/exec then silently re-authenticates.
+        # An already-open socket still counts (a master someone else started,
+        # including Otty's own inherit-SSH, which passes ControlMaster=auto),
+        # so only a path with neither a master nor a socket is dropped.
+        if [[ -n "$_otty_ctl_path" && "$_otty_ctl_master" == "no" && ! -S "$_otty_ctl_path" ]]; then
+            _otty_ctl_path=""
+        fi
+
+        local _otty_target="${_otty_user}@${_otty_hostname}"
+        local _otty_meta_file="${TMPDIR:-/tmp}/otty-ssh-shell-$$.meta"
+        local _otty_ctl_dir=""
+
+        # 

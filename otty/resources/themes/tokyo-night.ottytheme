@@ -1,0 +1,20 @@
+# Otty theme — Tokyo Night
+# The shipped Otty 1.5.4 theme text, comments and all. Sole deliberate deviation:
+# [token].font-ui = ["Styrene B", "Styrene A"] (appended here); the shipped build named the
+# platform UI stack there (Segoe UI / SF Pro / -apple-system / Inter).
+[meta]
+name = "Tokyo Night"
+mode = "dark"
+
+[terminal]
+foreground = "#C0CAF5"
+background = "#1A1B26"
+palette = [
+    "#15161E", "#F7768E", "#9ECE6A", "#E0AF68",
+    "#7AA2F7", "#BB9AF7", "#7DCFFF", "#A9B1D6",
+    "#414868", "#FF899D", "#9FE044", "#FABA4A",
+    "#8DB0FF", "#C7A9FF", "#A4DAFF", "#C0CAF5",
+]
+
+[token]
+font-ui = ["Styrene B", "Styrene A"]

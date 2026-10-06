@@ -1,0 +1,4 @@
+(version 1)
+;; Default-deny everything.  network, network-bind, mach-lookup,
+;; ipc-posix*, ipc-sysv*, process-fork are all blocked implicitly
+;; by (deny default) 

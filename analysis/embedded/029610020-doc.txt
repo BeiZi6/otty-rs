@@ -1,0 +1,11 @@
+— the colour dialogs, the command palette and
+# the settings surfaces land on. Matches the acrylic tint so those floating
+# panels read as the same material gone opaque, `surface` one Fluent step up.
+[panel]
+background = "#2C2C2C"
+surface    = "#383838"
+border     = "#454545"
+
+# The macOS look: ONE material under the whole window. `background` is the
+# material's OWN tint, not a fill layered over it, and `opacity` is how strongly
+# that tint beats the blurred desktop 

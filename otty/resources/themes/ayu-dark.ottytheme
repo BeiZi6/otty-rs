@@ -1,0 +1,25 @@
+# Otty theme — Ayu Dark
+# The shipped Otty 1.5.4 theme text, comments and all. Sole deliberate deviation:
+# [token].font-ui = ["Styrene B", "Styrene A"] (inserted here); the shipped build named the
+# platform UI stack there (Segoe UI / SF Pro / -apple-system / Inter).
+[meta]
+name = "Ayu Dark"
+mode = "dark"
+
+[terminal]
+foreground = "#B3B1AD"
+background = "#0A0E14"
+palette = [
+    "#01060E", "#EA6C73", "#91B362", "#F9AF4F",
+    "#53BDFA", "#FAE994", "#90E1C6", "#C7C7C7",
+    "#686868", "#F07178", "#C2D94C", "#FFB454",
+    "#59C2FF", "#FFEE99", "#95E6CB", "#FFFFFF",
+]
+
+[sidebar]
+material = "vibrancy-thin"
+
+[token]
+font-ui = ["Styrene B", "Styrene A"]
+secondary = "#c0c0c0"
+tertiary = "#9f9f9f"

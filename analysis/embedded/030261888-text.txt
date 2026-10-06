@@ -1,0 +1,19 @@
+(function () {
+  if (typeof mermaid === 'undefined') { return; }
+  var blocks = document.querySelectorAll('pre.mermaid');
+  if (!blocks.length) { return; }
+  try { mermaid.initialize(OTTY_MERMAID_CONFIG); } catch (e) { return; }
+  var draw = function (el, i) {
+    var failed = function () { el.setAttribute('data-otty-diagram', 'error'); };
+    try {
+      var out = mermaid.render('otty-mermaid-' + i, el.textContent);
+      if (!out || typeof out.then !== 'function') { failed(); return; }
+      out.then(function (res) {
+        if (!res || !res.svg) { failed(); return; }
+        el.innerHTML = res.svg;
+        el.setAttribute('data-otty-diagram', 'ok');
+      }, failed);
+    } catch (e) { failed(); }
+  };
+  for (var i = 0; i < blocks.length; i++) { draw(blocks[i], i); }
+})();

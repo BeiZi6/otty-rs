@@ -1,0 +1,72 @@
+· found after brew installotty_ffi::stream_session#!/bin/sh
+# Otty's remote shim: writes the request to the terminal as OSC 8801 for the
+# Otty at the other end, and runs nothing locally. See src/shim.rs.
+
+cmd=${1:-}
+[ $# -gt 0 ] && shift
+
+usage() {
+    cat <<'EOF'
+otty - hand a request to the Otty terminal on your own computer.
+
+  otty view <path>...   open read-only
+  otty edit <path>...   open in the editor
+  otty jump [query]     jump to a recent directory
+  otty learn <path>     remember a directory
+  otty ignore <path>    stop remembering one
+
+Anything else otty does needs the real binary, which this host has not got.
+EOF
+}
+
+case "$cmd" in
+    view|edit|jump|learn|ignore) ;;
+    help|-h|--help) usage; exit 0 ;;
+    '') usage >&2; exit 1 ;;
+    *)
+        printf 'otty %s is not available on a remote host: only view, edit, jump, learn and ignore travel over the terminal.\n' "$cmd" >&2
+        exit 1 ;;
+esac
+
+cwd=${PWD:-$(pwd)}
+
+# Refused, not stripped: dropping the tab from `a<TAB>b.log` would send Otty a
+# different path and call it a success. The no-helper fallback refuses them too.
+case "$*$cwd" in
+    *[[:cntrl:]]*) printf 'otty: control characters cannot be sent.\n' >&2; exit 1 ;;
+esac
+
+# Escape \ and " for JSON.
+esc() {
+    printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
+json="{\"v\":1,\"cmd\":\"$cmd\",\"args\":["
+sep=''
+for a in "$@"; do
+    json="${json}${sep}\"$(esc "$a")\""
+    sep=','
+done
+json="${json}],\"cwd\":\"$(esc "$cwd")\"}"
+
+if command -v base64 >/dev/null 2>&1; then
+    b64=$(printf '%s' "$json" | base64)
+elif command -v openssl >/dev/null 2>&1; then
+    b64=$(printf '%s' "$json" | openssl base64 -A)
+else
+    printf 'otty: no base64 on this host, so nothing can be sent.\n' >&2
+    exit 1
+fi
+# base64url: URL-safe alphabet, unwrapped, unpadded.
+b64=$(printf '%s' "$b64" | tr -d '\n=' | tr '+/' '-_')
+
+if [ -z "${OTTY_REMOTE:-}" ] && [ "${TERM_PROGRAM:-}" != otty ]; then
+    printf 'otty: this session does not look like an Otty one; sending anyway.\n' >&2
+fi
+
+# /dev/tty so a $(...) still reaches Otty; stdout where there is none.
+if ! { printf '\033]8801;otty;%s\007' "$b64" >/dev/tty; } 2>/dev/null; then
+    printf '\033]8801;otty;%s\007' "$b64"
+fi
+printf 'Handed to Otty on your computer.\n'
+sh -c 'h="$HOME/.local/share/otty"; test -x "$h/bin/otty" && echo shim; test -x "$h/otty-helper" && echo helper; uname -s'sh -c 'umask 022; d="$HOME/.local/share/otty/bin"; t="$d/.otty.tmp.$$"; mkdir -p "$d" && cat > "$t" && chmod 755 "$t" && mv -f "$t" "$d/otty" || { rm -f "$t"; exit 1; }'sh -c 'h="$HOME/.local/share/otty"; for f in "$h/bin/otty" "$h/otty-helper" "$h/helper.json"; do test -e "$f" && echo "$f"; done; true'sh -c 'h="$HOME/.local/share/otty"; if test -x "$h/otty-helper"; then "$h/otty-helper" uninstall --yes; else rm -f "$h/bin/otty" && { rmdir "$h/bin" "$h" 2>/dev/null; true; }; fi'[]helperotty_ffi::autocomplete_engineappliedmissing update pathmissing update datemissing update SHA-256term mutex poisoned in session_scroll, recoveringotty_mark_clean_exit called 

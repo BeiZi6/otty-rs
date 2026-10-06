@@ -1,0 +1,5 @@
+—
+    # so this is what lets the terminal tell OUR prompt from theirs. Falls
+    # back to a bare mark when no token was handed to us.
+    # Not inside a multiplexer only. A nested shell inherits the very same
+    # token, and a multiplexer can forward marks to the outer terminal 

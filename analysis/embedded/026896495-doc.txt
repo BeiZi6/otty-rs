@@ -1,0 +1,5 @@
+─
+# These wrapper functions must be installed AFTER the user's config.fish so
+# otty's wrappers win over same-named functions defined there, and so the
+# allow_overwrite sentinel can actually replace a user's existing definition.
+# But when auto-loaded from vendor_conf.d we run BEFORE config.fish 

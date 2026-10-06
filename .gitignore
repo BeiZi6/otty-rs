@@ -1,0 +1,21 @@
+# Build
+**/target/
+**/node_modules/
+*.pdb
+
+# Extracted macOS installers — read-only source, not committed
+dmg/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Local run output
+output/

@@ -1,0 +1,15 @@
+— verified, not assumed.
+# `isatty stdout` additionally covers a plain redirect to a file.
+function __otty_osc7 --argument-names _otty_payload
+    status is-command-substitution; and return 1
+    isatty stdout; or return 1
+    printf '\e]7;%s\a' $_otty_payload
+end
+
+function __otty_cwd_report --on-variable PWD
+    __otty_osc7 "file://"(hostname)"$PWD"
+end
+# Emit initial CWD.
+__otty_osc7 "file://"(hostname)"$PWD"
+
+# 

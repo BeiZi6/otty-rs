@@ -1,0 +1,5 @@
+─
+        # `ssh -G` reports the FULLY resolved configuration: ~/.ssh/config,
+        # /etc/ssh/ssh_config, Match blocks and the caller's own `-o`, with
+        # %-tokens and `~` already expanded. ControlPath is read from here for
+        # that reason 

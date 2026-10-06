@@ -1,0 +1,36 @@
+— hand the invocation over untouched.
+    case "$1" in add|remove|view|ls|import) command otty jump "$@"; return ;; esac
+    local _otty_a
+    for _otty_a in "$@"; do
+        [[ "$_otty_a" == -* ]] && { command otty jump "$@"; return; }
+    done
+    if (( $# == 0 )); then
+        # No-args: toggle between $HOME and the last jump-source dir.
+        # Local-only state ($OTTY_JUMP_PREV) so up-arrow still recalls
+        # the user's literal `jump` invocation, not an injected `cd`.
+        if [[ "$PWD" == "$HOME" && -n "$OTTY_JUMP_PREV" ]]; then
+            local _otty_dest="$OTTY_JUMP_PREV"
+            OTTY_JUMP_PREV="$PWD"
+            builtin cd -- "$_otty_dest"
+        else
+            OTTY_JUMP_PREV="$PWD"
+            builtin cd -- "$HOME"
+        fi
+        return
+    fi
+    local _otty_p
+    _otty_p=$(command otty jump --no-cd "$@") || return
+    if [[ -n "$_otty_p" ]]; then
+        OTTY_JUMP_PREV="$PWD"
+        builtin cd -- "$_otty_p"
+    fi
+}
+__otty_should_wrap jump && function jump {
+    if [[ -n "$OTTY_FLAGS_DIR" && -f "$OTTY_FLAGS_DIR/omit_prefix" ]]; then
+        __otty_jump "$@"
+    else
+        command jump "$@"
+    fi
+}
+# `otty` itself, so the prefixed `otty jump <query>` gets the local cd too.
+# Only the bare `jump` subcommand is intercepted; everything else 

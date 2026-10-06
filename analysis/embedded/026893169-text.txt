@@ -1,0 +1,17 @@
+— it holds the previous command's exit code.
+    set -l last $status
+    if test -n "$__otty_cmd_executed"
+        printf '\e]133;D;%d\a' $last
+    end
+    if test -n "$__otty_progress_active"
+        if test $last -eq 0
+            printf '\e]9;4;5;0\a'
+        else
+            printf '\e]9;4;2\a'
+        end
+        set -g __otty_progress_active ""
+    end
+    # See the zsh payload: the token is what distinguishes our prompt mark
+    # from one emitted by a program running under us.
+    # Not inside a multiplexer only. A nested shell inherits the very same
+    # token, and a multiplexer can forward marks to the outer terminal 

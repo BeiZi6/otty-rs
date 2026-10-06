@@ -1,0 +1,295 @@
+— the Windows spelling of what
+# `[window].material = "glass"` asks for on macOS. `color` here is the
+# material's TINT (the column paints no fill of its own over it), `opacity` its
+# luminosity opacity.
+[windows.sidebar]
+material = "acrylic"
+color    = "#2C2C2C"
+opacity  = 0.8
+
+[sidebar]
+border-right = "none"
+
+[details-panel]
+border-right = "none"
+
+[titlebar]
+foreground = "#FFFFFF"
+
+# NavigationView item: 4pt pill, subtle wash when selected, accent bar on the
+# leading edge.
+
+[tab]
+radius          = 4
+foreground      = "#C5C5C5"
+font-weight     = 400
+indicator       = "bar"
+indicator-color = "#60CDFF"
+
+[tab.active]
+background  = "#FFFFFF17"
+foreground  = "#FFFFFF"
+border      = "1px solid #FFFFFF14"
+font-weight = 600
+
+[tab.hover]
+background = "#FFFFFF0F"
+
+# Two columns, not a floating island: no `[container]` margin/radius, so the
+# terminal fills its column edge to edge and the acrylic is the sidebar and the
+# title strip beside it. `background` alone keeps the grid's own gutter on the
+# terminal colour rather than letting the window tint bleed into it.
+
+[container]
+background = "#202020"
+#FFFFFF#5DA802Aprilapril[meta]
+name        = "April"
+author      = "Otty"
+mode        = "light"
+description = "Light botanical theme with moss green accents"
+
+[terminal]
+foreground = "#17703f"
+background = "#ffffff"
+palette = [
+    "#1A1F1C", "#B23B3B", "#5DA802", "#B88A3A",
+    "#3D87C8", "#9B5AAB", "#3F9B85", "#464A47",
+    "#878988", "#D04A3D", "#7CB342", "#D89B47",
+    "#5AA3D6", "#A67ABF", "#5BB8A0", "#2A332E",
+]
+
+[token]
+foreground = "#2A332E"
+secondary  = "#6B7A73"
+tertiary   = "#9AA8A1"
+accent    = "#5DA802"
+radius    = 4
+font-ui   = ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+font-mono = ["JetBrains Mono", "Menlo", "monospace"]
+font-size = 13
+
+[panel]
+background = "#F4F6F4"
+surface = "#FFFFFF"
+border = "#E0E6E2"
+
+[sidebar]
+background = "#F4F6F4"
+border-right = "1px solid #e0e6e2"
+padding = 0.0
+
+[tab]
+radius = 0.0
+foreground  = "#6B7A73"
+font-weight = 400
+height = 32.0
+
+[tab.active]
+background = "#14934b2f"
+foreground  = "#2A332E"
+shadow      = "0 1px 3px rgba(0,0,0,0.06)"
+font-weight = 500
+
+[tab.hover]
+background = "rgba(0,0,0,0.04)"
+
+[container]
+radius = 0.0
+
+[window]
+background = "#ffffff"
+
+[titlebar]
+foreground = "#698678"
+background = "#f4f6f4"
+
+[tab-bar]
+background = "#f4f6f4"
+height = 44.0
+
+[tab-bar.tab]
+padding = 12.0#1A2420#C5E86CApril Darkapril-dark[meta]
+name        = "April Dark"
+author      = "Abner"
+mode        = "dark"
+description = "Dark botanical theme with lime accent and mossy greens"
+
+[terminal]
+foreground = "#FFFFFF"
+background = "#141B18"
+palette = [
+    "#101513", "#E06C75", "#98C379", "#E5C07B",
+    "#61AFEF", "#B876B8", "#5FB8A0", "#8A9992",
+    "#5C6B64", "#EB8A91", "#C5E86C", "#F0D499",
+    "#82C2F3", "#D098D0", "#85CDB6", "#FFFFFF",
+]
+
+[token]
+foreground = "#FFFFFF"
+secondary  = "#8A9992"
+tertiary   = "#5C6B64"
+accent    = "#C5E86C"
+radius    = 4
+shadow    = "0 20px 40px rgba(0,0,0,0.4)"
+font-ui   = ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+font-mono = ["JetBrains Mono", "Menlo", "monospace"]
+font-size = 13
+
+[panel]
+background = "#141B18"
+surface    = "#1A2420"
+border     = "#25332D"
+
+[sidebar]
+background   = "#1A2420"
+border-right = "1px solid #25332D"
+
+[tab]
+radius      = 4
+foreground  = "#8A9992"
+font-weight = 400
+
+[tab.active]
+background  = "#22302A"
+foreground  = "#FFFFFF"
+font-weight = 500
+
+[tab.hover]
+background = "#22302A"
+
+[container]
+radius = 4
+[meta]
+name = "Ayu Dark"
+mode = "dark"
+
+[terminal]
+foreground = "#B3B1AD"
+background = "#0A0E14"
+palette = [
+    "#01060E", "#EA6C73", "#91B362", "#F9AF4F",
+    "#53BDFA", "#FAE994", "#90E1C6", "#C7C7C7",
+    "#686868", "#F07178", "#C2D94C", "#FFB454",
+    "#59C2FF", "#FFEE99", "#95E6CB", "#FFFFFF",
+]
+
+[sidebar]
+material = "vibrancy-thin"
+
+[token]
+secondary = "#c0c0c0"
+tertiary = "#9f9f9f"
+#4196DFAyu Lightayu-light[meta]
+name = "Ayu Light"
+mode = "light"
+
+[terminal]
+foreground = "#5C6166"
+background = "#FCFCFC"
+palette = ["#010101", "#E7666A", "#80AB24", "#EBA54D", "#4196DF", "#9870C3", "#51B891", "#44474B", "#84878B", "#EE9295", "#9FD32F", "#F0BC7B", "#6DAEE6", "#B294D2", "#75C7A8", "#2D2F32"]
+
+[token]
+foreground = "#1A1A1A"
+secondary  = "#8E8E93"
+tertiary   = "#BBBBBB"
+accent    = "#4196DF"
+radius    = 6
+font-size = 13
+font-mono = "Menlo"
+adjust-cell-height = "20%"
+
+[panel]
+surface    = "#FFFFFF"
+border     = "#E0E0E0"
+
+[sidebar]
+border-right = "1px solid #d7d7d7"
+background = "#f4f4f400"
+material = "glass"
+padding = 0.0
+
+[tab]
+radius = 0.0
+
+[tab.active]
+background = "#6f869e50"
+foreground  = "#1A1A1A"
+shadow      = "0 1px 3px rgba(0,0,0,0.06)"
+font-weight = 600
+
+[tab.hover]
+background = "rgba(0,0,0,0.04)"
+
+[titlebar]
+background = "#f4f4f4"
+material = "vibrancy-thin"
+
+[tab-bar]
+border-bottom = "1px solid auto"
+material = "vibrancy-thin"[meta]
+name = "Catppuccin Mocha"
+mode = "dark"
+
+[terminal]
+foreground = "#CDD6F4"
+background = "#1E1E2E"
+palette = [
+    "#45475A", "#F38BA8", "#A6E3A1", "#F9E2AF",
+    "#89B4FA", "#F5C2E7", "#94E2D5", "#BAC2DE",
+    "#585B70", "#F38BA8", "#A6E3A1", "#F9E2AF",
+    "#89B4FA", "#F5C2E7", "#94E2D5", "#A6ADC8",
+]
+Draculadracula[meta]
+name = "Dracula"
+mode = "dark"
+
+[terminal]
+foreground = "#F8F8F2"
+background = "#282A36"
+palette = [
+    "#21222C", "#FF5555", "#50FA7B", "#F1FA8C",
+    "#BD93F9", "#FF79C6", "#8BE9FD", "#F8F8F2",
+    "#6272A4", "#FF6E6E", "#69FF94", "#FFFFA5",
+    "#D6ACFF", "#FF92DF", "#A4FFFF", "#FFFFFF",
+]
+#FAFAFA#000000Floating Cardfloating-card[meta]
+name        = "Floating Card"
+author      = "Otty"
+mode        = "light"
+description = "Frosted-glass window chrome with a rounded, shadowed card around the terminal (Tailwind neutral-200 + shadow-md)."
+
+[terminal]
+foreground           = "#24292E"
+background           = "#FFFFFF"
+palette = [
+    "#24292E", "#D73A49", "#28A745", "#DBAB09",
+    "#0366D6", "#5A32A3", "#0598BC", "#45494E",
+    "#959DA5", "#CB2431", "#22863A", "#B08800",
+    "#005CC5", "#5A32A3", "#3192AA", "#191C20",
+]
+cursor               = "#18181B"
+selection-background = "#E4E4E7"
+
+[token]
+foreground = "#18181B"
+secondary  = "#52525B"
+tertiary   = "#A1A1AA"
+accent    = "#000000"
+radius    = 8
+font-ui   = ["-apple-system", "BlinkMacSystemFont", "SF Pro", "sans-serif"]
+font-mono = ["JetBrains Mono", "Menlo", "monospace"]
+font-size = 13
+
+# The window itself becomes a translucent frosted panel. The sidebar,
+# titlebar area, and the margin strip around the card all share this
+# one backdrop (no per-section material needed).
+
+[panel]
+background = "#FFFFFF"
+surface    = "#FAFAFA"
+border     = "#E5E5E5"
+
+[window]
+material = "glass"
+
+# Transparent sidebar 

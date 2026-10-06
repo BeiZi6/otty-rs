@@ -1,0 +1,8 @@
+— rolling back"
+  if [ -d "$TRASH" ]; then mv "$TRASH" "$OLD" 2>/dev/null || true; fi
+  exit 1
+fi
+# Drop quarantine so the user doesn't get a Gatekeeper prompt on first launch.
+/usr/bin/xattr -dr com.apple.quarantine "$OLD" 2>/dev/null || true
+
+# Clean up the old bundle in the background 

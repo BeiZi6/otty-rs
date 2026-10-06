@@ -1,0 +1,16 @@
+— which reads as
+                    # "ssh froze". It only bit on the first connection to a host
+                    # (later ones hit the terminfo cache and skipped this probe
+                    # entirely), which is what made it look intermittent.
+                    # ControlPath=none keeps the probe off the socket so the
+                    # interactive ssh below stays the master.
+                    if echo "$_otty_terminfo" | command env $_otty_askpass_env ssh \
+                        -o "ControlMaster=no" \
+                        -o "ControlPath=none" \
+                        $_otty_conn \
+                        "/bin/sh -c 'otty_term=$_otty_remote_term; "'command -v infocmp >/dev/null 2>&1 && infocmp "$otty_term" >/dev/null 2>&1 && exit 0; command -v tic >/dev/null 2>&1 || exit 1; mkdir -p ~/.terminfo 2>/dev/null; tic -x - >/dev/null 2>&1 || exit 1; command -v infocmp >/dev/null 2>&1 && { infocmp -1 "$otty_term" 2>/dev/null | grep -q "clear=" || { rm -f ~/.terminfo/?/"$otty_term" ~/.terminfo/??/"$otty_term" 2>/dev/null; exit 1; }; }; exit 0'"'" \
+                        2>/dev/null
+                        set _otty_term (set -q TERM; and echo $TERM; or echo "xterm-256color")
+                        command touch "$_otty_cache_file"
+                    else if test -n "$OTTY_DEBUG_SSH"
+                        # Nothing is cached on failure 

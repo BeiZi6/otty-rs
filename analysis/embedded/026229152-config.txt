@@ -1,0 +1,41 @@
+— ~/.vimrc and ~/.vim on Unix,
+# $XDG_CONFIG_HOME/vim since Vim 9.1.
+paths = ["~/.vimrc", "~/.vim/", "~/.config/vim/"]
+
+# Every carve-out twice: ~/.vim and $XDG_CONFIG_HOME/vim are the same tree
+# under Vim's two layouts, and a Vim 9.1 setup grows its plugin checkouts and
+# swap files under the XDG one.
+exclude = [
+  "~/.viminfo",
+  "~/.vim/pack/",
+  "~/.vim/plugged/",
+  "~/.vim/bundle/",
+  "~/.vim/.netrwhist",
+  "~/.vim/swap/",
+  "~/.vim/undo/",
+  "~/.vim/backup/",
+  "~/.vim/view/",
+  "~/.config/vim/pack/",
+  "~/.config/vim/plugged/",
+  "~/.config/vim/bundle/",
+  "~/.config/vim/.netrwhist",
+  "~/.config/vim/swap/",
+  "~/.config/vim/undo/",
+  "~/.config/vim/backup/",
+  "~/.config/vim/view/",
+]
+
+secret = []
+
+# These three point at absolute per-machine scratch directories.
+[[machine_lines]]
+file  = "~/.vimrc"
+match = { prefix = ["set directory=", "set backupdir=", "set undodir="] }
+id       = "starship"
+name     = "Starship"
+homepage = "https://starship.rs"
+description = "A cross-shell prompt: one binary, one config, the same prompt in every shell."
+icon     = "theSVG:starship"
+detect   = ["starship"]
+
+# https://starship.rs/config/ 

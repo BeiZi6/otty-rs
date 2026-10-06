@@ -1,0 +1,23 @@
+─
+# The ANSI palette + fg/bg drives the text rendering area. `palette`
+# has exactly 16 entries: [0..7] are the normal colors, [8..15] are the
+# bright variants. `font-blending` lets the theme suggest a glyph
+# compositing mode (linear / srgb-over / macos-like / perceptual); the
+# user's config still wins when they have explicitly chosen a mode.
+
+[terminal]
+foreground = "#f1f6ff"
+background           = "#2E3440"
+cursor               = "#E5E9F0"
+cursor-text          = "#2E3440"
+selection-foreground = "#2e3440"
+selection-background = "#e5e9f0"
+font-blending        = "linear"
+palette = [
+    "#3B4252", "#BF616A", "#A3BE8C", "#EBCB8B",
+    "#81A1C1", "#B48EAD", "#88C0D0", "#E5E9F0",
+    "#4C566A", "#BF616A", "#A3BE8C", "#EBCB8B",
+    "#81A1C1", "#B48EAD", "#8FBCBB", "#ECEFF4",
+]
+
+# 

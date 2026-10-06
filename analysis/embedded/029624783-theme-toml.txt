@@ -1,0 +1,110 @@
+— Typora-inspired editorial light theme using Inconsolata"
+
+[terminal]
+foreground = "#333638"
+background = "#f4f4f1"
+palette = [
+    "#262522", "#A33A35", "#5C7A3E", "#967927",
+    "#2F5F8A", "#904180", "#3E7A78", "#434340",
+    "#7A766B", "#C25852", "#7A9A52", "#d4a945",
+    "#4470a0", "#be79bb", "#739797", "#121211",
+]
+
+[token]
+foreground = "#262522"
+secondary  = "#7A766B"
+tertiary   = "#B8B3A6"
+accent    = "#2F5F8A"
+radius    = 4
+shadow    = "0 1px 2px rgba(0,0,0,0.03)"
+font-ui   = ["Inter", "-apple-system", "sans-serif"]
+font-size = 13
+font-mono = "Office Code Pro"
+
+[panel]
+background = "#f3f2ee"
+surface    = "#F4F1EA"
+border     = "#DBD6C8"
+
+[sidebar]
+background = "#f4f4f1"
+border-right = "1px solid #DBD6C8"
+material     = "none"
+
+[tab]
+radius      = 4
+foreground  = "#7A766B"
+font-weight = 400
+
+[tab.active]
+background = "#6d7478"
+foreground = "#ffffff"
+font-weight = 500
+
+[tab.hover]
+background = "#c4bfb16f"
+
+[tab-bar]
+height  = 44
+padding = 8
+border-bottom = "1px solid auto"
+
+[tab-bar.tab]
+radius = 14
+height = 32
+
+[tab-bar.tab.active]
+shadow = "0 1px 4px rgba(0,0,0,0.05)"
+
+#2E3033#82AAFFNightnight[meta]
+name        = "Night"
+author      = "Typora"
+mode        = "dark"
+description = "Calm night theme with material-style syntax accents"
+
+[terminal]
+foreground = "#ffffff"
+background = "#363B40"
+palette = [
+    "#1F2226", "#F07178", "#C3E88D", "#FFCB6B",
+    "#82AAFF", "#C792EA", "#89DDFF", "#BFC7D5",
+    "#676E95", "#FF8B92", "#D2EE9F", "#FFD68A",
+    "#9CBEFF", "#D5A8F0", "#A5E5FF", "#FFFFFF",
+]
+
+[token]
+foreground = "#dce4f3"
+secondary  = "#A5ACBA"
+tertiary   = "#676E95"
+accent     = "#82AAFF"
+radius     = 4
+shadow     = "0 20px 40px rgba(0,0,0,0.4)"
+font-ui   = ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+font-mono = ["JetBrains Mono", "Menlo", "monospace"]
+font-size = 13
+
+[panel]
+background = "#363B40"
+surface    = "#2E3033"
+border     = "#222426"
+
+[sidebar]
+background   = "#2E3033"
+border-right = "1px solid #222426"
+
+[tab]
+radius      = 4
+foreground  = "#A5ACBA"
+font-weight = 400
+
+[tab.active]
+background  = "#222222"
+foreground  = "#FFFFFF"
+font-weight = 500
+
+[tab.hover]
+background = "#2A2C2F"
+
+[container]
+radius = 4
+#3B4252#88C0D0# Nord 

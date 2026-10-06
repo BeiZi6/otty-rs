@@ -1,0 +1,10 @@
+— zle edits multi-line buffers
+# natively, so Shift+Enter composes multi-line commands at the prompt.
+# NOT self-insert-unmeta: that inserts the sequence's LAST key (`u`).
+if [[ -o interactive ]] 2>/dev/null; then
+    __otty_insert_newline() { LBUFFER+=$'\n' }
+    builtin zle -N __otty_insert_newline
+    bindkey '\e[13;2u' __otty_insert_newline
+fi
+
+# 

@@ -1,0 +1,7 @@
+INSERT OR REPLACE INTO pane
+(id, tab_id, cwd, shell, program_type, resume_key,
+ content_type, content_url, view_mode,
+ scroll_y, selection_start, selection_length,
+ cols, rows, running_command, resume_spec, extra)
+VALUES (?1, ?2, ?3, ?4, ?5,
+        

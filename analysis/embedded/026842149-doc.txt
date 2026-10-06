@@ -1,0 +1,18 @@
+…)` runs this whole wrapper in a
+        # command-substitution subshell, and an unguarded write here wrapped
+        # the captured output in OSC 7 exactly the way chpwd corrupted $( ).
+        __otty_osc7 "ssh://${_otty_hostname:-unknown}"
+
+        # Spelled out twice rather than expanding a possibly-empty array into
+        # the one call: the no-bootstrap line has to stay identical to what it
+        # was before this feature existed, and "identical" should be visible.
+        if (( ${#_otty_boot[@]} )); then
+            TERM="$_otty_term" command ssh "${_otty_opts[@]}" "$@" "${_otty_boot[@]}"
+        else
+            TERM="$_otty_term" command ssh "${_otty_opts[@]}" "$@"
+        fi
+        local _ret=$?
+
+        command rm -f "$_otty_meta_file" 2>/dev/null
+
+        # Retire the ControlMaster we minted above. Only ours 

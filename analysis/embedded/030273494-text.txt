@@ -1,0 +1,11 @@
+— sandbox-exec's
+;; initial execvp(TARGET_BIN) goes through this rule.  Combined
+;; with the implicit deny on process-fork, the probed process can
+;; run --help but cannot spawn any child of its own.
+(allow process-exec (literal (param "TARGET_BIN")))
+
+;; --- File reads (whitelist) ---
+;; With file-write/network/ipc/mach all denied, a probed binary
+;; cannot exfiltrate what it reads.  The only channel back to us
+;; is stdout, which our parser only retains as option/subcommand
+;; tokens 

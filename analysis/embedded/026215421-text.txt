@@ -1,0 +1,57 @@
+§1: every chain but a file's account-level one.
+            CREATE TABLE IF NOT EXISTS chain (
+                id          TEXT PRIMARY KEY,
+                item        TEXT NOT NULL,
+                app         TEXT NOT NULL,
+                path        TEXT NOT NULL,
+                kind        TEXT NOT NULL,
+                owner       TEXT NOT NULL DEFAULT '',
+                version     INTEGER NOT NULL DEFAULT 0,
+                hash        TEXT,
+                size        INTEGER NOT NULL DEFAULT 0,
+                at          INTEGER,
+                device      TEXT,
+                attribution TEXT,
+                sent_hash   TEXT,
+                body        TEXT
+            );
+            CREATE INDEX IF NOT EXISTS chain_by_item ON chain(item);
+            CREATE INDEX IF NOT EXISTS chain_by_app ON chain(app);
+            -- The user's own rules, removals included (`to_kind = 'catalog'`),
+            -- so a removal syncs like any other edit.
+            CREATE TABLE IF NOT EXISTS user_rule (
+                app     TEXT NOT NULL,
+                pattern TEXT NOT NULL,
+                to_kind TEXT NOT NULL,
+                at      INTEGER NOT NULL,
+                PRIMARY KEY (app, pattern)
+            );
+            ALTER TABLE item ADD COLUMN meta_sent INTEGER NOT NULL DEFAULT 0ALTER TABLE item ADD COLUMN backup INTEGER NOT NULL DEFAULT 0ALTER TABLE item ADD COLUMN newer_item TEXTALTER TABLE item ADD COLUMN newer_version INTEGERALTER TABLE item ADD COLUMN newer_at INTEGERALTER TABLE item ADD COLUMN newer_device TEXTALTER TABLE item ADD COLUMN newer_hash TEXTALTER TABLE item ADD COLUMN dismissed_at INTEGERALTER TABLE app ADD COLUMN backup_only INTEGER NOT NULL DEFAULT 0ALTER TABLE app ADD COLUMN found_at INTEGERALTER TABLE item ADD COLUMN refusal TEXTALTER TABLE app ADD COLUMN decided_at INTEGERUPDATE app SET decided_at = 0 WHERE decided_at IS NULL AND (enabled = 1 OR state != 'new')SELECT cmdline, started_ms, finished_ms, cwd FROM command ORDER BY seqotty_configmachinecleanlocal_aheadremote_aheadrefused_secretover_limitremote_newernot_ownerlimitINSERT INTO item(id, app, kind, path, scope, side_effect, size, status, version,
+                              base_hash, machine_lines, stripped, reason,
+                              last_at, last_device, last_attribution, meta_sent,
+                              backup, newer_item, newer_version, newer_at, newer_device,
+                              newer_hash, dismissed_at, refusal)
+             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,
+                     ?18,?19,?20,?21,?22,?23,?24,?25)
+             ON CONFLICT(id) DO UPDATE SET
+                app = excluded.app, kind = excluded.kind, path = excluded.path,
+                scope = excluded.scope, side_effect = excluded.side_effect,
+                size = excluded.size, status = excluded.status, version = excluded.version,
+                base_hash = excluded.base_hash, machine_lines = excluded.machine_lines,
+                stripped = excluded.stripped, reason = excluded.reason,
+                last_at = excluded.last_at, last_device = excluded.last_device,
+                last_attribution = excluded.last_attribution,
+                meta_sent = excluded.meta_sent, backup = excluded.backup,
+                newer_item = excluded.newer_item, newer_version = excluded.newer_version,
+                newer_at = excluded.newer_at, newer_device = excluded.newer_device,
+                newer_hash = excluded.newer_hash, dismissed_at = excluded.dismissed_at,
+                refusal = excluded.refusalINSERT INTO meta(key, value) VALUES (?1, ?2)
+             ON CONFLICT(key) DO UPDATE SET value = excluded.valueSELECT id FROM chain ORDER BY idINSERT INTO chain(id, item, app, path, kind, owner, version, hash, size, at,
+                               device, attribution, sent_hash, body)
+             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)
+             ON CONFLICT(id) DO UPDATE SET
+                item = excluded.item, app = excluded.app, path = excluded.path,
+                kind = excluded.kind, owner = excluded.owner, version = excluded.version,
+                hash = excluded.hash, size = excluded.size, at = excluded.at,
+                device = excluded.device, attribution = excluded.attribution,
+                sent_hash = excluded.sent_hash, body = excluded.bodysecret_fieldvrulesaccount_idlist_cursorcatalog_checked_ms1; rules_sentuser-rulesdevice_idlast_sync_atbackup_onlyweb_versionscatalog.jsoncatalog_sha256first_scan_donedeviceremoved on another devicethe rules are always readaccountjson.partialwaiting for this device to be identifieddevice_namea newer backup is brought here with restore0the server says another device owns this backupaccount_key_fingerprintThis deviceengine.db-walengine.db-shmengine.db-journalyour rule keeps this file on this machinethe catalog marks this file a credentialyour rule marks this file a credentialboth sides rewrote a binary fileSyncs itselfAppmacOS onlyplatform_onlygui_app[[machine_lines]], attributionpadidchainanother devicea credentialover the limitfilesfolderfoldersfiles and folders 

@@ -1,0 +1,11 @@
+— the page is the only place that knows
+          // it, and sending it with the click saves C++ a script round-trip.
+          post({ type: "send-to-chat", text: window.getSelection().toString() });
+        } else {
+          post({ type: "action", act: act });
+        }
+      });
+    });
+  }
+
+  // 

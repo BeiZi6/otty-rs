@@ -1,0 +1,10 @@
+…)` runs this wrapper with stdout
+        # redirected into the substitution's capture pipe.
+        __otty_osc7 "ssh://"(test -n "$_otty_hostname"; and echo $_otty_hostname; or echo "unknown")
+
+        command env TERM=$_otty_term $_otty_askpass_env ssh $_otty_opts $argv $_otty_boot
+        set -l _ret $status
+
+        command rm -f "$_otty_meta_file" 2>/dev/null
+
+        # Retire the ControlMaster we minted above. Only ours 

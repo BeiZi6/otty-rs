@@ -1,0 +1,7 @@
+─
+        #
+        # On a host Otty has put its helper on, `otty view foo.log` typed in
+        # the remote shell should reach the Otty the user is sitting at. That
+        # needs two things a plain `ssh host` does not give it: the shim on the
+        # remote $PATH, and a tty for the shim to write its OSC to. Both are
+        # bought by turning the invocation into `ssh -t host sh -c 

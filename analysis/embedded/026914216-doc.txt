@@ -1,0 +1,15 @@
+— every panel SFTP/exec then silently re-authenticates.
+        # An already-open socket still counts (a master someone else started,
+        # including Otty's own inherit-SSH, which passes ControlMaster=auto),
+        # so only a path with neither a master nor a socket is dropped.
+        if test -n "$_otty_ctl_path" -a "$_otty_ctl_master" = "no" -a ! -S "$_otty_ctl_path"
+            set _otty_ctl_path ""
+        end
+
+        set -l _otty_target "$_otty_user@$_otty_hostname"
+        set -l _otty_tmpdir (set -q TMPDIR; and echo $TMPDIR; or echo /tmp)
+        # $fish_pid, not %self: fish removed `%` process expansion in 3.1, so
+        # %self is a literal everywhere now (and even on older fish it only
+        # expanded as a standalone token, never concatenated like this). A
+        # literal here means the host looks for otty-ssh-shell-<pid>.meta and
+        # never finds it 

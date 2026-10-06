@@ -1,0 +1,24 @@
+— random secrets won't survive.  So we allow reads on
+;; the system paths --help routinely needs and exclude $HOME,
+;; /tmp, /Volumes, /private/var/log, etc.
+(allow file-read*
+  ;; The binary + the .app bundle it lives in (BUNDLE_ROOT
+  ;; defaults to TARGET_BIN when not in a bundle, so the rule is
+  ;; a no-op then).
+  (literal (param "TARGET_BIN"))
+  (subpath (param "BUNDLE_ROOT"))
+  ;; System dylibs / SDKs / dyld shared cache.
+  (subpath "/usr")
+  (subpath "/System")
+  (subpath "/Library")
+  (subpath "/System/Volumes")
+  ;; Third-party package managers.
+  (subpath "/opt/homebrew")
+  (subpath "/opt/local")
+  ;; System-wide config (resolv.conf, ssl/openssl.cnf, ...).
+  (subpath "/private/etc")
+  (subpath "/private/var/db/timezone")
+  ;; Per-user TMPDIR / NSCachesDirectory (kernel rewrites
+  ;; $TMPDIR to here).
+  (subpath "/private/var/folders")
+  ;; Path traversal 

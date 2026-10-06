@@ -1,0 +1,11 @@
+— payload (sourced from config.fish managed block)
+#
+# Idempotent: re-sourcing in the same shell is a no-op. `return` (not `exit`)
+# so non-interactive fish that sources config.fish isn't killed.
+set -q __otty_loaded; and return
+set -g __otty_loaded 1
+
+# Guard: only for interactive shells.
+status is-interactive; or return
+
+# 

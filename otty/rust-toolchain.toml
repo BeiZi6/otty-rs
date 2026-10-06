@@ -1,0 +1,17 @@
+[toolchain]
+# `stable`, deliberately — not a version number.
+#
+# This project needs Rust 1.80 or newer, which `rust-version` in the root
+# `Cargo.toml` states and cargo enforces. Pinning an exact channel here looks
+# tidier but is a footgun on a machine where that channel is not already present:
+# `rust-toolchain.toml` makes cargo *install* whatever it names on every
+# invocation, so naming an absent version turns "run the test suite" into a
+# network operation — and when that install fails partway (observed on this
+# machine: `could not rename 'component' file … directory is not empty`, leaving
+# a toolchain directory containing only `share/` and an empty `lib/rustlib`),
+# every subsequent cargo command fails with `Missing manifest in toolchain`.
+#
+# The instruction to build with a specific version belongs in `docs/BUILDING.md`
+# and in CI, where a failure is a failed job rather than a broken developer box.
+channel = "stable"
+components = ["rustfmt", "clippy"]

@@ -1,0 +1,5 @@
+px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.transcript { padding:8px 0 40vh 0; max-width:920px; margin:0 auto; }
+.empty { padding:24px; color:

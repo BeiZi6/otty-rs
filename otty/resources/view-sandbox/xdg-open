@@ -1,0 +1,6 @@
+#!/bin/sh
+# Shadows `xdg-open` for programs running inside an Otty details-panel view.
+# See README.md in this directory.
+printf '%s\n' 'otty: `xdg-open` is not available inside the details panel.' >&2
+printf '%s\n' "Run it from a terminal pane instead." >&2
+exit 126

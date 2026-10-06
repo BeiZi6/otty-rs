@@ -1,0 +1,5 @@
+INSERT INTO dir_frecency (path, score, last_seen, ignored)
+VALUES (?, 1.0, ?, 0)
+ON CONFLICT(path) DO UPDATE SET
+    score = score + 1.0,
+    last_seen = excluded.last_seen

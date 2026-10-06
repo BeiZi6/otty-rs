@@ -1,0 +1,13 @@
+— a name outside [A-Za-z0-9._+-] has no local
+                    # terminfo entry either, so `infocmp -0 -x` above would
+                    # have come back empty and this branch never run.
+                    set -l _otty_remote_term (set -q TERM; and echo $TERM; or echo "xterm-256color")
+                    if string match -qr '[^A-Za-z0-9._+-]' -- $_otty_remote_term
+                        set _otty_remote_term "xterm-256color"
+                    end
+                    # Deliberately NOT sharing $_otty_ctl_path here. This probe
+                    # used to run with ControlMaster=yes and hand its master to
+                    # the interactive ssh below, saving one auth round-trip. But
+                    # that demoted the interactive connection to a mux *client*,
+                    # and a client's interactive session can hang with no output
+                    # at all 

@@ -1,0 +1,9 @@
+—
+                # which is not necessarily POSIX. Three plain words and a
+                # single-quoted token is the shape fish, csh and every POSIX
+                # shell agree on; the same reasoning as the terminfo probe.
+                #
+                # Two stages, not one, because exporting PATH here and then
+                # `exec $SHELL -l` does not work on the commonest server OS
+                # there is: Debian's /etc/profile *assigns*
+                #     PATH="/usr/local/bin:/usr/bin:/bin:

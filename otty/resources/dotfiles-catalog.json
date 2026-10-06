@@ -1,0 +1,1316 @@
+{
+  "version": "0.3.0",
+  "generated_at": "2026-09-07T09:09:44Z",
+  "apps": [
+    {
+      "id": "1password-cli",
+      "name": "1Password CLI",
+      "homepage": "https://developer.1password.com/docs/cli/",
+      "detect": [
+        "op"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/op/config",
+        "%LOCALAPPDATA%/1Password/config/op/config"
+      ],
+      "exclude": [
+        "~/.config/op/data/",
+        "~/.config/op/cache/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.config/op/config",
+          "format": "json",
+          "match": {
+            "key_path": [
+              "device",
+              "latest_signin"
+            ]
+          }
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "aws",
+      "name": "AWS CLI",
+      "homepage": "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html",
+      "detect": [
+        "aws"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.aws/config"
+      ],
+      "exclude": [
+        "~/.aws/cli/cache/",
+        "~/.aws/sso/cache/",
+        "~/.aws/boto/cache/"
+      ],
+      "secret": [
+        "~/.aws/credentials"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.aws/config",
+          "match": {
+            "prefix": [
+              "credential_process",
+              "ca_bundle"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "bash",
+      "name": "Bash",
+      "homepage": "https://www.gnu.org/software/bash/",
+      "detect": [
+        "bash"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "paths": [
+        "~/.bashrc",
+        "~/.bash_profile",
+        "~/.bash_login",
+        "~/.profile",
+        "~/.bash_logout",
+        "~/.inputrc"
+      ],
+      "exclude": [
+        "~/.bash_history",
+        "~/.bash_sessions/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.bashrc",
+          "match": {
+            "prefix": [
+              "export PATH=",
+              "export HOMEBREW_PREFIX=",
+              "export NVM_DIR="
+            ]
+          },
+          "format": null
+        },
+        {
+          "file": "~/.bash_profile",
+          "match": {
+            "prefix": [
+              "export PATH="
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "cargo",
+      "name": "Cargo",
+      "homepage": "https://doc.rust-lang.org/cargo/reference/config.html",
+      "detect": [
+        "cargo"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.cargo/config.toml",
+        "~/.cargo/config"
+      ],
+      "exclude": [
+        "~/.cargo/registry/",
+        "~/.cargo/git/",
+        "~/.cargo/bin/",
+        "~/.cargo/.package-cache",
+        "~/.cargo/.crates.toml",
+        "~/.cargo/.crates2.json"
+      ],
+      "secret": [
+        "~/.cargo/credentials.toml",
+        "~/.cargo/credentials"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.cargo/config.toml",
+          "match": {
+            "key_path": [
+              "paths",
+              "build.target-dir"
+            ]
+          },
+          "format": "toml"
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "homepage": "https://claude.com/claude-code",
+      "detect": [
+        "claude"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.claude/settings.json",
+        "~/.claude/CLAUDE.md",
+        "~/.claude/keybindings.json",
+        "~/.claude/agents/",
+        "~/.claude/commands/",
+        "~/.claude/skills/"
+      ],
+      "exclude": [
+        "~/.claude/settings.local.json",
+        "~/.claude/projects/",
+        "~/.claude/sessions/",
+        "~/.claude/session-env/",
+        "~/.claude/jobs/",
+        "~/.claude/tasks/",
+        "~/.claude/history.jsonl",
+        "~/.claude/shell-snapshots/",
+        "~/.claude/file-history/",
+        "~/.claude/paste-cache/",
+        "~/.claude/downloads/",
+        "~/.claude/backups/",
+        "~/.claude/cache/",
+        "~/.claude/debug/",
+        "~/.claude/telemetry/",
+        "~/.claude/ide/",
+        "~/.claude/daemon/",
+        "~/.claude/plugins/",
+        "~/.claude/stats-cache.json",
+        "~/.claude/policy-limits.json",
+        "~/.claude/settings.json.bak",
+        "~/.claude/settings.json.backup-*",
+        "~/.claude/*.log"
+      ],
+      "secret": [
+        "~/.claude.json",
+        "~/.claude/.credentials.json"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.claude/settings.json",
+          "match": {
+            "key_path": [
+              "hooks.*.*.hooks.*.command",
+              "statusLine.command"
+            ]
+          },
+          "format": "json"
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "codex",
+      "name": "Codex",
+      "homepage": "https://developers.openai.com/codex/cli/",
+      "detect": [
+        "codex"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.codex/config.toml",
+        "~/.codex/hooks.json",
+        "~/.codex/AGENTS.md",
+        "~/.codex/prompts/",
+        "~/.codex/skills/"
+      ],
+      "exclude": [
+        "~/.codex/sessions/",
+        "~/.codex/session_index.jsonl",
+        "~/.codex/shell_snapshots/",
+        "~/.codex/worktrees/",
+        "~/.codex/vendor_imports/",
+        "~/.codex/visualizations/",
+        "~/.codex/thread-writer-locks/",
+        "~/.codex/tmp/",
+        "~/.codex/log/",
+        "~/.codex/sqlite/",
+        "~/.codex/*.sqlite",
+        "~/.codex/*.sqlite-shm",
+        "~/.codex/*.sqlite-wal",
+        "~/.codex/*.jsonl",
+        "~/.codex/.codex-global-state.json",
+        "~/.codex/.codex-global-state.json.bak",
+        "~/.codex/version.json"
+      ],
+      "secret": [
+        "~/.codex/auth.json"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.codex/config.toml",
+          "match": {
+            "key_path": [
+              "mcp_servers.*.command",
+              "mcp_servers.*.args",
+              "mcp_servers.*.cwd"
+            ]
+          },
+          "format": "toml"
+        },
+        {
+          "file": "~/.codex/hooks.json",
+          "match": {
+            "key_path": [
+              "hooks.*.*.hooks.*.command"
+            ]
+          },
+          "format": "json"
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor CLI",
+      "homepage": "https://cursor.com/docs/cli",
+      "detect": [
+        "cursor-agent"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.cursor/cli-config.json",
+        "~/.cursor/hooks.json",
+        "~/.cursor/mcp.json",
+        "~/.cursor/rules/",
+        "~/.cursor/commands/"
+      ],
+      "exclude": [
+        "~/.cursor/projects/",
+        "~/.cursor/chats/",
+        "~/.cursor/agents/",
+        "~/.cursor/plans/",
+        "~/.cursor/snapshots/",
+        "~/.cursor/worktrees/",
+        "~/.cursor/extensions/",
+        "~/.cursor/plugins/",
+        "~/.cursor/skills-cursor/",
+        "~/.cursor/ai-tracking/",
+        "~/.cursor/agent-cli-state.json",
+        "~/.cursor/ide_state.json",
+        "~/.cursor/statsig-cache.json",
+        "~/.cursor/argv.json"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.cursor/hooks.json",
+          "match": {
+            "key_path": [
+              "hooks.*.*.command"
+            ]
+          },
+          "format": "json"
+        },
+        {
+          "file": "~/.cursor/mcp.json",
+          "match": {
+            "key_path": [
+              "mcpServers.*.command",
+              "mcpServers.*.args"
+            ]
+          },
+          "format": "json"
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "direnv",
+      "name": "direnv",
+      "homepage": "https://direnv.net",
+      "detect": [
+        "direnv"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "paths": [
+        "~/.config/direnv/direnv.toml",
+        "~/.config/direnv/direnvrc",
+        "~/.config/direnv/lib/",
+        "~/.direnvrc"
+      ],
+      "exclude": [
+        "~/.local/share/direnv/allow/",
+        "~/.config/direnv/allow/"
+      ],
+      "secret": [],
+      "side_effect": false,
+      "machine_lines": [
+        {
+          "file": "~/.config/direnv/direnv.toml",
+          "match": {
+            "key_path": [
+              "whitelist.prefix",
+              "whitelist.exact"
+            ]
+          },
+          "format": "toml"
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "homepage": "https://docs.docker.com/reference/cli/docker/",
+      "detect": [
+        "docker"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.docker/config.json",
+        "~/.docker/daemon.json"
+      ],
+      "exclude": [
+        "~/.docker/contexts/",
+        "~/.docker/buildx/",
+        "~/.docker/cli-plugins/",
+        "~/.docker/desktop/",
+        "~/.docker/run/",
+        "~/.docker/scan/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.docker/config.json",
+          "match": {
+            "key_path": [
+              "credsStore",
+              "currentContext"
+            ]
+          },
+          "format": "json"
+        }
+      ],
+      "secret_paths": [
+        {
+          "file": "~/.docker/config.json",
+          "match": {
+            "key_path": [
+              "auths.*.auth",
+              "auths.*.identitytoken"
+            ]
+          },
+          "format": "json"
+        }
+      ]
+    },
+    {
+      "id": "fish",
+      "name": "fish",
+      "homepage": "https://fishshell.com",
+      "detect": [
+        "fish"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "paths": [
+        "~/.config/fish/config.fish",
+        "~/.config/fish/conf.d/",
+        "~/.config/fish/functions/",
+        "~/.config/fish/completions/",
+        "~/.config/fish/fish_plugins",
+        "~/.config/fish/themes/"
+      ],
+      "exclude": [
+        "~/.config/fish/fish_variables",
+        "~/.config/fish/fish_history",
+        "~/.local/share/fish/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.config/fish/config.fish",
+          "match": {
+            "prefix": [
+              "set -gx PATH",
+              "fish_add_path",
+              "set -gx JAVA_HOME"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "gcloud",
+      "name": "Google Cloud CLI",
+      "homepage": "https://cloud.google.com/sdk/docs/configurations",
+      "detect": [
+        "gcloud",
+        "gsutil",
+        "bq"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/gcloud/configurations/",
+        "%APPDATA%/gcloud/configurations/"
+      ],
+      "exclude": [
+        "~/.config/gcloud/logs/",
+        "~/.config/gcloud/cache/",
+        "~/.config/gcloud/surface_data/",
+        "~/.config/gcloud/config_sentinel",
+        "~/.config/gcloud/gce"
+      ],
+      "secret": [
+        "~/.config/gcloud/credentials.db",
+        "~/.config/gcloud/access_tokens.db",
+        "~/.config/gcloud/application_default_credentials.json",
+        "~/.config/gcloud/legacy_credentials/"
+      ],
+      "side_effect": true,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "gh",
+      "name": "GitHub CLI",
+      "homepage": "https://cli.github.com",
+      "detect": [
+        "gh"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/gh/config.yml",
+        "~/.config/gh/hosts.yml",
+        "%APPDATA%/GitHub CLI/config.yml",
+        "%APPDATA%/GitHub CLI/hosts.yml"
+      ],
+      "exclude": [],
+      "secret": [],
+      "side_effect": false,
+      "machine_lines": [],
+      "secret_paths": [
+        {
+          "file": "~/.config/gh/hosts.yml",
+          "match": {
+            "key_path": [
+              "*.oauth_token",
+              "*.users.*.oauth_token"
+            ]
+          },
+          "format": "yaml"
+        }
+      ]
+    },
+    {
+      "id": "git",
+      "name": "Git",
+      "homepage": "https://git-scm.com",
+      "detect": [
+        "git"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.gitconfig",
+        "~/.config/git/config",
+        "~/.config/git/ignore",
+        "~/.config/git/attributes"
+      ],
+      "exclude": [],
+      "secret": [
+        "~/.git-credentials",
+        "~/.config/git/credentials"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.gitconfig",
+          "match": {
+            "prefix": [
+              "signingkey",
+              "helper"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "gnupg",
+      "name": "GnuPG",
+      "homepage": "https://gnupg.org",
+      "detect": [
+        "gpg",
+        "gpg2",
+        "gpgconf"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "paths": [
+        "~/.gnupg/gpg.conf",
+        "~/.gnupg/gpg-agent.conf",
+        "~/.gnupg/dirmngr.conf",
+        "~/.gnupg/scdaemon.conf",
+        "~/.gnupg/sshcontrol"
+      ],
+      "exclude": [
+        "~/.gnupg/random_seed",
+        "~/.gnupg/S.*",
+        "~/.gnupg/*.lock",
+        "~/.gnupg/crls.d/",
+        "~/.gnupg/public-keys.d/",
+        "~/.gnupg/openpgp-revocs.d/",
+        "~/.gnupg/pubring.kbx~"
+      ],
+      "secret": [
+        "~/.gnupg/private-keys-v1.d/",
+        "~/.gnupg/secring.gpg"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.gnupg/gpg-agent.conf",
+          "match": {
+            "prefix": [
+              "pinentry-program"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "grok",
+      "name": "Grok Build",
+      "homepage": "https://github.com/xai-org/grok-build",
+      "detect": [
+        "grok"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.grok/config.toml"
+      ],
+      "exclude": [
+        "~/.grok/sessions/",
+        "~/.grok/logs/",
+        "~/.grok/bin/",
+        "~/.grok/bundled/",
+        "~/.grok/docs/",
+        "~/.grok/downloads/",
+        "~/.grok/completions/",
+        "~/.grok/relocations/",
+        "~/.grok/memtrace/",
+        "~/.grok/marketplace-cache/",
+        "~/.grok/hooks/",
+        "~/.grok/trusted_folders.toml",
+        "~/.grok/active_sessions.json",
+        "~/.grok/models_cache.json",
+        "~/.grok/worktrees.db",
+        "~/.grok/agent_id",
+        "~/.grok/version.json",
+        "~/.grok/tip_cursor.json",
+        "~/.grok/CHANGELOG.json",
+        "~/.grok/CHANGELOG.md",
+        "~/.grok/README.md",
+        "~/.grok/*.lock",
+        "~/.grok/.metadata_version"
+      ],
+      "secret": [
+        "~/.grok/auth.json"
+      ],
+      "side_effect": true,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "homebrew",
+      "name": "Homebrew",
+      "homepage": "https://brew.sh",
+      "detect": [
+        "brew"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "paths": [
+        "~/.Brewfile",
+        "~/.homebrew/brew.env"
+      ],
+      "exclude": [
+        "~/Library/Caches/Homebrew/",
+        "~/.cache/Homebrew/",
+        "~/.Brewfile.lock.json"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.homebrew/brew.env",
+          "match": {
+            "prefix": [
+              "HOMEBREW_CACHE",
+              "HOMEBREW_TEMP"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "kimi-code",
+      "name": "Kimi Code",
+      "homepage": "https://github.com/MoonshotAI/kimi-code",
+      "detect": [
+        "kimi"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.kimi-code/config.toml",
+        "~/.kimi-code/tui.toml"
+      ],
+      "exclude": [
+        "~/.kimi-code/bin/",
+        "~/.kimi-code/cache/",
+        "~/.kimi-code/logs/",
+        "~/.kimi-code/server/",
+        "~/.kimi-code/sessions/",
+        "~/.kimi-code/search-index/",
+        "~/.kimi-code/telemetry/",
+        "~/.kimi-code/session_index.jsonl",
+        "~/.kimi-code/device_id",
+        "~/.kimi-code/region",
+        "~/.kimi-code/migrations-effort.json"
+      ],
+      "secret": [
+        "~/.kimi-code/server.token"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.kimi-code/config.toml",
+          "match": {
+            "key_path": [
+              "hooks.*.command"
+            ]
+          },
+          "format": "toml"
+        }
+      ],
+      "secret_paths": [
+        {
+          "file": "~/.kimi-code/config.toml",
+          "match": {
+            "prefix": [
+              "api_key"
+            ]
+          },
+          "format": null
+        }
+      ]
+    },
+    {
+      "id": "kubectl",
+      "name": "kubectl",
+      "homepage": "https://kubernetes.io/docs/reference/kubectl/",
+      "detect": [
+        "kubectl"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.kube/config"
+      ],
+      "exclude": [
+        "~/.kube/cache/",
+        "~/.kube/http-cache/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.kube/config",
+          "format": "yaml",
+          "match": {
+            "key_path": [
+              "current-context"
+            ]
+          }
+        }
+      ],
+      "secret_paths": [
+        {
+          "file": "~/.kube/config",
+          "format": "yaml",
+          "match": {
+            "key_path": [
+              "users.*.user.token",
+              "users.*.user.client-key-data",
+              "users.*.user.password"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "mise",
+      "name": "mise",
+      "homepage": "https://mise.jdx.dev",
+      "detect": [
+        "mise"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/mise/config.toml",
+        "~/.config/mise/conf.d/",
+        "~/.tool-versions"
+      ],
+      "exclude": [
+        "~/.local/share/mise/",
+        "~/.cache/mise/",
+        "~/.local/state/mise/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "neovim",
+      "name": "Neovim",
+      "homepage": "https://neovim.io",
+      "detect": [
+        "nvim"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/nvim/",
+        "%LOCALAPPDATA%/nvim/"
+      ],
+      "exclude": [
+        "~/.config/nvim/.git/",
+        "~/.config/nvim/spell/",
+        "~/.config/nvim/plugin/packer_compiled.lua",
+        "~/.local/share/nvim/",
+        "~/.local/state/nvim/",
+        "~/.cache/nvim/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "npm",
+      "name": "npm",
+      "homepage": "https://docs.npmjs.com/cli/v10/configuring-npm/npmrc",
+      "detect": [
+        "npm",
+        "npx"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.npmrc"
+      ],
+      "exclude": [
+        "~/.npm/_cacache/",
+        "~/.npm/_logs/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.npmrc",
+          "match": {
+            "prefix": [
+              "prefix=",
+              "cache="
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": [
+        {
+          "file": "~/.npmrc",
+          "match": {
+            "prefix": [
+              "//"
+            ]
+          },
+          "format": null
+        }
+      ]
+    },
+    {
+      "id": "omp",
+      "name": "omp",
+      "homepage": "https://omp.sh",
+      "detect": [
+        "omp"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.omp/agent/config.yml",
+        "~/.omp/agent/extensions/"
+      ],
+      "exclude": [
+        "~/.omp/agent/sessions/",
+        "~/.omp/agent/terminal-sessions/",
+        "~/.omp/agent/agent.db",
+        "~/.omp/agent/agent.db-shm",
+        "~/.omp/agent/agent.db-wal",
+        "~/.omp/agent/history.db",
+        "~/.omp/agent/history.db-shm",
+        "~/.omp/agent/history.db-wal",
+        "~/.omp/agent/models.db",
+        "~/.omp/agent/models.db-shm",
+        "~/.omp/agent/models.db-wal",
+        "~/.omp/logs/",
+        "~/.omp/natives/",
+        "~/.omp/gpu_cache.json"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "homepage": "https://opencode.ai/docs/config/",
+      "detect": [
+        "opencode"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/opencode/opencode.json",
+        "~/.config/opencode/AGENTS.md",
+        "~/.config/opencode/plugins/",
+        "~/.config/opencode/commands/",
+        "~/.config/opencode/themes/",
+        "~/.config/opencode/skills/"
+      ],
+      "exclude": [
+        "~/.config/opencode/node_modules/",
+        "~/.config/opencode/bun.lock",
+        "~/.config/opencode/package-lock.json",
+        "~/.config/opencode/tui.json",
+        "~/.config/opencode/opencode.json.tui-migration.bak",
+        "~/.local/share/opencode/log/",
+        "~/.local/share/opencode/storage/",
+        "~/.local/share/opencode/cache/"
+      ],
+      "secret": [
+        "~/.local/share/opencode/auth.json"
+      ],
+      "side_effect": true,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "pi",
+      "name": "pi",
+      "homepage": "https://pi.dev",
+      "detect": [
+        "pi"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.pi/agent/settings.json",
+        "~/.pi/agent/extensions/"
+      ],
+      "exclude": [
+        "~/.pi/agent/sessions/",
+        "~/.pi/agent/logs/",
+        "~/.pi/agent/cache/"
+      ],
+      "secret": [
+        "~/.pi/agent/auth.json"
+      ],
+      "side_effect": true,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "pip",
+      "name": "pip",
+      "homepage": "https://pip.pypa.io/en/stable/topics/configuration/",
+      "detect": [
+        "pip",
+        "pip3"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/pip/pip.conf",
+        "~/.pip/pip.conf",
+        "~/Library/Application Support/pip/pip.conf",
+        "%APPDATA%/pip/pip.ini"
+      ],
+      "exclude": [
+        "~/.cache/pip/",
+        "~/Library/Caches/pip/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.config/pip/pip.conf",
+          "match": {
+            "prefix": [
+              "cache-dir"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "reasonix",
+      "name": "Reasonix",
+      "homepage": "https://reasonix.io",
+      "detect": [
+        "reasonix"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.reasonix/settings.json",
+        "~/.reasonix/config.toml"
+      ],
+      "exclude": [
+        "~/.reasonix/projects/",
+        "~/.reasonix/logs/",
+        "~/.reasonix/state/",
+        "~/.reasonix/stats/",
+        "~/.reasonix/cli-telemetry-install-id",
+        "~/.reasonix/cli-telemetry-pending",
+        "~/.reasonix/cli-telemetry-ping-*"
+      ],
+      "secret": [
+        "~/.reasonix/.env"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.reasonix/settings.json",
+          "match": {
+            "key_path": [
+              "hooks.*.*.command"
+            ]
+          },
+          "format": "json"
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "ssh",
+      "name": "OpenSSH",
+      "homepage": "https://www.openssh.com",
+      "detect": [
+        "ssh"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.ssh/config",
+        "~/.ssh/config.d/"
+      ],
+      "exclude": [
+        "~/.ssh/known_hosts",
+        "~/.ssh/known_hosts.old",
+        "~/.ssh/authorized_keys"
+      ],
+      "secret": [
+        "~/.ssh/id_*",
+        "~/.ssh/*.pem",
+        "~/.ssh/*.key"
+      ],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.ssh/config",
+          "match": {
+            "prefix": [
+              "IdentityFile",
+              "IdentityAgent",
+              "ControlPath",
+              "UserKnownHostsFile"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "starship",
+      "name": "Starship",
+      "homepage": "https://starship.rs",
+      "detect": [
+        "starship"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.config/starship.toml"
+      ],
+      "exclude": [
+        "~/.cache/starship/"
+      ],
+      "secret": [],
+      "side_effect": false,
+      "machine_lines": [],
+      "secret_paths": []
+    },
+    {
+      "id": "tmux",
+      "name": "tmux",
+      "homepage": "https://github.com/tmux/tmux/wiki",
+      "detect": [
+        "tmux"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "paths": [
+        "~/.tmux.conf",
+        "~/.config/tmux/"
+      ],
+      "exclude": [
+        "~/.tmux/plugins/",
+        "~/.config/tmux/plugins/",
+        "~/.config/tmux/resurrect/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.tmux.conf",
+          "match": {
+            "prefix": [
+              "set -g default-shell",
+              "set -g default-command"
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "vim",
+      "name": "Vim",
+      "homepage": "https://www.vim.org",
+      "detect": [
+        "vim"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "paths": [
+        "~/.vimrc",
+        "~/.vim/",
+        "~/.config/vim/"
+      ],
+      "exclude": [
+        "~/.viminfo",
+        "~/.vim/pack/",
+        "~/.vim/plugged/",
+        "~/.vim/bundle/",
+        "~/.vim/.netrwhist",
+        "~/.vim/swap/",
+        "~/.vim/undo/",
+        "~/.vim/backup/",
+        "~/.vim/view/"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.vimrc",
+          "match": {
+            "prefix": [
+              "set directory=",
+              "set backupdir=",
+              "set undodir="
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    },
+    {
+      "id": "zsh",
+      "name": "Zsh",
+      "homepage": "https://www.zsh.org",
+      "detect": [
+        "zsh"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "paths": [
+        "~/.zshenv",
+        "~/.zprofile",
+        "~/.zshrc",
+        "~/.zlogin",
+        "~/.zlogout",
+        "~/.config/zsh/"
+      ],
+      "exclude": [
+        "~/.zsh_history",
+        "~/.zsh_sessions/",
+        "~/.zcompdump*",
+        "~/.config/zsh/.zsh_history",
+        "~/.config/zsh/.zcompdump*"
+      ],
+      "secret": [],
+      "side_effect": true,
+      "machine_lines": [
+        {
+          "file": "~/.zshrc",
+          "match": {
+            "prefix": [
+              "export PATH=",
+              "export HOMEBREW_PREFIX=",
+              "export NVM_DIR=",
+              "export JAVA_HOME="
+            ]
+          },
+          "format": null
+        },
+        {
+          "file": "~/.zshenv",
+          "match": {
+            "prefix": [
+              "export PATH=",
+              "export ZDOTDIR="
+            ]
+          },
+          "format": null
+        }
+      ],
+      "secret_paths": []
+    }
+  ]
+}

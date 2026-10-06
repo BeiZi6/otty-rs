@@ -1,0 +1,11 @@
+─
+# `mode` is "light" or "dark". When omitted, Otty infers it from the
+# terminal background luminance.
+
+[meta]
+name        = "Nord"
+author      = "arcticicestudio"
+mode        = "dark"
+description = "An arctic, north-bluish color palette."
+
+# 

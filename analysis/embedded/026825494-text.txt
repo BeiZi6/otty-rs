@@ -1,0 +1,4 @@
+— the user's command executed a second time, in the probe connection,
+        # with a stray argument glued on.
+        #
+        # Where the connection arguments end is a getopt(3) question 

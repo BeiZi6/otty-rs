@@ -1,0 +1,22 @@
+— so
+# eval-splitting it into a pure string helper lands the foreign command in
+# $3 unmangled. The command substitution around `trap -p DEBUG` reports
+# the parent shell's trap (POSIX special case; bash 3.2 honors it at top
+# level).
+__otty_extract_trap() { printf '%s' "$3"; }
+__otty_rearm='__otty_trap_cur="$(trap -p DEBUG)"
+case "$__otty_trap_cur" in
+*__otty_debug_trap*) ;;
+"") trap __otty_debug_trap DEBUG ;;
+*)
+    __otty_trap_foreign="$(eval "__otty_extract_trap $__otty_trap_cur")"
+    if [ -n "$__otty_trap_foreign" ]; then
+        trap "$__otty_trap_foreign
+__otty_debug_trap" DEBUG
+    else
+        trap __otty_debug_trap DEBUG
+    fi
+    ;;
+esac'
+
+# 

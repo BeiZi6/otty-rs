@@ -1,0 +1,4 @@
+INSERT INTO help_completions (command, result, status, probed_at)
+VALUES (?, ?, ?, ?)
+ON CONFLICT(command) DO UPDATE SET result=excluded.result,
+    status=excluded.status, probed_at=excluded.probed_at

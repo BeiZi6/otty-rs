@@ -1,0 +1,11 @@
+─
+  function wirePills() {
+    document.querySelectorAll(".pill").forEach(function (pill) {
+      pill.addEventListener("click", function () {
+        post({ type: "open-attachment", src: pill.getAttribute("data-src"),
+               isData: pill.getAttribute("data-data") === "1" });
+      });
+    });
+  }
+
+  // 

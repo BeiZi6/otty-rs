@@ -1,0 +1,39 @@
+— lets [window].material show through. Row text
+# and hovers still use the regular theme tokens.
+# border-right = "none" hides the 1px NSSplitView hairline divider
+# between sidebar and the card so the card appears to float freely
+# over the frosted window.
+
+[sidebar]
+border-right = "none"
+background = "#ffffff00"
+material = "glass"
+padding-right = 0.0
+
+[titlebar]
+foreground = "#52525B"
+
+[tab]
+radius      = 6
+foreground  = "#52525B"
+font-weight = 400
+
+[tab.active]
+background  = "rgba(255,255,255,0.9)"
+foreground  = "#18181B"
+shadow      = "0 1px 2px rgba(0,0,0,0.05)"
+font-weight = 700
+border = "1px solid #e5e5e5"
+
+[tab.hover]
+background = "rgba(0,0,0,0.04)"
+
+# The terminal viewport becomes a floating rounded card.
+#   - margin insets it from the window edges. The renderer reserves the
+#     titlebar height intrinsically so `top = 0` already lands flush with
+#     the titlebar bottom; left/right/bottom leave the sidebar and window
+#     edge visible so vibrancy wraps around the card.
+#   - padding shrinks the default 8pt grid gutter so the card hugs
+#     the text more tightly (the outer margin already provides
+#     breathing room)
+#   - radius + shadow + border 

@@ -1,0 +1,14 @@
+— sanitized and still deliveredotty_agent_history::ffiImage[Imagesource:file_pathpatterncommandprompt, image/pngshcmd""zshkshwsl''agentagyclaude codecursor clikimi codegrok buildcodebuddy clicodebuddy codegoogle antigravity cliantigravity cligithub copilot cligithub copilotremote-agents.meta.jsonisUltraplanUltraPlanplansCODEX_HOMEtokenstotalmodelIDContextwd_usage.recordusageScopeusageinputOtherinputCacheReadinputCacheCreationoutputmodeltoken_counttotal_token_usagetotal_tokensmodel_context_windowrequestIdinput_tokenscache_creation_input_tokenscache_read_input_tokensoutput_tokensquotacontextsessionTokenscostUsdlabelpercentKIMI_CODE_HOME.kimi-codetotalTokens<div id="sticky" class="sticky" hidden></div>
+<main id="transcript" class="transcript">
+<div class="empty">No transcript content.</div>
+// Agent-history transcript page script. Self-contained; no external deps.
+// Folding is native <details>. This wires: local-time formatting, user-card
+// truncation, the sticky current-user banner, transcript-wide find, the vim
+// pager, and the C++ bridge (window.chrome.webview).
+(function () {
+  "use strict";
+
+  var bridge = (window.chrome && window.chrome.webview) || null;
+  function post(msg) { try { if (bridge) bridge.postMessage(JSON.stringify(msg)); } catch (e) {} }
+
+  // 

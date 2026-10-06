@@ -1,0 +1,9 @@
+— the user's real history file is not touched, and repeated
+# restarts cannot accumulate copies.
+#
+# Why not point HISTFILE at the file instead: on macOS `/etc/zshrc` assigns
+# HISTFILE unconditionally, after our .zshenv and before the user's .zshrc, so
+# steering the read that way is not possible.
+#
+# WHEN this runs decides everything, because zsh reads HISTFILE only after the
+# whole startup chain 

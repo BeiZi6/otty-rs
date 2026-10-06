@@ -1,0 +1,19 @@
+→ Kitty export
+# Generated from your Otty config.toml
+# https://docs.otty.sh/customization/import-export
+
+#383838#60CDFFAcrylic Darkacrylic-dark[meta]
+name        = "Acrylic Dark"
+author      = "Otty"
+mode        = "dark"
+description = "Fluent dark chrome on one continuous Windows 11 acrylic surface, with the terminal as a rounded layer card."
+
+# Colors are the Windows 11 / WinUI 2.6+ Fluent tokens where one exists:
+#   background      SolidBackgroundFillColorBase   #202020
+#   foreground      TextFillColorPrimary           #FFFFFF
+#   ANSI 7          TextFillColorSecondary         #C5C5C5
+#   ANSI 8          TextFillColorDisabled          #767676
+#   ANSI 15         Campbell brightWhite           #F2F2F2
+#   accent / cursor SystemAccentColorLight2        #60CDFF
+# The ANSI hues keep the Campbell (Windows console) identity but are lifted
+# for readability on #202020 

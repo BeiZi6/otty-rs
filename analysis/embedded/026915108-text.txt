@@ -1,0 +1,9 @@
+— no ControlMaster reuse for remote git/SFTP.
+        set -l _otty_meta_file "$_otty_tmpdir/otty-ssh-shell-$fish_pid.meta"
+        # Declared at function scope, not inside the `if` below: fish's `set -l`
+        # is block-scoped, so a declaration in that block would be invisible to
+        # the cleanup at the end of this function. ($_otty_ctl_path is set by
+        # the `ssh -G` loop above, which is already at function scope.)
+        set -l _otty_ctl_dir ""
+
+        # 

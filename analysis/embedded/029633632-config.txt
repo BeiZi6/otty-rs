@@ -1,0 +1,19 @@
+─
+# The rounded card wrapping the terminal viewport. `margin` is an
+# extra inset on top of the intrinsic titlebar reserve, so margin=0
+# lands flush with the titlebar bottom. `padding` overrides the
+# built-in 8pt grid gutter.
+
+[container]
+background = "#2E3440"
+radius     = 0
+margin     = 0
+padding    = 8
+
+# [container.tabs-top]
+# margin = 12
+#
+# [container.tabs-bottom]
+# margin = 12
+
+# 

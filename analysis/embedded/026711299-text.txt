@@ -1,0 +1,141 @@
+Ájournal_modeWALSELECT 1 FROM pragma_table_info(?1) WHERE name = ?2SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'recent_closed'CHECKALTER TABLE recent_closed RENAME TO recent_closed_old;
+         CREATE TABLE recent_closed (
+             id INTEGER PRIMARY KEY AUTOINCREMENT,
+             type TEXT NOT NULL,
+             closed_at REAL NOT NULL,
+             ref_ids TEXT NOT NULL
+         );
+         INSERT INTO recent_closed (id, type, closed_at, ref_ids)
+             SELECT id, type, closed_at, ref_ids FROM recent_closed_old;
+         DROP TABLE recent_closed_old;BEGIN IMMEDIATECREATE TABLE IF NOT EXISTS pane (
+        id TEXT PRIMARY KEY,
+        tab_id TEXT NOT NULL,
+        cwd TEXT NOT NULL DEFAULT '',
+        program_type TEXT,
+        resume_key TEXT
+    )CREATE TABLE IF NOT EXISTS tab (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL DEFAULT '',
+        cwd TEXT NOT NULL DEFAULT '',
+        pane_tree TEXT,
+        focused_pane TEXT,
+        created_at REAL NOT NULL,
+        updated_at REAL NOT NULL,
+        window_id TEXT,
+        program_type TEXT,
+        resume_key TEXT,
+        manual_project_group TEXT,
+        title_mode TEXT NOT NULL DEFAULT 'auto',
+        title_prefix TEXT NOT NULL DEFAULT ''
+    )CREATE TABLE IF NOT EXISTS window (
+        id TEXT PRIMARY KEY,
+        active_tab TEXT,
+        tab_ids TEXT NOT NULL DEFAULT '[]',
+        frame_x REAL NOT NULL DEFAULT 0,
+        frame_y REAL NOT NULL DEFAULT 0,
+        frame_w REAL NOT NULL DEFAULT 800,
+        frame_h REAL NOT NULL DEFAULT 600,
+        process_id INTEGER NOT NULL DEFAULT 0,
+        sidebar_dividers TEXT,
+        group_mode INTEGER NOT NULL DEFAULT 0,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        collapsed_groups TEXT NOT NULL DEFAULT '[]',
+        sidebar_visible INTEGER NOT NULL DEFAULT 1,
+        window_layout INTEGER NOT NULL DEFAULT 0,
+        maximized INTEGER NOT NULL DEFAULT 0
+    )CREATE TABLE IF NOT EXISTS app_state (
+        slot TEXT PRIMARY KEY CHECK (slot IN ('last', 'cur')),
+        process_id INTEGER NOT NULL,
+        clean_exit INTEGER NOT NULL DEFAULT 0,
+        window_ids TEXT NOT NULL DEFAULT '[]'
+    )CREATE TABLE IF NOT EXISTS recent_closed (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT NOT NULL,
+        closed_at REAL NOT NULL,
+        ref_ids TEXT NOT NULL
+    )CREATE TABLE IF NOT EXISTS recent_session (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        cwd TEXT NOT NULL,
+        position INTEGER NOT NULL,
+        icon TEXT NOT NULL DEFAULT '',
+        icon_color TEXT NOT NULL DEFAULT '',
+        profile_id TEXT NOT NULL DEFAULT ''
+    )CREATE TABLE IF NOT EXISTS recent_dir (
+        dir TEXT PRIMARY KEY,
+        position INTEGER NOT NULL
+    )CREATE TABLE IF NOT EXISTS dir_frecency (
+        path TEXT PRIMARY KEY,
+        score REAL NOT NULL,
+        last_seen REAL NOT NULL,
+        ignored INTEGER NOT NULL DEFAULT 0
+    )CREATE INDEX IF NOT EXISTS idx_dir_frecency_score
+        ON dir_frecency(score DESC) WHERE ignored = 0CREATE TABLE IF NOT EXISTS meta (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    )CREATE TABLE IF NOT EXISTS recipe (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        scope TEXT NOT NULL,
+        content TEXT NOT NULL,
+        definition TEXT NOT NULL,
+        shortcut TEXT,
+        created_at REAL NOT NULL,
+        updated_at REAL NOT NULL,
+        tab_count INTEGER NOT NULL DEFAULT 0
+    )CREATE TABLE IF NOT EXISTS file_pane (
+        window_id TEXT PRIMARY KEY,
+        path TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        updated_at REAL NOT NULL
+    )CREATE TABLE IF NOT EXISTS prompt_queue (
+        pane_id TEXT PRIMARY KEY,
+        items TEXT NOT NULL
+    )CREATE TABLE IF NOT EXISTS command_history (
+        cmd TEXT PRIMARY KEY,
+        position INTEGER NOT NULL
+    )CREATE TABLE IF NOT EXISTS app_kv (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    )CREATE TABLE IF NOT EXISTS anywhere_pair (
+        pair_id        TEXT PRIMARY KEY,
+        peer_device_id TEXT NOT NULL,
+        peer_name      TEXT NOT NULL,
+        peer_platform  TEXT NOT NULL,
+        peer_sign_pk   TEXT NOT NULL,
+        peer_kx_pk     TEXT NOT NULL,
+        permission     TEXT NOT NULL DEFAULT 'view',
+        notify         INTEGER NOT NULL DEFAULT 1,
+        direct_addrs   TEXT,
+        created_at     INTEGER NOT NULL,
+        last_seen_at   INTEGER
+    )CREATE TABLE IF NOT EXISTS anywhere_share_pane (
+        pane_id TEXT PRIMARY KEY
+    )CREATE TABLE IF NOT EXISTS remote_host_meta (
+        alias              TEXT PRIMARY KEY,
+        source             TEXT NOT NULL,
+        icon               TEXT, color TEXT, tags TEXT, note TEXT,
+        last_used_at       INTEGER,
+        helper_state       TEXT NOT NULL DEFAULT 'unknown',
+        helper_version     TEXT,
+        helper_declined_at INTEGER,
+        last_error         TEXT,
+        last_error_at      INTEGER,
+        hidden             INTEGER NOT NULL DEFAULT 0
+    )windowsidebar_dividers TEXTgroup_mode INTEGER NOT NULL DEFAULT 0sort_order INTEGER NOT NULL DEFAULT 0collapsed_groups TEXT NOT NULL DEFAULT '[]'sidebar_visible INTEGER NOT NULL DEFAULT 1tabprogram_type TEXTresume_key TEXTmanual_project_group TEXTtitle_mode TEXT NOT NULL DEFAULT 'auto'title_prefix TEXT NOT NULL DEFAULT ''cwd TEXT NOT NULL DEFAULT ''closed_at REALclosed_label TEXTshell TEXTcontent_type TEXT NOT NULL DEFAULT 'terminal'view_mode TEXTscroll_y REALselection_start INTEGERselection_length INTEGERcols INTEGERrows INTEGERrunning_command TEXTextra TEXTapp_stateprocess_start_time REALrecent_closedtab_index INTEGERwindow_id TEXTrecipetab_count INTEGER NOT NULL DEFAULT 0badge TEXT NOT NULL DEFAULT ''unread INTEGER NOT NULL DEFAULT 0awaiting_input INTEGER NOT NULL DEFAULT 0window_layout INTEGER NOT NULL DEFAULT 0maximized INTEGER NOT NULL DEFAULT 0recent_sessionicon TEXT NOT NULL DEFAULT ''icon_color TEXT NOT NULL DEFAULT ''profile_id TEXT NOT NULL DEFAULT ''hidden INTEGER NOT NULL DEFAULT 0anywhere_pairkind TEXT NOT NULL DEFAULT 'pair'UPDATE recipe
+         SET tab_count = (LENGTH(definition) - LENGTH(REPLACE(definition, '[[window.tabs]]', ''))) / 15
+         WHERE tab_count = 0column definition starts with a nameprogram_typeagent_typeUPDATE tab SET program_type = agent_typeresume_keyUPDATE tab SET resume_key = agent_session_idUPDATE pane SET program_type = agent_typeUPDATE pane SET resume_key = agent_session_idclosed_atwindow_idUPDATE tab SET closed_at = updated_at
+         WHERE window_id IS NULL AND closed_at IS NULLpair_id, peer_device_id, peer_name, peer_platform, peer_sign_pk, peer_kx_pk, permission, notify, direct_addrs, created_at, last_seen_at, kindINSERT INTO remote_host_meta (alias, source, last_used_at)
+             VALUES (?1, ?2, ?3)
+         ON CONFLICT(alias) DO UPDATE SET last_used_at = excluded.last_used_atinstallednot-installedunsupportedDELETE FROM anywhere_pair WHERE pair_id = ?1guestaccountalias, source, icon, color, tags, note, last_used_at, helper_state, helper_version, helper_declined_at, last_error, last_error_at, hiddenSELECT 1 FROM anywhere_share_pane WHERE pane_id = ?1unknownINSERT INTO remote_host_meta (alias, source, last_error, last_error_at)
+             VALUES (?1, ?2, ?3, ?4)
+         ON CONFLICT(alias) DO UPDATE SET
+             last_error = excluded.last_error,
+             last_error_at = excluded.last_error_atDELETE FROM anywhere_share_pane WHERE pane_id = ?1INSERT OR IGNORE INTO anywhere_share_pane (pane_id) VALUES (?1)INSERT INTO remote_host_meta (alias, source, hidden)
+             VALUES (?1, ?2, ?3)
+         ON CONFLICT(alias) DO UPDATE SET hidden = excluded.hiddenUPDATE anywhere_pair SET notify = ?2 WHERE pair_id = ?1DELETE FROM remote_host_meta WHERE alias = ?1SELECT pane_id FROM anywhere_share_pane ORDER BY pane_idINSERT INTO remote_host_meta (alias, source, helper_state, helper_version, helper_declined_at)
+             VALUES (?1, ?2, ?3, ?4, ?5)
+         ON CONFLICT(alias) DO UPDATE SET
+             helper_state = excluded.helper_state,
+             helper_version = excluded.helper_version,
+             helper_declined_at = excluded.helper_declined_atDELETE FROM anywhere_share_paneUPDATE anywhere_pair SET last_seen_at = ?2 WHERE pair_id = ?1SELECT alias FROM remote_host_meta WHERE hidden != 0UPDATE anywhere_pair SET permission = ?2 WHERE pair_id = ?1UPDATE anywhere_pair SET direct_addrs = ?2, last_seen_at = ?3 WHERE pair_id = ?1SELECT path, score, last_seen FROM dir_frecency WHERE ignored = 0:/foreign_keysOFF()description() is deprecated; use Displaymid > lencalled `Result::unwrap_err()` on an `Ok` valueIntegerSqliteFailureSqliteSingleThreadedModeFromSqlConversionFailureIntegralValueOutOfRangeUtf8ErrorInvalidParameterNameInvalidPathExecuteReturnedResultsQueryReturnedNoRowsInvalidColumnIndexInvalidColumnNameInvalidColumnTypeStatementChangedRowsToSqlConversionFailureInvalidQueryUnwindingPanicMultipleStatementInvalidParameterCountSqlInputErrorerrormsgsqloffsetInvalidDatabaseIndexvalid_up_toerror_lenErrorextended_codeInternalMalfunctionDatabaseBusyDatabaseLockedOutOfMemoryOperationInterruptedSystemIoFailureDatabaseCorruptCannotOpenFileLockingProtocolFailedSchemaChangedTooBigConstraintViolationTypeMismatchApiMisuseNoLargeFileSupportAuthorizationForStatementDeniedParameterOutOfRangeNotADatabaseUnknownCOMMITTransaction dropped unexpectedly.Null pointer from sqlite3_column_name: Out of memory?Column out of boundsInvalid UTF-8 sequence in column name

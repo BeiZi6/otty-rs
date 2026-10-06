@@ -1,0 +1,11 @@
+— Otty Theme
+#
+# A reference dark theme that lists the common keys you can tune. Each
+# section is annotated so you can copy this file to
+# ~/.config/otty/themes/<name>.toml and use it as a starting point for
+# your own theme. All keys except `[meta]` and `[terminal]` are optional;
+# the values below match the defaults the app would derive on its own
+# when each key is omitted. See docs/spec/THEME_SPEC.md for the full
+# reference.
+
+# 

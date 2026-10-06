@@ -1,0 +1,25 @@
+
+        kwstrnumcomtypfnvaroppunpp#1a1a1a#e0e0e0#ffffff#0d1117#58a6ff#c586c0#ce9178#b5cea8#7c7c7c#4ec9b0#dcdcaa#d4d4d4#bababa#222222#f5f5f5#0366d6#a626a4#50a14f#986801#a0a1a7#4078f2#383a42max(24px, calc(100vh - 1.55em))max(24px, calc(50vh - 1.55em))default-src 'none'; img-src file: data: blob: https: http:; media-src file: data: blob:; font-src file: data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'<script>
+(function() {
+  document.addEventListener('click', function(e) {
+    var n = e.target;
+    while (n && n !== document.body) {
+      if (n.tagName === 'A') {
+        var href = n.getAttribute('href') || '';
+        if (href.length > 1 && href.charAt(0) === '#') {
+          e.preventDefault();
+          try {
+            var id = decodeURIComponent(href.substring(1));
+            var el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } catch (_) {}
+          return;
+        }
+      }
+      n = n.parentNode;
+    }
+  }, true);
+})();
+</script>g<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="

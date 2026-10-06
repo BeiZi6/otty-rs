@@ -1,0 +1,23 @@
+— dyld stats "/" while resolving paths.
+  (literal "/")
+  ;; Devices commonly opened by CLI tools.
+  (literal "/dev/null")
+  (literal "/dev/zero")
+  (literal "/dev/urandom")
+  (literal "/dev/random")
+  (literal "/dev/tty")
+  (subpath "/dev/fd"))
+
+;; --- File writes (severely restricted) ---
+;; Tools constantly redirect to /dev/null O_RDWR; denying writes
+;; there breaks ssh and many others ("Couldn't open /dev/null").
+;; /dev/stdout and /dev/stderr are captured pipes from our parent.
+(allow file-write*
+  (literal "/dev/null")
+  (literal "/dev/stdout")
+  (literal "/dev/stderr")
+  (literal "/dev/tty"))
+
+;; --- Misc system services needed for process startup ---
+(allow sysctl-read)
+(allow signal (target self))

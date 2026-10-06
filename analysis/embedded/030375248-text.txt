@@ -1,0 +1,4 @@
+<html><body style="font-family:system-ui;padding:40px;color:#aaa;background:#1e1e1e">
+<h2>Settings UI not built</h2>
+<p>Run <code>cd packages/settings-ui && npm install && npm run build</code></p>
+</body></html>

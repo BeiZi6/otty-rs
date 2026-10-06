@@ -1,0 +1,13 @@
+— never shadow a standard
+                    #      name like xterm-256color with our copy.
+                    #   2. Otherwise install via `tic`, then verify the fresh
+                    #      entry actually has `clear=`; a truncated transfer can
+                    #      compile a stub that lacks clear/cup and breaks tput &
+                    #      tmux. If incomplete, remove it and fail so we fall back
+                    #      to the system database instead of a broken shadow.
+                    # Deliberately NOT sharing $_otty_ctl_path here. This probe
+                    # used to run with ControlMaster=yes and hand its master to
+                    # the interactive ssh below, saving one auth round-trip. But
+                    # that demoted the interactive connection to a mux *client*,
+                    # and a client's interactive session can hang with no output
+                    # at all 

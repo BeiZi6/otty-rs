@@ -1,0 +1,7 @@
+— both conditions are unchanged across the call, so the pair is
+        # always emitted together or not at all.
+        __otty_osc7 "file://${HOST}${PWD}"
+        return $_ret
+    }
+fi
+otty-integration.bash# Otty bash integration 

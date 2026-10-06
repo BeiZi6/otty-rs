@@ -1,0 +1,4 @@
+… )`, a pipeline segment or a
+# background job. None of those move the interactive shell, and the first one's
+# stdout is the pipe the parent reads back as a value.
+# -t 1 

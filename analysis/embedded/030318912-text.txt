@@ -1,0 +1,15 @@
+
+
+exec >>"$LOG" 2>&1
+echo "--- helper start $(date) ---"
+echo "wait pid: $WAIT_PID"
+echo "old: $OLD"
+echo "new: $NEW"
+
+# Wait up to 30s for the main app to exit cleanly.
+for i in $(seq 1 150); do
+  if [ "$WAIT_PID" = "0" ]; then break; fi
+  if ! kill -0 "$WAIT_PID" 2>/dev/null; then break; fi
+  sleep 0.2
+done
+# If it's still alive after that, force it 

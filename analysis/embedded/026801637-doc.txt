@@ -1,0 +1,5 @@
+→ fall through to `command <name>` so PATH lookup
+# behaves exactly as if the wrapper weren't there (system `watch` on Linux
+# still works). By default, names already defined as user functions/aliases
+# are left untouched; the `allow_overwrite` sentinel (evaluated at shell
+# init 

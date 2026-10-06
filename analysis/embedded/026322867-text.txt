@@ -1,0 +1,22 @@
+─
+  window.__otty_scrollToItem = function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    // Expand a collapsed turn so the anchor is visible.
+    var fold = el.querySelector(":scope > details.fold");
+    if (fold) fold.open = true;
+    el.scrollIntoView({ block: "start", behavior: "auto" });
+    el.classList.add("flash");
+    setTimeout(function () { el.classList.remove("flash"); }, 900);
+  };
+  window.__otty_find = function (q) { openFind(); findInput.value = q || ""; runFind(findInput.value); };
+  window.__otty_setVim = function (on) { window.__otty_vim = !!on; };
+  // Resume only means something while the session is still live, so the host
+  // re-asserts this on every load (the button ships hidden).
+  window.__otty_setResume = function (on) { if (resumeBtn) resumeBtn.hidden = !on; };
+  window.__otty_restoreScroll = function (ratio) {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    if (max > 0) window.scrollTo({ top: ratio * max });
+  };
+
+  // 

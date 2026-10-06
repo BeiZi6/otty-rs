@@ -1,0 +1,12 @@
+— PATH is
+# captured after config.fish has finished setting it up.
+function __otty_dump_path --on-event fish_prompt
+    set -q __otty_path_dumped; and return
+    set -g __otty_path_dumped 1
+    set -l tmpdir $TMPDIR
+    test -n "$tmpdir"; or set tmpdir /tmp
+    set -l dump "$tmpdir/otty-path-"(id -u)
+    string join ':' $PATH >$dump 2>/dev/null
+end
+
+# 

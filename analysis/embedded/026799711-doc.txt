@@ -1,0 +1,8 @@
+— chpwd hooks also run in FORKED subshells, and a command
+# substitution is a forked subshell whose stdout is the pipe the parent reads
+# back as a value. So `r=$(cd sub && pwd)` captured this escape into $r,
+# yielding a string that prints identically to the right path but fails every
+# file test. Only code sourced into the interactive shell hit it; a script runs
+# in a child with no hooks installed, which is why it looked terminal-specific.
+# Suppressing is also the semantically correct answer rather than a workaround:
+# a `cd` inside `$( )`, `( 

@@ -1,0 +1,9 @@
+— using `==` with a
+            # ksh-style `*(...)` pattern here would silently reject every
+            # alias under emulate.
+            [[ "$name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+            [[ "$cmd"  =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+            __otty_should_wrap "$name" || continue
+            # jump needs the local cd: `command otty jump` would re-introduce
+            # the visible `cd '<path>'` echo + spurious shell-history entry.
+            # Call __otty_jump, not the bare `jump` wrapper 

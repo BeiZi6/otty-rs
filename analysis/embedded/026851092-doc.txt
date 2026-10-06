@@ -1,0 +1,5 @@
+…)`, and an unguarded
+# write there wraps the captured output in OSC 7. Returns non-zero when it
+# suppresses, so callers can tell "reported" from "skipped".
+#
+# BASH_SUBSHELL 

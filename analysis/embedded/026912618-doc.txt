@@ -1,0 +1,25 @@
+— otherwise a host with no saved password would go straight to
+        # "Permission denied" instead of prompting. The list is a plain file
+        # (one alias per line, written by the app) precisely so this check costs
+        # a read and not a process.
+        #
+        # Decided before the terminfo probe, which opens a connection of its own
+        # and would otherwise spend a failed password attempt on every ssh to
+        # such a host. The variable is declared out here because fish scopes
+        # `set -l` to the enclosing BLOCK, not to the function; the exports ride
+        # on each ssh command line below for the same reason.
+        set -l _otty_askpass_env
+        if test -n "$OTTY_ASKPASS_HOSTS" -a -n "$_otty_alias" -a -r "$OTTY_ASKPASS_HOSTS"
+            set -l _otty_askpass_bin (string replace -r '/[^/]*$' '' -- "$OTTY_ASKPASS_HOSTS")"/otty-askpass"
+            if test -x "$_otty_askpass_bin"; and contains -- "$_otty_alias" (command cat "$OTTY_ASKPASS_HOSTS" 2>/dev/null)
+                set _otty_askpass_env "SSH_ASKPASS=$_otty_askpass_bin" \
+                    "SSH_ASKPASS_REQUIRE=force" "OTTY_ASKPASS_ALIAS=$_otty_alias"
+            end
+        end
+
+        # A ControlPath is only a *name* until something creates the socket.
+        # `ssh -G` prints the configured path whether or not multiplexing is
+        # actually on, so a `ControlPath` in ssh_config with ControlMaster left
+        # at its default `no` looked exactly like a live master here: nothing
+        # was minted, and `socket=` below named a path that never comes into
+        # existence 

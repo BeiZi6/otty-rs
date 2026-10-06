@@ -1,0 +1,27 @@
+— appended to PS1 so it fires after prompt is rendered.
+__otty_install_ps1() {
+    if [[ "$PS1" != *'133;B'* ]]; then
+        PS1="${PS1}\[\e]133;B\a\]"
+    fi
+}
+
+__otty_debug_trap() {
+    # Only emit C for real commands, not PROMPT_COMMAND itself.
+    if [[ -n "$COMP_LINE" ]]; then
+        return
+    fi
+    if [[ "$BASH_COMMAND" == __otty_* ]]; then
+        return
+    fi
+    if [[ -z "$__otty_cmd_executed" ]]; then
+        printf '\e]133;C\a'
+        __otty_cmd_executed=1
+        # OSC 9;4 indeterminate progress for matched commands.
+        if __otty_progress_match "$BASH_COMMAND"; then
+            printf '\e]9;4;3\a'
+            __otty_progress_active=1
+        fi
+    fi
+}
+
+# 

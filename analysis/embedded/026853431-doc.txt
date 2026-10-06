@@ -1,0 +1,16 @@
+— restart the shell for the toggle to take
+# effect) opts into replacing them.
+__otty_should_wrap() {
+    if [[ -n "$OTTY_FLAGS_DIR" && -f "$OTTY_FLAGS_DIR/allow_overwrite" ]]; then
+        # An alias outranks a function at command lookup, so a leftover one
+        # would shadow the wrapper we are about to install. Drop it here so
+        # our wrapper actually wins.
+        alias "$1" >/dev/null 2>&1 && unalias "$1"
+        return 0
+    fi
+    declare -F "$1" >/dev/null 2>&1 && return 1
+    alias "$1" >/dev/null 2>&1 && return 1
+    return 0
+}
+
+# The wrappers below use the `function NAME { 

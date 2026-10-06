@@ -1,0 +1,35 @@
+— the same class of attack
+                # the host guards against when it vets the metadata file's
+                # ownership. Skipping multiplexing is the safe degradation:
+                # socket= is written empty and the host simply leaves
+                # controlSocket unset.
+                set _otty_ctl_dir (mktemp -d /tmp/otty-ssh.XXXXXX 2>/dev/null)
+                if test -n "$_otty_ctl_dir"
+                    set _otty_ctl_path "$_otty_ctl_dir/socket"
+                    set _otty_opts $_otty_opts \
+                        -o "ControlMaster=auto" \
+                        -o "ControlPath=$_otty_ctl_path" \
+                        -o "ControlPersist=60"
+                end
+            end
+
+            # Terminfo install (cached per user@host).
+            #
+            # Skipped entirely when the caller supplied a remote command: a
+            # probe there would open a second connection behind the back of a
+            # script that asked for exactly one, and terminfo only matters for a
+            # session that has a tty. TERM then stays at the xterm-256color
+            # default, which every system terminfo database already resolves.
+            set -l _otty_cache_dir "$_otty_tmpdir/otty-terminfo-cache"
+            command mkdir -p "$_otty_cache_dir" 2>/dev/null
+            set -l _otty_cache_file "$_otty_cache_dir/$_otty_target"
+
+            if test -f "$_otty_cache_file"
+                set _otty_term (set -q TERM; and echo $TERM; or echo "xterm-256color")
+            else if test $_otty_has_cmd -eq 0; and command -v infocmp >/dev/null 2>&1
+                set -l _otty_terminfo (infocmp -0 -x 2>/dev/null)
+
+                if test -n "$_otty_terminfo"
+                    # Remote command (TERM injected via the leading assignment):
+                    #   1. If the remote already resolves this TERM (system DB or
+                    #      a user entry), do nothing 

@@ -1,0 +1,72 @@
+…` are tokens this must not react to. Returns 0 = blocked.
+    __otty_ssh_blocks_bootstrap() {
+        local tok body ch skip=0
+        for tok in "$@"; do
+            if (( skip )); then
+                skip=0
+                continue
+            fi
+            case "$tok" in
+                # Everything after `--` is the destination (we are only called
+                # when there is no remote command), so the scan is done.
+                --) return 1 ;;
+                -?*) ;;
+                *) continue ;;
+            esac
+            body="${tok#-}"
+            while [[ -n "$body" ]]; do
+                ch="${body[1]}"
+                body="${body[2,-1]}"
+                case "$ch" in
+                    N|W|O|G|T|s) return 0 ;;
+                    # Value-taking (OpenSSH's own getopt string): the rest of
+                    # the token is its value, or the next token when there is
+                    # no rest.
+                    b|c|e|i|l|m|o|p|B|D|E|F|I|J|L|P|Q|R|S|w)
+                        [[ -z "$body" ]] && skip=1
+                        break ;;
+                esac
+            done
+        done
+        return 1
+    }
+
+    # Is $2 (the alias as typed) or $3 (user@hostname) a line of the file $1?
+    # One entry per line, written by the app; a missing or unreadable file
+    # means "no host qualifies", which is what a fresh install looks like.
+    __otty_ssh_host_listed() {
+        local file="$1" line
+        [[ -n "$file" && -r "$file" ]] || return 1
+        while IFS= read -r line; do
+            [[ -z "$line" ]] && continue
+            [[ -n "$2" && "$line" == "$2" ]] && return 0
+            [[ -n "$3" && "$line" == "$3" ]] && return 0
+        done < "$file"
+        return 1
+    }
+
+    # The remote login shell we have on record for this host, or nothing.
+    # `<config_dir>/remote-shells`, lines of `<host> <shell>`; the directory is
+    # taken from $OTTY_HELPER_HOSTS so a debug build reads its own config dir.
+    # Nothing is probed: asking the host would cost a connection and could
+    # raise an auth prompt, and "we do not know" is an answer this may give.
+    __otty_ssh_recorded_shell() {
+        local file="${OTTY_HELPER_HOSTS%/*}/remote-shells" host sh_name line
+        [[ -n "${OTTY_HELPER_HOSTS:-}" && -r "$file" ]] || return 0
+        while IFS=' ' read -r host sh_name; do
+            [[ -z "$host" || -z "$sh_name" ]] && continue
+            if [[ ( -n "$1" && "$host" == "$1" ) || ( -n "$2" && "$host" == "$2" ) ]]; then
+                builtin print -r -- "$sh_name"
+                return 0
+            fi
+        done < "$file"
+    }
+
+    ssh() {
+        local _otty_term="xterm-256color"
+        local -a _otty_opts=(
+            -o "SetEnv=COLORTERM=truecolor TERM_PROGRAM=otty"
+            -o "SendEnv=COLORTERM TERM_PROGRAM TERM_PROGRAM_VERSION"
+        )
+
+        # 

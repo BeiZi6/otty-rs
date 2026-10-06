@@ -1,0 +1,25 @@
+# Otty theme — Monokai Classic
+# The shipped Otty 1.5.4 theme text, comments and all. Sole deliberate deviation:
+# [token].font-ui = ["Styrene B", "Styrene A"] (appended here); the shipped build named the
+# platform UI stack there (Segoe UI / SF Pro / -apple-system / Inter).
+# Shipped palette repeats, do not "fix": 1:9, 2:10, 3:11, 4:12, 5:13, 6:14, 7:15.
+[meta]
+name = "Monokai Classic"
+mode = "dark"
+
+[terminal]
+foreground           = "#FDFFF1"
+background           = "#272822"
+cursor               = "#C0C1B5"
+cursor-text          = "#8D8E82"
+selection-foreground = "#FDFFF1"
+selection-background = "#57584F"
+palette = [
+    "#272822", "#F92672", "#A6E22E", "#E6DB74",
+    "#FD971F", "#AE81FF", "#66D9EF", "#FDFFF1",
+    "#6E7066", "#F92672", "#A6E22E", "#E6DB74",
+    "#FD971F", "#AE81FF", "#66D9EF", "#FDFFF1",
+]
+
+[token]
+font-ui = ["Styrene B", "Styrene A"]

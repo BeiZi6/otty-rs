@@ -1,0 +1,50 @@
+[package]
+name = "otty-ui"
+description = "The application shell: windows, tabs, panes, details panel and settings."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "otty-app"
+path = "src/main.rs"
+
+[dependencies]
+otty-core = { workspace = true }
+anyhow = { workspace = true }
+otty-config = { workspace = true }
+otty-term = { workspace = true }
+otty-pty = { workspace = true }
+otty-state = { workspace = true }
+otty-ipc = { workspace = true }
+otty-fonts = { workspace = true }
+otty-agent = { workspace = true }
+otty-autocomplete = { workspace = true }
+otty-ssh = { workspace = true }
+otty-render = { workspace = true }
+winit = { workspace = true }
+wgpu = { workspace = true }
+log = { workspace = true }
+fontdb = { workspace = true }
+thiserror = { workspace = true }
+pollster = { workspace = true }
+arboard = { workspace = true }
+rfd = { workspace = true }
+image = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+jiff = { workspace = true }
+notify = { workspace = true }
+crossbeam-channel = { workspace = true }
+which = { workspace = true }
+walkdir = { workspace = true }
+regex = { workspace = true }
+unicode-segmentation = { workspace = true }
+
+
+[dev-dependencies]
+tempfile = { workspace = true }

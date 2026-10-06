@@ -1,0 +1,43 @@
+─
+__otty_cmd_executed=""
+__otty_progress_active=""
+
+# Match command line against $OTTY_PROGRESS_COMMANDS (pipe-separated list of
+# whitespace-delimited prefixes, e.g. "git push").
+__otty_progress_match() {
+    emulate -L zsh
+    setopt sh_word_split
+    local cmd="$1"
+    [[ -z "$OTTY_PROGRESS_COMMANDS" ]] && return 1
+    # Strip leading `NAME=value` env assignments (must be followed by a space).
+    while [[ "$cmd" == [A-Za-z_]*=*' '* ]]; do
+        local first="${cmd%% *}"
+        [[ "$first" == *=* ]] || break
+        cmd="${cmd#* }"
+    done
+    local IFS='|'
+    local p
+    for p in $OTTY_PROGRESS_COMMANDS; do
+        [[ -z "$p" ]] && continue
+        if [[ "$cmd" == "$p" || "$cmd" == "$p "* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+__otty_precmd() {
+    local ret=$?
+    if [[ -n "$__otty_cmd_executed" ]]; then
+        builtin printf '\e]133;D;%d\a' "$ret"
+    fi
+    if [[ -n "$__otty_progress_active" ]]; then
+        if (( ret == 0 )); then
+            builtin printf '\e]9;4;5;0\a'
+        else
+            builtin printf '\e]9;4;2\a'
+        fi
+        __otty_progress_active=""
+    fi
+    # Stamp our per-session token on the prompt mark. OSC 133 is a public
+    # convention 

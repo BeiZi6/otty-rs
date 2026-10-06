@@ -1,0 +1,22 @@
+— the reason
+# arrowing up in one tab otherwise surfaces a sibling tab's commands.
+#
+# Only the WHEN of reading/writing changes, never the history file's contents:
+# every mode still reads the whole file at startup, so a fresh pane always
+# inherits the full history. `per-pane` merely stops it from picking up what
+# other panes write while it is alive. An unset variable means "follow the
+# user's own configuration" and touches nothing.
+case "${OTTY_HISTORY_SCOPE:-}" in
+    shared)
+        setopt share_history
+        ;;
+    per-pane)
+        unsetopt share_history
+        # Still append each command as it runs, so the NEXT pane to open
+        # inherits it. Without this the history is only flushed at exit and a
+        # crashed shell loses the session.
+        setopt inc_append_history
+        ;;
+esac
+
+# 

@@ -1,0 +1,47 @@
+(function () {
+  if (typeof mermaid === 'undefined') { return; }
+  var blocks = document.querySelectorAll('pre.mermaid');
+  if (!blocks.length) { return; }
+  try { mermaid.initialize(OTTY_MERMAID_CONFIG); } catch (e) { return; }
+  var draw = function (el, i) {
+    var failed = function () { el.setAttribute('data-otty-diagram', 'error'); };
+    try {
+      var out = mermaid.render('otty-mermaid-' + i, el.textContent);
+      if (!out || typeof out.then !== 'function') { failed(); return; }
+      out.then(function (res) {
+        if (!res || !res.svg) { failed(); return; }
+        el.innerHTML = res.svg;
+        el.setAttribute('data-otty-diagram', 'ok');
+      }, failed);
+    } catch (e) { failed(); }
+  };
+  for (var i = 0; i < blocks.length; i++) { draw(blocks[i], i); }
+})();piecScalegit\u2028\u2029httpsftpmailtotelabout:blank#blocked<span class="tok-"></span>rspythonpyjavascriptjstypescripttsgolanggozshshellshcsharpc#csrbkotlinktymlmdc++cppobjective-cm<code></code><span class="math math-inline"><span class="math math-display"><sup class="footnote-reference"><a href="#</a></sup><br />
+<hr />
+<input disabled="" type="checkbox"/>
+<input disabled="" type="checkbox" checked=""/>
+</p>
+</code></pre>
+</li>
+</div>
+</dt>
+</dd>
+</tbody></table>
+</tr></thead><tbody>
+</tr>
+</th></td></em></strong></del>[ ][x]<p> id="="" class="markdown-alert-note" class="markdown-alert-tip" class="markdown-alert-important" class="markdown-alert-warning" class="markdown-alert-caution"<pre><code><pre><code class="language-
+<ul>
+<ul>
+
+<ol>
+<ol>
+
+<ol start="<ol start="">
+
+<li>
+<div class="footnote-definition" id="<div class="footnote-definition" id=""><sup class="footnote-definition-label"></sup>
+<dl>
+<dl>
+
+<dt>
+<dd><table><thead><tr><th<td style="text-align: left"> style="text-align: center"> style="text-align: right"><del>" title="<a href="<img src="" alt="invalid utf8failed to fill whole buffer

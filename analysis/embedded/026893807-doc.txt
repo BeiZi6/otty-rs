@@ -1,0 +1,29 @@
+— today
+    # by a script wrapping them in tmux's DCS passthrough, and possibly by
+    # default in future (tmux/tmux#5237). An inner prompt would then
+    # authenticate against the OUTER terminal and reclaim state belonging to
+    # the multiplexer itself, yanking it off the alternate screen mid-session.
+    # Dropping the token degrades to a bare mark: nothing is reclaimed, which
+    # is what terminals without this feature do anyway.
+    if test -n "$OTTY_PROMPT_TOKEN" -a -z "$TMUX" -a -z "$STY" -a -z "$ZELLIJ"
+        printf '\e]133;A;otty=%s\a' "$OTTY_PROMPT_TOKEN"
+    else
+        printf '\e]133;A\a'
+    end
+    set -g __otty_cmd_executed ""
+end
+
+function __otty_prompt_end --on-event fish_prompt
+    printf '\e]133;B\a'
+end
+
+function __otty_preexec --on-event fish_preexec
+    printf '\e]133;C\a'
+    set -g __otty_cmd_executed 1
+    if __otty_progress_match "$argv[1]"
+        printf '\e]9;4;3\a'
+        set -g __otty_progress_active 1
+    end
+end
+
+# 

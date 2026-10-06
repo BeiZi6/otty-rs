@@ -1,0 +1,4 @@
+… }` form. Aliases are expanded at PARSE time, so for a user with
+# e.g. `alias view='vim -R'` in an rc file sourced ahead of us, the parser
+# rewrites `view()` into `vim -R()` and the whole script dies on a syntax error
+# 

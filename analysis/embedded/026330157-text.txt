@@ -1,0 +1,8 @@
+; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mi-result .branch { opacity:.8; }
+
+/* Turn final markdown */
+.md { padding:2px 16px 4px; }
+.md :first-child { margin-top:0; }
+.md :last-child { margin-bottom:0; }
+.md h1,.md h2,.md h3,.md h4,.md h5,.md h6 { color:

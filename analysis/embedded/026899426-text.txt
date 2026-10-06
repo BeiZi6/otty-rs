@@ -1,0 +1,40 @@
+— hand the invocation over untouched.
+    if contains -- "$argv[1]" add remove view ls import
+        command otty jump $argv
+        return $status
+    end
+    for _otty_a in $argv
+        if string match -q -- '-*' $_otty_a
+            command otty jump $argv
+            return $status
+        end
+    end
+    if test (count $argv) -eq 0
+        # No-args: toggle between $HOME and the last jump-source dir.
+        # Local-only state ($OTTY_JUMP_PREV) so up-arrow still recalls
+        # the user's literal `jump` invocation, not an injected `cd`.
+        if test "$PWD" = "$HOME" -a -n "$OTTY_JUMP_PREV"
+            set -l _otty_dest "$OTTY_JUMP_PREV"
+            set -g OTTY_JUMP_PREV "$PWD"
+            builtin cd -- "$_otty_dest"
+        else
+            set -g OTTY_JUMP_PREV "$PWD"
+            builtin cd -- "$HOME"
+        end
+        return
+    end
+    set -l _otty_p (command otty jump --no-cd $argv); or return
+    if test -n "$_otty_p"
+        set -g OTTY_JUMP_PREV "$PWD"
+        builtin cd -- $_otty_p
+    end
+end
+__otty_should_wrap jump; and function jump
+    if test -n "$OTTY_FLAGS_DIR" -a -f "$OTTY_FLAGS_DIR/omit_prefix"
+        __otty_jump $argv
+    else
+        command jump $argv
+    end
+end
+# `otty` itself, so the prefixed `otty jump <query>` gets the local cd too.
+# Only the bare `jump` subcommand is intercepted; everything else 

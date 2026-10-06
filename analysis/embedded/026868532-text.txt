@@ -1,0 +1,10 @@
+— the argv scan still covers the flags themselves.
+        local _otty_batchmode="" _otty_requesttty="" _otty_sessiontype=""
+        while IFS=' ' read -r _k _v; do
+            case "$_k" in
+                user) _otty_user="$_v" ;;
+                hostname) _otty_hostname="$_v" ;;
+                batchmode) _otty_batchmode="$_v" ;;
+                requesttty) _otty_requesttty="$_v" ;;
+                sessiontype) _otty_sessiontype="$_v" ;;
+                # The alias as typed, before ssh_config resolved it 

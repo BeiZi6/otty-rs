@@ -1,0 +1,90 @@
+this session has no way to carry a file to the other side(?i)(?-u)--(?:resume|session|session[-_]id|sid)[\s=]+$resume context regex compilespasswdpwdtokensecretapikeycredentialscredentialapikeyaccessprivateclient|_-(?-u)\b(A[SK]IA[0-9A-Z]{16})\b(?-u)\b(gh[pousr]_[A-Za-z0-9_]{36,255})\b(?-u)\b(glpat-[A-Za-z0-9\-_]{20,})\b(?-u)\b(xox[bpsar]-[A-Za-z0-9\-]{10,})\b(?-u)\b([sr]k_live_[A-Za-z0-9]{20,})\b(?-u)\b(SK[0-9a-fA-F]{32})\b(?-u)\b([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\b(?-u)\b(npm_[A-Za-z0-9]{36,})\b(?-u)\b(pypi-[A-Za-z0-9\-_]{16,})\b(?-u)\b(eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,})\b(?-u)(-----BEGIN [A-Z ]*PRIVATE KEY-----)(?i)(?-u)[Bb]earer\s+([A-Za-z0-9_\-.~+/]{20,}=*)(?i)(?-u)[Bb]asic\s+([A-Za-z0-9+/]{20,}={0,2})(?-u)://([^:@\s/]{1,64}):([^@\s]{1,256})@(?i)(?-u)export\s+[A-Z_]*(?:PASSWORD|TOKEN|SECRET|KEY|CREDENTIAL|AUTH)[A-Z_]*\s*=\s*["']?([^\s"']{8,})["']?otty_core::session_log_redactxterm-256colorotty_core::ptypowershell''-NoLogo-NoExit# Otty PowerShell integration (auto-loaded via -Command). Defensive by design:
+# any failure must never break the user's shell, so everything is wrapped in
+# try/catch and the original prompt is preserved.
+
+# Otty ships a CLI binary next to the app. If "Install CLI" has not been run
+# (no otty on the user's PATH), point the shell at our bin dir so `otty ...`
+# still works without touching their environment. Dot-sourced after the user's
+# profile, so we win any PATH they set; the -notcontains guard avoids stacking
+# the same dir across nested shells.
+try {
+  if ($env:OTTY_BIN_DIR -and (Test-Path -LiteralPath $env:OTTY_BIN_DIR -PathType Container)) {
+    if (($env:PATH -split ';') -notcontains $env:OTTY_BIN_DIR) {
+      $env:PATH = "$env:OTTY_BIN_DIR;$env:PATH"
+    }
+  }
+} catch {}
+
+if (-not $global:__OttyLoaded) {
+  $global:__OttyLoaded = $true
+  $global:__OttyOrigPrompt = $function:prompt
+  $global:__OttyCmdRan = $false
+  $global:__OttyProgressActive = $false
+
+  # Auto-progress: does the line about to run start with one of the
+  # whitespace-delimited prefixes in $env:OTTY_PROGRESS_COMMANDS (pipe
+  # separated, handed over from `progress-bar-commands`)? Same prefix rule as
+  # the zsh/bash/fish payloads, so `git push` matches `git push origin main`
+  # but not `git status`. Ordinal comparison keeps it case-sensitive and
+  # culture-independent, matching their `==` test; the line is NOT trimmed
+  # first, also matching them (` git fetch` with a leading space does not
+  # count, on any shell). Those payloads additionally strip leading
+  # `NAME=value ` assignments so `GIT_TRACE=1 git fetch` still counts;
+  # PowerShell has no such prefix syntax (it is `$env:X = 'v'; cmd`, whose
+  # `git` is not at the start of the line), so that case is simply not
+  # covered here -- splitting on `;` would misfire on `echo "a; git push"`.
+  function global:__OttyProgressMatch {
+    param([string]$cmd)
+    # Bind the env var to a local first: `$env:NAME.Split(...)` leans on how
+    # far the parser carries a provider-variable path, and a plain local has
+    # no such ambiguity.
+    $list = $env:OTTY_PROGRESS_COMMANDS
+    if (-not $list) { return $false }
+    foreach ($p in $list.Split([char]'|')) {
+      if (-not $p) { continue }
+      if ([string]::Equals($cmd, $p, [System.StringComparison]::Ordinal) -or
+          $cmd.StartsWith("$p ", [System.StringComparison]::Ordinal)) { return $true }
+    }
+    return $false
+  }
+
+  # PSReadLine (pwsh 7's line editor) paints its own history guess after the
+  # cursor -- the spot Otty's ghost uses, and Otty yields to any text already
+  # sitting there. `autocomplete-inline-provider` picks which one the user
+  # sees: the `psreadline_prediction` sentinel present = keep PSReadLine's,
+  # absent = switch it off so Otty's is the only one. Read at every prompt so a
+  # Settings change reaches shells that are already running. Only the INLINE
+  # view is touched: ListView draws below the prompt, not after the cursor, and
+  # a user who chose it keeps it. What we switch off is remembered and put back
+  # as it was, never guessed.
+  function global:__OttySyncPrediction {
+    try {
+      $o = Get-PSReadLineOption
+      # PSReadLine 2.0 (Windows PowerShell 5.1's) has no predictions at all.
+      if (-not $o.PSObject.Properties['PredictionSource']) { return }
+      $keep = $env:OTTY_FLAGS_DIR -and
+        (Test-Path -LiteralPath (Join-Path $env:OTTY_FLAGS_DIR 'psreadline_prediction'))
+      $inline = (-not $o.PSObject.Properties['PredictionViewStyle']) -or
+        ("$($o.PredictionViewStyle)" -eq 'InlineView')
+      if ((-not $keep) -and $inline) {
+        if ("$($o.PredictionSource)" -ne 'None') {
+          $global:__OttySavedPrediction = $o.PredictionSource
+          Set-PSReadLineOption -PredictionSource None
+        }
+      } elseif ($null -ne $global:__OttySavedPrediction) {
+        Set-PSReadLineOption -PredictionSource $global:__OttySavedPrediction
+        $global:__OttySavedPrediction = $null
+      }
+    } catch {}
+  }
+
+  function global:prompt {
+    # Capture $? BEFORE any statement (the next assignment would reset it),
+    # then $LASTEXITCODE. Both describe the command that just finished.
+    $__otty_ok = $?
+    $__otty_exit = $LASTEXITCODE
+    # Before ReadLine starts on the line this prompt opens.
+    __OttySyncPrediction
+    try {
+      $e = [char]27; $b = [char]7; $out = ''
+      # OSC 133 D 

@@ -1,0 +1,27 @@
+— HISTFILE has not been read
+#     yet, so defer to the first precmd.
+#
+# `__otty_precmd_load` is set by the .zshenv loader across its `source`, and is
+# the only thing that tells the two apart.
+if [[ -o interactive ]] 2>/dev/null \
+   && [[ -n "$OTTY_PANE_HISTORY" && -r "$OTTY_PANE_HISTORY" ]]; then
+    __otty_load_pane_history() {
+        # Re-check: under the deferred path a nested shell may have consumed
+        # (and unset) the variable between load and first prompt.
+        if [[ -n "$OTTY_PANE_HISTORY" && -r "$OTTY_PANE_HISTORY" ]]; then
+            fc -R "$OTTY_PANE_HISTORY" 2>/dev/null
+        fi
+        # Strictly one-shot. The variable is exported, so a nested interactive
+        # zsh (or one started by a script in this pane) would inherit it and
+        # load the same entries a second time into its own list.
+        builtin unset OTTY_PANE_HISTORY
+        precmd_functions=("${(@)precmd_functions:#__otty_load_pane_history}")
+    }
+    if [[ -n "$__otty_precmd_load" ]]; then
+        __otty_load_pane_history
+    else
+        precmd_functions+=(__otty_load_pane_history)
+    fi
+fi
+
+# 

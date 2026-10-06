@@ -1,0 +1,5 @@
+─
+        #
+        # `SSH_ASKPASS_REQUIRE=force` takes away ssh's fallback of asking on the
+        # terminal, so it is set ONLY for a host Otty really has a password for
+        # 

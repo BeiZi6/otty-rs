@@ -1,0 +1,677 @@
+# strings of otty-helper (597 unique)
+
+
+## rust-marker  (25)
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/base64-0.22.1/src/encode.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/base64-0.22.1/src/engine/general_purpose/mod.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/base64-0.22.1/src/engine/mod.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.18/src/lib.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/read.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/value/index.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/value/ser.rs
+/rust/deps/rustc-demangle-0.1.26/src/legacy.rs
+/rust/deps/rustc-demangle-0.1.26/src/lib.rs
+/rust/deps/rustc-demangle-0.1.26/src/v0.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/map.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/map/entry.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/navigate.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/node.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/string.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/vec/mod.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/cell/once.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/num/wrapping.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/ops/function.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/slice/sort/stable/quicksort.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/str/pattern.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/time.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/std/src/io/mod.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/std/src/io/stdio.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/std/src/thread/functions.rs
+
+
+## swift-marker  (0)
+
+
+## swift-demangle  (0)
+
+
+## objc-class  (0)
+
+
+## toml-key  (0)
+
+
+## config-path  (4)
+    otty-helper install --from <path>       Install into ~/.local/share/otty/
+    ~/.local/share/otty/bin/otty      the remote `otty` shim
+    ~/.local/share/otty/helper.json
+    ~/.local/share/otty/otty-helper
+
+
+## osc  (1)
+# Otty's remote shim: writes the request to the terminal as OSC 8801 for the
+
+
+## vt-name  (1)
+RI,@9J$@9
+
+
+## uri  (3)
+http://crl.apple.com/root.crl0
+http://www.apple.com/appleca0
+https://www.apple.com/appleca/0
+
+
+## appkit  (0)
+
+
+## bundle-id  (0)
+
+
+## cmdline  (0)
+
+
+## font-name  (0)
+
+
+## agent  (0)
+
+
+## ALL (sorted)
+      
+                        [--by <label>]      Record who installed it (default: unknown)
+             at .debug_types.dwoentity not foundconnection resethost unreachableno storage spaceinvalid filenamee0A
+        exit 1 ;;
+        printf 'otty %s is not available on a remote host: only view, edit, jump, learn and ignore travel over the terminal.\n' "$cmd" >&2
+      [... omitted 
+    '') usage >&2; exit 1 ;;
+    *)
+    *[[:cntrl:]]*) printf 'otty: control characters cannot be sent.\n' >&2; exit 1 ;;
+    <!-- Allow terminal child processes to request Apple Events access through Otty. -->
+    <!-- Allow terminal child processes to request microphone access through Otty. -->
+    <key>com.apple.security.automation.apple-events</key>
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
+    LeftOrRight::Left(idx) => idx <= old_left_len,
+    LeftOrRight::Right(idx) => idx <= right_len,
+    b64=$(printf '%s' "$json" | base64)
+    b64=$(printf '%s' "$json" | openssl base64 -A)
+    cat <<'EOF'
+    exit 1
+    help|-h|--help) usage; exit 0 ;;
+    json="${json}${sep}\"$(esc "$a")\""
+    otty-helper install --from <path>       Install into ~/.local/share/otty/
+    otty-helper serve                       Speak newline-delimited JSON-RPC 2.0 on stdin/stdout
+    otty-helper uninstall [--yes]           Print the removal plan; remove with --yes
+    otty-helper version                     Print the helper version
+    ottypathnamesizelistdatareadstatfileHOMEusedNoneSomeboolchari128u128shim as mut dyn  is  -> for<ZerotruenullcodekindKind
+    printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+    printf '\033]8801;otty;%s\007' "$b64"
+    printf 'otty: no base64 on this host, so nothing can be sent.\n' >&2
+    printf 'otty: this session does not look like an Otty one; sending anyway.\n' >&2
+    sep=','
+    view|edit|jump|learn|ignore) ;;
+    ~/.local/share/otty/bin/otty      the remote `otty` shim
+    ~/.local/share/otty/helper.json
+    ~/.local/share/otty/otty-helper
+  (not present)
+  left: 
+  otty edit <path>...   open in the editor
+  otty ignore <path>    stop remembering one
+  otty jump [query]     jump to a recent directory
+  otty learn <path>     remember a directory
+  otty view <path>...   open read-only
+  }"false[{,:]
+ !"#$%&'()*+,-./0123
+ #%&(38:HJLPSUVXZ\^`cefksx}
+ (bytes 
+ (os error 
+ Otty's remote host helper
+ at line 
+ but ends at 
+ but the index is 
+ bytes
+ bytes failed
+ bytes from index 
+ bytes, expected 
+ chars were found
+ column 
+ failed: 
+ failed: kern_return 
+ frame
+ in JSON 
+ index out of bounds: the len is 
+ is not a regular file
+ is out of bounds of `
+ must be a non-negative integer
+ must be a number
+ otty-helper: stats.tick failed: 
+ right: 
+ right` failed
+!@9?@@
+!failed to allocate a guard page: 
+" must be absolute or start with ~/
+" out of range for slice of length 
+" was expected to have 1 char, but 
+"@@yQ|
+"failed to protect the guard page: 
+"http://crl.apple.com/timestamp.crl0
+"unexpected error during closedir: 
+# /dev/tty so a $(...) still reaches Otty; stdout where there is none.
+# Escape \ and " for JSON.
+# Otty at the other end, and runs nothing locally. See src/shim.rs.
+# Otty's remote shim: writes the request to the terminal as OSC 8801 for the
+# Refused, not stripped: dropping the tab from `a<TAB>b.log` would send Otty a
+# base64url: URL-safe alphabet, unwrapped, unpadded.
+# different path and call it a success. The no-helper fallback refuses them too.
+$Developer ID Certification Authority1&0$
+$http://ocsp.apple.com/ocsp03-devid060
+%com.apple.security.device.audio-input
+& is not a char boundary; it is inside 
+'Apple Timestamp Certification Authority1&0$
+(&@9/"@9#
+(=@9*9@9+
+(Jz (Oz
+) has overflowed its stack
+) of `
+) panicked at 
+) when slicing `
+))979^);'C9
+)147:;=IJ]
+)14:;EFIJ^de
+)14:EFIJNOde
+):;EIW[^_de
+)SWnRa
+)b"=s(
+)failed to allocate an alternative stack: 
+)ki8(kh8
+)xEii`k_
+*-@9-)@9.
+*Q@xHA
+*com.apple.security.automation.apple-events
+*http://www.apple.com/certificateauthority/0
+*incomplete utf-8 byte sequence from index 
+*m/sb.4
+*yjx*h(x
++ik8Ki(8
+, aborting
+, column: 
+, line: 
+--from needs a path--by needs a labelinstall: --from <path> is requiredotty-helper uninstall would remove:
+..RefCell already borrowed
+./?\]_
+.debug_abbrev.dwo.debug_cu_index.debug_info.dwo.debug_line.dwo.debug_loc.dwo.debug_loclists.dwo.debug_rnglists.dwo.debug_str.dwo.debug_str_offsets.dwo.debug_tu_indexfailed to create whole treea formatting trait implementation returned an error when the underlying stream did notfailed to write whole bufferinternal error: entered unreachable codeOsmessageErrorCustomerrorpermission deniedconnection refusednetwork unreachableconnection abortednot connectedaddress in useaddress not availablenetwork downbroken pipeentity already existsoperation would blocknot a directoryis a directorydirectory not emptyread-only filesystem or storage mediumfilesystem loop or indirection limit (e.g. symlink loop)stale network file handleinvalid input parameterinvalid datatimed outwrite zeroseek on unseekable filequota exceededfile too largeresource busyexecutable file busycross-device link or renametoo many linksargument list too longoperation interruptedunsupportedunexpected end of fileout of memoryin progressother erroruncategorized errorstdoutstderradvancing IoSlice beyond its lengthadvancing io slices beyond their lengthfailed to write the buffered datafatal runtime error: initialization or cleanup bug, aborting
+.llvm.{size limit reached}`fmt::Error` from `SizeLimitedFmtAdapter` was discardedpunycode{EmptyInvalidDigitPosOverflowNegOverflowParseIntErrorSizeLimitExhausted
+.uuuuuuuubtnufruuuuuuuuuuuuuuuuuu
+/.@90*@9$
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/base64-0.22.1/src/encode.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/base64-0.22.1/src/engine/general_purpose/mod.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/base64-0.22.1/src/engine/mod.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.18/src/lib.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/read.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/value/index.rs
+/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/value/ser.rs
+/dev/null
+/failed to set up alternative stack guard page: 
+/rust/deps/addr2line-0.25.1/src/function.rs
+/rust/deps/addr2line-0.25.1/src/line.rs
+/rust/deps/addr2line-0.25.1/src/unit.rs
+/rust/deps/gimli-0.32.3/src/read/abbrev.rs
+/rust/deps/gimli-0.32.3/src/read/line.rs
+/rust/deps/object-0.37.3/src/read/archive.rs
+/rust/deps/rustc-demangle-0.1.26/src/legacy.rs
+/rust/deps/rustc-demangle-0.1.26/src/lib.rs
+/rust/deps/rustc-demangle-0.1.26/src/v0.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/map.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/map/entry.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/navigate.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/collections/btree/node.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/string.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/alloc/src/vec/mod.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/cell/once.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/num/wrapping.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/ops/function.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/slice/sort/stable/quicksort.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/str/pattern.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/core/src/time.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/std/src/io/mod.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/std/src/io/stdio.rs
+/rustc/01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf/library/std/src/thread/functions.rs
+/usr/lib/dyld
+/usr/lib/libSystem.B.dylib
+/usr/lib/libiconv.2.dylib
+00010203040506070809101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899#!/bin/sh
+0123456789ABCDEF{invalid syntax}m]
+0123456789abcdef
+060425214036Z
+0Developer ID Application: Abner Lee (9HWK5273G4)1
+0y1-0+
+0|100.
+120201221215Z
+120405120244Z
+1? v(m
+20150409000000Z0
+20260923053820Z0
+250104125618Z
+260902231619Z
+260923053819Z0/
+260923053820Z0#
+261014231618Z0B1
+270201221215Z0
+270201221215Z0y1-0+
+270405120244Z0|100.
+350209214036Z0b1
+4QDy6UDy
+5fatal runtime error: failed to initiate panic, error 
+7H$@9(
+7H,@9H
+7H,@9h
+7SK99'7z7CK99C);V');V'
+7hJ@9(!87`"@
+7hJ@9h
+7hJ@9h%87`"@
+7ky- r
+8>G#g$
+9: ~user expansion is not supported; send an absolute path
+9HWK5273G4
+9HWK5273G41
+9HWK5273G41907
+9Y>)F$
+9internal error: entered unreachable code: str::from_utf8(
+: Is a directory
+: fatal runtime error: Rust panics must be rethrown, aborting
+: returned 
+::ffff:
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+</array>
+</data>
+</dict>
+</plist>
+<?xml version="1.0" encoding="UTF-8"?>
+<array>
+<data>
+<dict>
+<key>cdhashes</key>
+<plist version="1.0">
+<unknown>
+<unnamed>Box<dyn Any>thread caused non-unwinding panic. aborting.
+>&<6>>>
+>>>>>>>
+>>>>>>>>>>>(
+>>>>>>>>>>>>>>>>>>>>>>>
+?456789:;<=
+@(>8@@@ DF
+@9)h(8
+@9H @9
+@9ij 8
+@9jj 8
+@9jj(8
+@9lj(8
+@@@@@@@
+@@@@@@@@@@@*
+@@@@@@@@@@@@@@@@@@@@@@@
+@DQ_AD
+@OQ]=4
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+Abner Lee1
+Anything else otty does needs the real binary, which this host has not got.
+Apple Certification Authority1
+Apple Inc.1
+Apple Inc.1&0$
+Apple Root CA0
+Archive member size is too large
+Bsu|QC
+CX n$X n
+Contents/Resources/DWARF
+D888(8
+Error(
+FGNOXZ\^~
+G bytes failed
+G/bXHl
+Hcannot access a Thread Local Storage value during or after destruction: 
+I7Cxl2i5n
+INOWY^_
+K+il8m
+KYkx+ 
+Kik8+i(8
+Kykx+$
+Lil8li(8
+Lil8li)8,
+L|]C5;
+MYmx- 
+Nothing removed. Re-run with --yes to remove them.
+Nothing to remove.
+O<@9D8@9E
+PermissionDeniedAddrNotAvailable
+Q<@!tv
+R?@@qj
+RI,@9J$@9
+RJ$@9I,@9_
+RKi(8I
+RKi)8H
+RUST_BACKTRACEfailed to generate unique thread ID: bitspace exhaustedtoo many running threads in thread scopeuse of std::thread::current() is not possible after the thread's local data has been destroyedfatal runtime error: init_current() was re-entrant, which indicates a bug in the Rust threading implementation, aborting
+RUST_MIN_STACK
+R_c@9H
+Reliance on this certificate by any party assumes acceptance of the then applicable standard terms and conditions of use, certificate policy and certification practice statements.0
+Reliance on this certificate by any party assumes acceptance of the then applicable standard terms and conditions of use, certificate policy and certification practice statements.06
+SMYkxi%
+T)hk8j
+T)ih8?
+T)ih8?%
+T)ij8?
+T)ik8?
+T*ih8_}
+T1ik80
+THik8)
+TLik8+
+Tbi`8Iii8_
+Tci`8Iii8
+The helper opens no network sockets and owns exactly three files on this host:
+Timestamp Signer NWK21
+Tl1Dyk
+USAGE:
+UgAy#s
+Utf8Errorvalid_up_toerror_lenFromUtf8ErrorbytesInvalid UTF8fatal runtime error: thread result panicked on drop, aborting
+Yix)h(x
+[ $# -gt 0 ] && shift
+[...]user-provided comparison function does not correctly implement a total ordercalled `Option::unwrap()` on a `None` value
+[?/"=~Fr
+^- };wK
+_R?Z}5
+__DATA
+__DATA_CONST
+__LINKEDIT
+__NSGetArgc
+__NSGetArgv
+__PAGEZERO
+__TEXT
+__Unwind_Backtrace
+__Unwind_DeleteException
+__Unwind_GetDataRelBase
+__Unwind_GetIP
+__Unwind_GetIPInfo
+__Unwind_GetLanguageSpecificData
+__Unwind_GetRegionStart
+__Unwind_GetTextRelBase
+__Unwind_RaiseException
+__Unwind_Resume
+__Unwind_SetGR
+__Unwind_SetIP
+___error
+__const
+__cstring
+__data
+__dyld_get_image_header
+__dyld_get_image_name
+__dyld_get_image_vmaddr_slide
+__dyld_image_count
+__eh_frame
+__gcc_except_tab__TEXT
+__mh_execute_header
+__rust_end_short_backtrace__rust_begin_short_backtraceslock count overflow in reentrant mutexnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+__stubs
+__text
+__thread_bss
+__thread_data
+__thread_vars
+__tlv_atexit
+__tlv_bootstrap
+__unwind_info
+_abort
+_bzero
+_calloc
+_chmod
+_clock_gettime
+_close
+_closedir
+_copyfile_state_alloc
+_copyfile_state_free
+_copyfile_state_get
+_dirfd
+_dispatch_release
+_dispatch_semaphore_create
+_dispatch_semaphore_signal
+_dispatch_semaphore_wait
+_fchmod
+_fclonefileat
+_fcntl
+_fcopyfile
+_freeifaddrs
+_fstat
+_getcwd
+_getenv
+_gethostname
+_getifaddrs
+_getloadavg
+_getpid
+_getpwuid
+_getuid
+_host_statistics
+_host_statistics64
+_lseek
+_lstat
+_mach_host_self
+_malloc
+_memcmp
+_memcpy
+_memmove
+_memset
+_mh_execute_header
+_mkdir
+_mprotect
+_munmap
+_nanosleep
+_opendir
+_p&&<Y
+_pause
+_posix_memalign
+_pthread_attr_destroy
+_pthread_attr_init
+_pthread_attr_setstacksize
+_pthread_create
+_pthread_detach
+_pthread_get_stackaddr_np
+_pthread_get_stacksize_np
+_pthread_mutex_destroy
+_pthread_mutex_init
+_pthread_mutex_lock
+_pthread_mutex_trylock
+_pthread_mutex_unlock
+_pthread_mutexattr_destroy
+_pthread_mutexattr_init
+_pthread_mutexattr_settype
+_pthread_self
+_pthread_setname_np
+_pthread_threadid_np
+_readdir_r
+_readlink
+_realloc
+_realpath$DARWIN_EXTSN
+_rename
+_rmdir
+_rust_eh_personality
+_sigaction
+_sigaltstack
+_signal
+_statfs
+_statvfs
+_strerror_r
+_strlen
+_sysconf
+_sysctlbyname
+_unlink
+_write
+_writev
+a Display implementation returned an error unexpectedlyassertion failed: idx < CAPACITYfmt errorEOF while parsing a listEOF while parsing an objectEOF while parsing a stringEOF while parsing a valueexpected `:`expected `,` or `]`expected `,` or `}`expected identexpected valueexpected `"`invalid escapeinvalid numbernumber out of rangeinvalid unicode code pointcontrol character (\u0000-\u001F) found while parsing a stringkey must be a stringinvalid value: expected key to be a number in quotesfloat key must be finite (got NaN or +/-inf)lone leading surrogate in hex escapetrailing commatrailing charactersunexpected end of hex escaperecursion limit exceededbooleannumberstringarrayobject,
+aborting due to panic at 
+assertion `left 
+attempt to divide by zeroattempt to calculate the remainder with a divisor of zeropanic in a destructor during cleanup==panic in a function that cannot unwind
+b64=$(printf '%s' "$b64" | tr -d '\n=' | tr '+/' '-_')
+begin <= end (
+byte index 
+cannot access key 
+cannot panic during the backtrace function
+capacity overflow
+case "$*$cwd" in
+case "$cmd" in
+cmd=${1:-}
+cwd=${PWD:-$(pwd)}
+deadlock in SIGSEGV handlerinternal error: entered unreachable code: the thread info setup logic isn't recursivefatal runtime error: stack overflow, aborting
+deadlockNotFoundTimedOutDeadlockNulError
+di`8%i`8
+elif command -v openssl >/dev/null 2>&1; then
+encoding helper.json: 
+eofotherdirsymlink.local/share/otty
+esc() {
+extern "
+fG16dNp3DBb8+24VrWleUzIaU3U=
+failed printing to 
+failed to lock mutex: 
+failed to spawn threadstats.tick
+fatal runtime error: Rust cannot catch foreign exceptions, aborting
+fatal runtime error: current thread handle already set during thread spawn, aborting
+fatal runtime error: drop of the panic payload panicked, aborting
+fatal runtime error: the System allocator may not use TLS with destructors, aborting
+fatal runtime error: thread local panicked on drop, aborting
+fatal runtime error: tried to drop node in intrusive list., aborting
+fid8Ghd8
+fid8ghd8
+for a in "$@"; do
+gB9I#@
+getifaddrshw.memsizehost_statistics64(HOST_VM_INFO64)sysctl names are literalssysctlgetloadavg returned fewer than 3 sampleskern.boottimesystem clock is before 1970host_statistics(HOST_CPU_LOAD_INFO)
+hhTTxxt
+hhh`XX
+hhhhhhh
+hidden must be a booleanoffsetlen
+http://crl.apple.com/root.crl0
+http://www.apple.com/appleca0
+https://www.apple.com/appleca/0
+idmethodparamsparams must be an object or an arraymethod must be a stringjsonrpc must be the string "2.0"id must be a string, a number, or nullrequest must be a JSON objectbatch requests are not supported; send one request per line
+if ! { printf '\033]8801;otty;%s\007' "$b64" >/dev/tty; } 2>/dev/null; then
+if [ -z "${OTTY_REMOTE:-}" ] && [ "${TERM_PROGRAM:-}" != otty ]; then
+if command -v base64 >/dev/null 2>&1; then
+igJy?-
+input is not valid UTF-8: 
+install: unexpected argument 
+installed 
+installmkdirbinmissing required param: pathpath must be a string
+invalid JSON: 
+invalid stack sizestack backtrace:
+invalid timestampfile name contained an unexpected NUL bytefailed to create dispatch semaphore for thread synchronizationOnce instance has previously been poisoned
+invalid utf-8 sequence of 
+iyix)h(x
+json="${json}],\"cwd\":\"$(esc "$cwd")\"}"
+json="{\"v\":1,\"cmd\":\"$cmd\",\"args\":["
+jsonrpc
+k|8`"@
+library/alloc/src/fmt.rs
+library/alloc/src/raw_vec/mod.rs
+library/core/src/fmt/mod.rs
+library/core/src/net/display_buffer.rs
+library/core/src/net/ip_addr.rs
+library/core/src/panicking.rs
+library/core/src/slice/memchr.rs
+library/core/src/slice/sort/shared/smallsort.rs
+library/core/src/str/lossy.rs
+library/core/src/str/pattern.rs
+library/core/src/unicode/printable.rs
+library/std/src/../../backtrace/src/backtrace/libunwind.rs
+library/std/src/../../backtrace/src/symbolize/gimli.rs
+library/std/src/../../backtrace/src/symbolize/gimli/libs_macos.rs
+library/std/src/../../backtrace/src/symbolize/gimli/lru.rs
+library/std/src/../../backtrace/src/symbolize/mod.rs
+library/std/src/env.rs
+library/std/src/io/buffered/linewritershim.rs
+library/std/src/io/mod.rs
+library/std/src/io/stdio.rs
+library/std/src/panicking.rs
+library/std/src/path.rs
+library/std/src/rt.rs
+library/std/src/sync/once.rs
+library/std/src/sync/reentrant_lock.rs
+library/std/src/sys/fs/unix.rs
+library/std/src/sys/io/io_slice/iovec.rs
+library/std/src/sys/pal/unix/os.rs
+library/std/src/sys/pal/unix/stack_overflow.rs
+library/std/src/sys/pal/unix/stack_overflow/thread_info.rs
+library/std/src/sys/pal/unix/sync/mutex.rs
+library/std/src/sys/pal/unix/time.rs
+library/std/src/sys/sync/once/queue.rs
+library/std/src/sys/sync/rwlock/queue.rs
+library/std/src/sys/sync/thread_parking/darwin.rs
+library/std/src/sys/thread/unix.rs
+library/std/src/sys/thread_local/destructors/list.rs
+library/std/src/thread/current.rs
+library/std/src/thread/id.rs
+library/std/src/thread/local.rs
+library/std/src/thread/scoped.rs
+library/std/src/thread/thread.rs
+lij8lV
+lij8l[
+memory allocation of 
+must specify at least one of read, write, or append accesscreating or truncating a file requires write or append accessthe source path is neither a regular file nor a symlink to a regular filefatal runtime error: a thread received SIGSEGV while modifying its stack overflow information, aborting
+n!X n!(a
+n%@9p!@9q
+no7=?BESgu
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+otty - hand a request to the Otty terminal on your own computer.
+otty-helper
+otty-helper 
+otty-helper: 
+otty-helper: notification 
+otty-helperchmodwritehelper.jsoninstalled_atinstalled_byremove
+packages/remote-helper/src/fsops.rs
+packages/remote-helper/src/install.rs
+packages/remote-helper/src/jsonrpc.rs
+packages/remote-helper/src/server.rs
+packages/remote-helper/src/stats/macos.rs
+panicked at 
+params must be an object; positional params are not supportedinterval_msinterval_ms must be a non-negative integerinterval_ms must be a numberstatsfs
+path must not be emptycannot determine the home directory: $HOME is unset and this uid has no passwd entrystatvfspath contains an interior NUL bytemounttotal
+printf 'Handed to Otty on your computer.\n'
+radr://5614542
+range end index 
+range start index 
+reentrant initoverflow in Duration::newdescription() is deprecated; use Displaymid > lencalled `Result::unwrap()` on an `Err` valueWouldBlockassertion failed: edge.height == self.height - 1internal error: entered unreachable code: empty internal nodeassertion failed: self.height > 0assertion failed: src.len() == dst.len()assertion failed: old_right_len + count <= CAPACITYassertion failed: old_left_len >= countassertion failed: old_left_len + count <= CAPACITYassertion failed: old_right_len >= countassertion failed: match track_edge_idx {
+removed 
+request line exceeds 
+rust_eh_personality
+rx_bytestx_byteshostnameuptime_s
+s\ax}?
+sep=''
+serialize_value called before serialize_key0str()i8i16i32i64isizeu8u16u32u64usizef32f64!_...{recursion limit reached}?::::{closure#<>, & *const ; () + Cunsafe " -fn( {  } = 0x`fmt::Error`s should be impossible without a `fmt::Formatter`'> ..= | !null
+serializing stats: 
+serve: 
+skipping backtrace printing to avoid potential recursion
+slice index starts at 
+strerror_r failurefatal runtime error: assertion failed: signal(libc::SIGPIPE, handler) != libc::SIG_ERR, aborting
+subject.OU
+sysctl 
+tC7Ddx
+targethidden
+thread '
+thread name may not contain interior null bytes
+thread panicked while processing panic. aborting.
+uninstall: unexpected argument 
+unknown command 
+unknown method: 
+usage() {
+v6Dyh"
+vcJy8gJy
+version0.2.0
+wqBv/?
+xg^Jp5|
+xuRCk?
+yHYhx(
+yHYkx(
+yIYix)
+yMYmx-
+yMYnx-$
+zo;Z n(
+zo=[ n>
+zoIZ nJ
+zo_[ nF
+zog[ nx
+zokZ np
+{zel#|67
+}assertion failed: new_left_len <= CAPACITY.debug_abbrev.debug_addr.debug_aranges.debug_info.debug_line.debug_line_str.debug_loc.debug_loclists.debug_macinfo.debug_macro.debug_ranges.debug_rnglists.debug_str.debug_str_offsets.debug_typesConnectionRefusedConnectionResetHostUnreachableNetworkUnreachableConnectionAbortedNotConnectedAddrInUseNetworkDownBrokenPipeAlreadyExistsNotADirectoryIsADirectoryDirectoryNotEmptyReadOnlyFilesystemFilesystemLoopStaleNetworkFileHandleInvalidInputInvalidDataWriteZeroStorageFullNotSeekableQuotaExceededFileTooLargeResourceBusyExecutableFileBusyCrossesDevicesTooManyLinksInvalidFilenameArgumentListTooLongInterruptedUnsupportedUnexpectedEofOutOfMemoryInProgressOtherUncategorizedAccessErrorInvalid AIX big archive member headerInvalid AIX big archive member name lengthInvalid AIX big archive member nameInvalid AIX big archive terminatorInvalid archive member size in AIX big archiveInvalid archive member headerInvalid archive member sizeInvalid archive extended name lengthInvalid archive extended name offsetInvalid archive terminator

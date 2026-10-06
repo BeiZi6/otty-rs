@@ -1,0 +1,15 @@
+─
+# Outermost frame. `material` enables a translucent native backdrop
+# (one of: none / vibrancy-thin / vibrancy-regular / vibrancy-thick /
+# glass). Set `background` to an rgba color (e.g. "#2e344080") when
+# using a material to tint the backdrop.
+
+[window]
+background = "#2E3440"
+material   = "none"
+radius     = 12
+
+[window.unfocused]
+opacity = 0.92
+
+# 

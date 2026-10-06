@@ -1,0 +1,10 @@
+— so it happens only when every condition
+        # below holds, and otherwise this block leaves the invocation byte for
+        # byte as it is today.
+        #
+        #   * the argv scan succeeded and found no remote command. `ssh host
+        #     uname -a` asks for one command, not a login shell; appending ours
+        #     would fold the user's into it.
+        #   * stdin is a tty. `ssh host <script` has a destination but no
+        #     session to bootstrap.
+        #   * nothing asks for something other than a shell 

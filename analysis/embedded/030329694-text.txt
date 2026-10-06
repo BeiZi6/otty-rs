@@ -1,0 +1,5 @@
+— thin shim.
+// The real, readable logic lives in the bundled module imported below;
+// open it inside Otty.app to audit exactly what runs. This shim only
+// supplies the per-install paths.
+// marker: 

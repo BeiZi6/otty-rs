@@ -1,0 +1,17 @@
+— goes straight to the binary.
+__otty_should_wrap otty; and function otty
+    if test "$argv[1]" = jump
+        set -e argv[1]
+        __otty_jump $argv
+    else
+        command otty $argv
+    end
+end
+__otty_should_wrap learn; and function learn
+    if test -n "$OTTY_FLAGS_DIR" -a -f "$OTTY_FLAGS_DIR/omit_prefix"
+        command otty learn $argv
+    else
+        command learn $argv
+    end
+end
+# `watch:<agent>` 

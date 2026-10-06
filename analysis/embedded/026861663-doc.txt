@@ -1,0 +1,8 @@
+— never read siblings back into this
+        # pane. Appending as we go (rather than only at exit) is also what
+        # lets a restored pane recover its history after a crash.
+        __otty_history_hook() { builtin history -a; }
+        ;;
+esac
+
+# 

@@ -1,0 +1,21 @@
+─
+# bash's default is worse than zsh's: without `histappend` the LAST shell to
+# exit OVERWRITES the file, so commands from every other window are simply
+# lost. Both modes therefore turn it on; they differ only in whether a pane
+# reads back what its siblings wrote while it was alive.
+# An unset variable leaves bash's own behavior untouched.
+#
+# These override the no-op `__otty_history_hook` defined near the top, which
+# `__otty_prompt_command` calls on every prompt.
+case "${OTTY_HISTORY_SCOPE:-}" in
+    shared)
+        shopt -s histappend
+        __otty_history_hook() {
+            builtin history -a
+            builtin history -c
+            builtin history -r
+        }
+        ;;
+    per-pane)
+        shopt -s histappend
+        # Append after every command 

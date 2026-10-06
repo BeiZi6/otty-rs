@@ -1,0 +1,3 @@
+— hosts saved from the Details panel. Edit freely; Otty only touches blocks it created.# Added by Otty: hosts saved from the Details panel.alias contains whitespace, quotes or a comment characteralias is emptyaddkeystoagentusekeychain
+
+identity_filehostname is emptyknown_hostsfailed to write whole bufferdescription() is deprecated; use Displaymid > lenattempt to join into collection with len > usize::MAX

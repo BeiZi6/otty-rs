@@ -1,0 +1,15 @@
+─
+if test -n "$OTTY_CLI_ALIASES"
+    for __otty_pair in (string split '|' -- $OTTY_CLI_ALIASES)
+        test -z "$__otty_pair"; and continue
+        set -l __otty_name (string split -m1 '=' -- $__otty_pair)[1]
+        set -l __otty_cmd  (string split -m1 '=' -- $__otty_pair)[2]
+        test -z "$__otty_name" -o -z "$__otty_cmd"; and continue
+        string match -rq '^[A-Za-z_][A-Za-z0-9_]*$' -- $__otty_name; or continue
+        string match -rq '^[A-Za-z_][A-Za-z0-9_]*$' -- $__otty_cmd;  or continue
+        __otty_should_wrap $__otty_name; or continue
+        # Use eval to bake the captured $__otty_cmd into the function body so
+        # later changes to the local var can't leak into the wrapper.
+        # jump needs the local cd: `command otty jump` would re-introduce the
+        # visible `cd '<path>'` echo plus a spurious shell-history entry.
+        # Call __otty_jump, not the bare `jump` wrapper 

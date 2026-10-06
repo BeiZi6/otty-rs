@@ -1,0 +1,8 @@
+─
+# Set only for a pane Otty is restoring; a freshly created pane never sees it.
+#
+# `fc -R` appends the entries to this session's history list, so they land
+# NEWER than everything zsh already read from the real history file: Up reaches
+# what THIS pane ran before the restart, and keeps going into the global
+# history behind it. zsh treats them as already-on-disk, so they are never
+# written back 

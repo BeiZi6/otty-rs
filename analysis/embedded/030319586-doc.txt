@@ -1,0 +1,15 @@
+— abort"
+  exit 1
+fi
+
+# Replace the old bundle. mv to a sibling first so a failure mid-rm
+# still leaves a working app on disk.
+TRASH="${OLD}.old.$$"
+if [ -d "$OLD" ]; then
+  if ! mv "$OLD" "$TRASH"; then
+    echo "mv old aside failed"
+    exit 1
+  fi
+fi
+if ! /usr/bin/ditto "$NEW" "$OLD"; then
+  echo "ditto new into place failed 

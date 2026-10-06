@@ -1,0 +1,6 @@
+—
+# echoed by line-discipline, and read back as input so history records the cd
+# instead of what the user ran. Zoxide-style instead: ask the app to resolve
+# only (`--no-cd`) and `builtin cd` here.
+__otty_jump() {
+    # A management subcommand (`otty jump ls`, `jump add 

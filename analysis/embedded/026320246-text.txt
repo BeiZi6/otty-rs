@@ -1,0 +1,59 @@
+─
+  var pendingG = false;
+  document.addEventListener("keydown", function (e) {
+    // Ctrl/Cmd+F opens find regardless of focus.
+    if ((e.ctrlKey || e.metaKey) && (e.key === "f" || e.key === "F")) {
+      e.preventDefault(); openFind(); return;
+    }
+    // When typing in the find field, don't run pager keys.
+    if (document.activeElement === findInput) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) {
+      // Allow Ctrl scroll chords only.
+      if (e.ctrlKey && !e.metaKey && !e.altKey) {
+        switch (e.key) {
+          case "d": by(halfH()); e.preventDefault(); return;
+          case "u": by(-halfH()); e.preventDefault(); return;
+          case "f": by(pageH()); e.preventDefault(); return;
+          case "b": by(-pageH()); e.preventDefault(); return;
+        }
+      }
+      return;
+    }
+    if (!window.__otty_vim) {
+      // Non-vim: still honor viewport nav keys.
+      switch (e.key) {
+        case "PageDown": by(pageH()); e.preventDefault(); return;
+        case "PageUp": by(-pageH()); e.preventDefault(); return;
+        case "Home": toTop(); e.preventDefault(); return;
+        case "End": toBottom(); e.preventDefault(); return;
+        case " ": by(e.shiftKey ? -pageH() : pageH()); e.preventDefault(); return;
+        case "n": nextHit(); return;
+        case "N": prevHit(); return;
+      }
+      return;
+    }
+    // Vim pager.
+    switch (e.key) {
+      case "j": by(lineH()); e.preventDefault(); break;
+      case "k": by(-lineH()); e.preventDefault(); break;
+      case "d": by(halfH()); e.preventDefault(); break;
+      case "u": by(-halfH()); e.preventDefault(); break;
+      case "f": by(pageH()); e.preventDefault(); break;
+      case "b": by(-pageH()); e.preventDefault(); break;
+      case "G": toBottom(); e.preventDefault(); break;
+      case "n": nextHit(); e.preventDefault(); break;
+      case "N": prevHit(); e.preventDefault(); break;
+      case "/": openFind(); e.preventDefault(); break;
+      case "g":
+        if (pendingG) { toTop(); pendingG = false; } else { pendingG = true; }
+        e.preventDefault(); return;
+      case "PageDown": by(pageH()); e.preventDefault(); break;
+      case "PageUp": by(-pageH()); e.preventDefault(); break;
+      case "Home": toTop(); e.preventDefault(); break;
+      case "End": toBottom(); e.preventDefault(); break;
+      case " ": by(e.shiftKey ? -pageH() : pageH()); e.preventDefault(); break;
+    }
+    pendingG = false;
+  });
+
+  // 

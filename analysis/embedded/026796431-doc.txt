@@ -1,0 +1,4 @@
+─
+# Otty ships a CLI binary inside the .app bundle. If "Install CLI" has not
+# been run (no /usr/local/bin/otty symlink), point shells at our per-process
+# bin dir so `otty 

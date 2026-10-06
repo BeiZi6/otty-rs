@@ -1,0 +1,5 @@
+INSERT INTO remote_host_meta (alias, source, last_error, last_error_at)
+VALUES (?, ?, ?, ?)
+ON CONFLICT(alias) DO UPDATE SET
+    last_error = excluded.last_error,
+    last_error_at = excluded.last_error_at

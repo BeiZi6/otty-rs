@@ -1,0 +1,5 @@
+— Timestamp: PID: Fault address (si_addr): , pid , uid 
+Stack of the signalled thread (innermost first; raw frame-pointer walk, image + offset):
+
+Note: for fault signals the OS crash reporter adds the fully symbolicated report (macOS `.ips` under ~/Library/Logs/DiagnosticReports/); SIGTERM/SIGHUP never produce one, so the stack above is then the only record. Decimal offsets match the `imageOffset` field of any same-build `.ips`; resolve names offline with `atos -o <image> -l <load-addr>`.
+atexit handler 

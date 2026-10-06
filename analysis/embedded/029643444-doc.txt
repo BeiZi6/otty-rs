@@ -1,0 +1,4 @@
+→ Ghostty export
+# https://docs.otty.sh/reference/configuration
+
+Shelllogin-shell/bin/shProfileFilelaunchappearanceLaunchSectionelevateProfileSectionAppearanceSectiontitle-prefix

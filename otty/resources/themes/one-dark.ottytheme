@@ -1,0 +1,21 @@
+# Otty theme — One Dark
+# The shipped Otty 1.5.4 theme text, comments and all. Sole deliberate deviation:
+# [token].font-ui = ["Styrene B", "Styrene A"] (appended here); the shipped build named the
+# platform UI stack there (Segoe UI / SF Pro / -apple-system / Inter).
+# Shipped palette repeats, do not "fix": 1:9, 2:10, 3:11, 4:12, 5:13, 6:14.
+[meta]
+name = "One Dark"
+mode = "dark"
+
+[terminal]
+foreground = "#ABB2BF"
+background = "#282C34"
+palette = [
+    "#1E2127", "#E06C75", "#98C379", "#D19A66",
+    "#61AFEF", "#C678DD", "#56B6C2", "#ABB2BF",
+    "#5C6370", "#E06C75", "#98C379", "#D19A66",
+    "#61AFEF", "#C678DD", "#56B6C2", "#FFFFFF",
+]
+
+[token]
+font-ui = ["Styrene B", "Styrene A"]

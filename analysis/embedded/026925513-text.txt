@@ -1,0 +1,16 @@
+…)`.
+                        echo "otty: terminfo probe failed for $_otty_target; TERM stays xterm-256color" >&2
+                    end
+                end
+            end
+
+            # Under umask 077: the app refuses a metadata file others could have
+            # written, and Debian's default umask 002 would make this one
+            # group-writable. fish's umask is a function; restore it after.
+            set -l _otty_old_umask (umask)
+            umask 077
+            printf 'user=%s\nhostname=%s\nsocket=%s\n' $_otty_user $_otty_hostname $_otty_ctl_path > "$_otty_meta_file" 2>/dev/null
+            umask $_otty_old_umask
+        end
+
+        # 

@@ -1,0 +1,11 @@
+─
+  function wireMore() {
+    document.querySelectorAll(".more-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var card = btn.closest(".user-card");
+        if (!card) return;
+        var rest = card.querySelector(".user-rest");
+        var expanded = btn.getAttribute("data-expanded") === "1";
+        if (expanded) {
+          rest.hidden = true;
+          btn.textContent = "

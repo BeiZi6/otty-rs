@@ -1,0 +1,93 @@
+…` are tokens this must not react to. Returns 0 = blocked.
+    function __otty_ssh_blocks_bootstrap
+        set -l skip 0
+        for tok in $argv
+            if test $skip -eq 1
+                set skip 0
+                continue
+            end
+            # Everything after `--` is the destination (we are only called
+            # when there is no remote command), so the scan is done.
+            if test "$tok" = "--"
+                return 1
+            end
+            # A lone `-` is not an option, it is a destination. `-*` rather
+            # than `-?*`: fish 4 dropped `?` as a glob wildcard, so the older
+            # spelling silently matches nothing and every flag reads as
+            # allowed.
+            if test "$tok" = "-"; or not string match -q -- '-*' "$tok"
+                continue
+            end
+            set -l body (string sub -s 2 -- "$tok")
+            while test -n "$body"
+                set -l ch (string sub -l 1 -- "$body")
+                set body (string sub -s 2 -- "$body")
+                switch $ch
+                    case N W O G T s
+                        return 0
+                    # Value-taking (OpenSSH's own getopt string): the rest of
+                    # the token is its value, or the next token when there is
+                    # no rest.
+                    case b c e i l m o p B D E F I J L P Q R S w
+                        if test -z "$body"
+                            set skip 1
+                        end
+                        break
+                end
+            end
+        end
+        return 1
+    end
+
+    # Is $argv[2] (the alias as typed) or $argv[3] (user@hostname) a line of
+    # the file $argv[1]? One entry per line, written by the app; a missing or
+    # unreadable file means "no host qualifies", which is what a fresh install
+    # looks like.
+    function __otty_ssh_host_listed
+        set -l file $argv[1]
+        if test -z "$file" -o ! -r "$file"
+            return 1
+        end
+        set -l listed (command cat "$file" 2>/dev/null)
+        for h in $argv[2..-1]
+            if test -n "$h"; and contains -- "$h" $listed
+                return 0
+            end
+        end
+        return 1
+    end
+
+    # The remote login shell we have on record for this host, or nothing.
+    # `<config_dir>/remote-shells`, lines of `<host> <shell>`; the directory is
+    # taken from $OTTY_HELPER_HOSTS so a debug build reads its own config dir.
+    # Nothing is probed: asking the host would cost a connection and could
+    # raise an auth prompt, and "we do not know" is an answer this may give.
+    function __otty_ssh_recorded_shell
+        if test -z "$OTTY_HELPER_HOSTS"
+            return 0
+        end
+        set -l file (string replace -r '/[^/]*$' '' -- "$OTTY_HELPER_HOSTS")"/remote-shells"
+        if test ! -r "$file"
+            return 0
+        end
+        for line in (command cat "$file" 2>/dev/null)
+            set -l parts (string split -m 1 " " -- $line)
+            if test (count $parts) -ne 2
+                continue
+            end
+            for h in $argv
+                if test -n "$h" -a "$parts[1]" = "$h"
+                    echo $parts[2]
+                    return 0
+                end
+            end
+        end
+    end
+
+    function ssh --wraps=ssh
+        set -l _otty_term "xterm-256color"
+        set -l _otty_opts \
+            -o "SetEnv=COLORTERM=truecolor TERM_PROGRAM=otty" \
+            -o "SendEnv=COLORTERM TERM_PROGRAM TERM_PROGRAM_VERSION"
+
+        # 

@@ -1,0 +1,11 @@
+—
+                # because a two-stage exec it cannot parse would not degrade,
+                # it would end the session.
+                #
+                # $OTTY_REMOTE_SHELL overrides $SHELL when the host knows
+                # better (and lets the shells be exercised without chsh).
+                set _otty_opts $_otty_opts -t
+                set _otty_boot 'sh -c \'export OTTY_REMOTE=1; S="${OTTY_REMOTE_SHELL:-${SHELL:-/bin/sh}}"; D="$HOME/.local/share/otty/bin"; case "${S##*/}" in bash|zsh|sh|dash|ksh|ash) exec "$S" -l -c "PATH=\"$D:\$PATH\"; export PATH; exec \"$S\" -i" ;; fish) exec "$S" -l -c "set -gx PATH \"$D\" \$PATH; exec \"$S\" -i" ;; *) PATH="$D:$PATH"; export PATH; exec "$S" -l ;; esac\''
+            else if test "$OTTY_REMOTE_HELPER_POLICY" != "never"
+                and contains -- bash (__otty_ssh_recorded_shell "$_otty_alias" "$_otty_target")
+                # `contains`, not `test (

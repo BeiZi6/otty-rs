@@ -1,0 +1,90 @@
+─
+  var findBar = document.getElementById("find");
+  var findInput = document.getElementById("find-input");
+  var findCount = document.getElementById("find-count");
+  var transcript = document.getElementById("transcript");
+  var hits = [];
+  var hitIndex = -1;
+
+  function clearHits() {
+    var marks = transcript.querySelectorAll("mark.find-hit");
+    for (var i = 0; i < marks.length; i++) {
+      var m = marks[i];
+      var parent = m.parentNode;
+      parent.replaceChild(document.createTextNode(m.textContent), m);
+      parent.normalize();
+    }
+    hits = []; hitIndex = -1;
+  }
+
+  function runFind(query) {
+    clearHits();
+    if (!query) { findCount.textContent = "0/0"; return; }
+    var q = query.toLowerCase();
+    var walker = document.createTreeWalker(transcript, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        var p = node.parentNode;
+        if (p && (p.tagName === "SCRIPT" || p.tagName === "STYLE" || p.classList.contains("find-hit")))
+          return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var targets = [], n;
+    while ((n = walker.nextNode())) {
+      if (n.nodeValue.toLowerCase().indexOf(q) >= 0) targets.push(n);
+      if (targets.length > 2000) break;
+    }
+    for (var i = 0; i < targets.length; i++) {
+      var node = targets[i], text = node.nodeValue, lower = text.toLowerCase();
+      var frag = document.createDocumentFragment(), pos = 0, idx;
+      while ((idx = lower.indexOf(q, pos)) >= 0) {
+        if (idx > pos) frag.appendChild(document.createTextNode(text.slice(pos, idx)));
+        var mk = document.createElement("mark");
+        mk.className = "find-hit";
+        mk.textContent = text.slice(idx, idx + q.length);
+        frag.appendChild(mk);
+        hits.push(mk);
+        pos = idx + q.length;
+        if (hits.length >= 1000) break;
+      }
+      if (pos < text.length) frag.appendChild(document.createTextNode(text.slice(pos)));
+      node.parentNode.replaceChild(frag, node);
+      if (hits.length >= 1000) break;
+    }
+    if (hits.length) { hitIndex = 0; activateHit(); }
+    else findCount.textContent = "0/0";
+  }
+
+  function activateHit() {
+    for (var i = 0; i < hits.length; i++) hits[i].classList.remove("find-active");
+    if (hitIndex < 0 || hitIndex >= hits.length) return;
+    var h = hits[hitIndex];
+    h.classList.add("find-active");
+    h.scrollIntoView({ block: "center", behavior: "auto" });
+    findCount.textContent = (hitIndex + 1) + "/" + hits.length;
+  }
+  function nextHit() { if (hits.length) { hitIndex = (hitIndex + 1) % hits.length; activateHit(); } }
+  function prevHit() { if (hits.length) { hitIndex = (hitIndex - 1 + hits.length) % hits.length; activateHit(); } }
+
+  function openFind() {
+    findBar.hidden = false;
+    var sel = (window.getSelection().toString() || "").split("\n")[0];
+    if (sel) findInput.value = sel;
+    findInput.focus(); findInput.select();
+    if (findInput.value) runFind(findInput.value);
+  }
+  function closeFind() { findBar.hidden = true; clearHits(); findCount.textContent = "0/0"; findInput.blur(); }
+
+  if (findInput) {
+    findInput.addEventListener("input", function () { runFind(findInput.value); });
+    findInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); if (e.shiftKey) prevHit(); else nextHit(); }
+      else if (e.key === "Escape") { e.preventDefault(); closeFind(); }
+    });
+    document.getElementById("find-next").addEventListener("click", nextHit);
+    document.getElementById("find-prev").addEventListener("click", prevHit);
+    document.getElementById("find-close").addEventListener("click", closeFind);
+  }
+
+  // 

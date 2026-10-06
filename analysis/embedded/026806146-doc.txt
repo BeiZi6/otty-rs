@@ -1,0 +1,16 @@
+— wait for a Claude/Codex/OpenCode session to reach
+# idle. The colon is part of the command name as far as the shell is
+# concerned, so the bare `watch` wrapper above never catches it; install
+# one wrapper per agent. Keep in sync with WATCH_AGENTS in cli/src/main.rs.
+for __otty_a in claude codex opencode; do
+    __otty_should_wrap "watch:$__otty_a" && eval "watch:$__otty_a() {
+        if [[ -n \"\$OTTY_FLAGS_DIR\" && -f \"\$OTTY_FLAGS_DIR/omit_prefix\" ]]; then
+            command otty watch:$__otty_a \"\$@\"
+        else
+            command watch:$__otty_a \"\$@\"
+        fi
+    }"
+done
+unset __otty_a
+
+# 

@@ -1,0 +1,19 @@
+— sandbox-exec's initial
+;; execvp(TARGET_BIN) goes through this rule.  Combined with the implicit
+;; deny on process-fork, the probed process can run --help but cannot
+;; spawn any child of its own.
+(allow process-exec (literal (param "TARGET_BIN")))
+
+;; --- File reads (whitelist) ---
+;; With file-write/network/ipc/mach all denied, a probed binary cannot
+;; exfiltrate what it reads.  The only channel back to us is stdout, which
+;; the parser only retains as option/subcommand tokens.  So we allow the
+;; system paths --help routinely needs and exclude $HOME, /tmp, /Volumes.
+(allow file-read*
+  (literal (param "TARGET_BIN"))
+  ;; System dylibs / SDKs / dyld shared cache.
+  (subpath "/usr")
+  (subpath "/System")
+  (subpath "/Library")
+  (subpath "/System/Volumes")
+  ;; Third-party package managers 

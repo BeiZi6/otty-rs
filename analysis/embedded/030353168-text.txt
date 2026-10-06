@@ -1,0 +1,7 @@
+INSERT INTO remote_host_meta (alias, source, helper_state, helper_version,
+                              helper_declined_at)
+VALUES (?, ?, ?, ?, ?)
+ON CONFLICT(alias) DO UPDATE SET
+    helper_state = excluded.helper_state,
+    helper_version = excluded.helper_version,
+    helper_declined_at = excluded.helper_declined_at

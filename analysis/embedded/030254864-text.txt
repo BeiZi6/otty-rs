@@ -1,0 +1,5 @@
+"]');
+  if (!el) {
+    // Fall back to nearest preceding element when the exact line was
+    // an inline node (markdown attaches data-source-line to blocks
+    // only). Walk down from the closest line 

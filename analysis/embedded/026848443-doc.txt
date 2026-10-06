@@ -1,0 +1,5 @@
+— whoever installs last wins.
+# Silently losing it kills our C/D marks: session restore then reads
+# "prompt marks but no command ever ran" and skips the whole replay,
+# dropping real scrollback. So every prompt re-checks the trap and, if a
+# framework stole it, chains it back 

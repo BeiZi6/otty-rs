@@ -1,0 +1,59 @@
+— this list is by hand.
+[[machine_lines]]
+file  = ["~/.gitconfig", "~/.config/git/config"]
+match = { prefix = ["signingkey", "helper"] }
+sshid       = "ssh"
+name     = "OpenSSH"
+homepage = "https://www.openssh.com"
+description = "The OpenSSH client: encrypted remote login, and a config that names how to reach each host."
+icon     = "theSVG:ssh"
+detect   = ["ssh"]
+
+# ssh_config(5) FILES: ~/.ssh/config is the per-user client config. The
+# Include directive makes ~/.ssh/config.d a common split-config convention.
+paths = ["~/.ssh/config", "~/.ssh/config.d/"]
+
+# known_hosts is per-machine trust state that both ssh and the user rewrite
+# constantly; syncing it produces conflicts with no benefit.
+exclude = ["~/.ssh/known_hosts", "~/.ssh/known_hosts.old", "~/.ssh/authorized_keys"]
+
+# Private keys. `~/.ssh/id_*` deliberately also catches the matching .pub
+# files: over-classifying a public key costs a little convenience, and this
+# list is a floor, not a ceiling.
+secret = ["~/.ssh/id_*", "~/.ssh/*.pem", "~/.ssh/*.key"]
+
+[[machine_lines]]
+file  = "~/.ssh/config"
+match = { prefix = ["IdentityFile", "IdentityAgent", "ControlPath", "UserKnownHostsFile"] }
+id       = "tmux"
+name     = "tmux"
+homepage = "https://github.com/tmux/tmux/wiki"
+description = "A terminal multiplexer: many terminals in one screen, in sessions that outlive the window."
+icon     = "theSVG:tmux"
+detect   = ["tmux"]
+platforms = ["macos", "linux"]
+
+# tmux(1) FILES: ~/.tmux.conf and $XDG_CONFIG_HOME/tmux/tmux.conf.
+paths = ["~/.tmux.conf", "~/.config/tmux/"]
+
+# tpm and tmux-resurrect check out git repos and dump session state below the
+# config directory; neither is configuration.
+exclude = [
+  "~/.tmux/plugins/",
+  "~/.config/tmux/plugins/",
+  "~/.config/tmux/resurrect/",
+]
+
+secret = []
+
+[[machine_lines]]
+file  = "~/.tmux.conf"
+match = { prefix = ["set -g default-shell", "set -g default-command"] }
+neovimid       = "neovim"
+name     = "Neovim"
+homepage = "https://neovim.io"
+description = "Vim refactored around Lua configuration, a built-in LSP client and an embeddable core."
+icon     = "theSVG:neovim"
+detect   = ["nvim"]
+
+# :help config, :help base-directories 

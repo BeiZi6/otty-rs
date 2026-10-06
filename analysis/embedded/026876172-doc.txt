@@ -1,0 +1,39 @@
+— the same class of attack the host guards
+                # against when it vets the metadata file's ownership. Skipping
+                # multiplexing is the safe degradation: socket= is written empty
+                # and the host simply leaves controlSocket unset.
+                _otty_ctl_dir="$(mktemp -d /tmp/otty-ssh.XXXXXX 2>/dev/null)"
+                if [[ -n "$_otty_ctl_dir" ]]; then
+                    _otty_ctl_path="$_otty_ctl_dir/socket"
+                    _otty_opts+=(
+                        -o "ControlMaster=auto"
+                        -o "ControlPath=$_otty_ctl_path"
+                        -o "ControlPersist=60"
+                    )
+                fi
+            fi
+
+            # Terminfo install (cached per user@host).
+            #
+            # Skipped entirely when the caller supplied a remote command: a
+            # probe there would open a second connection behind the back of a
+            # script that asked for exactly one, and terminfo only matters for a
+            # session that has a tty. TERM then stays at the xterm-256color
+            # default, which every system terminfo database already resolves.
+            local _otty_cache_dir="${TMPDIR:-/tmp}/otty-terminfo-cache"
+            command mkdir -p "$_otty_cache_dir" 2>/dev/null
+            local _otty_cache_file="$_otty_cache_dir/$_otty_target"
+
+            if [[ -f "$_otty_cache_file" ]]; then
+                _otty_term="${TERM:-xterm-256color}"
+            elif (( ! _otty_has_cmd )) && command -v infocmp >/dev/null 2>&1; then
+                local _otty_terminfo
+                _otty_terminfo="$(infocmp -0 -x 2>/dev/null)"
+
+                if [[ -n "$_otty_terminfo" ]]; then
+                    # Deliberately NOT sharing $_otty_ctl_path here. This probe
+                    # used to run with ControlMaster=yes and hand its master to
+                    # the interactive ssh below, saving one auth round-trip. But
+                    # that demoted the interactive connection to a mux *client*,
+                    # and a client's interactive session can hang with no output
+                    # at all 

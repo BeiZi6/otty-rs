@@ -1,0 +1,19 @@
+— the argv scan still covers the flags themselves.
+        set -l _otty_batchmode ""
+        set -l _otty_requesttty ""
+        set -l _otty_sessiontype ""
+        for _line in (command ssh -G $argv 2>/dev/null)
+            set -l _parts (string split -m 1 " " -- $_line)
+            switch $_parts[1]
+                case "user"
+                    set _otty_user $_parts[2]
+                case "hostname"
+                    set _otty_hostname $_parts[2]
+                case "batchmode"
+                    set _otty_batchmode $_parts[2]
+                case "requesttty"
+                    set _otty_requesttty $_parts[2]
+                case "sessiontype"
+                    set _otty_sessiontype $_parts[2]
+                case "host"
+                    # The alias as typed, before ssh_config resolved it 

@@ -1,0 +1,11 @@
+— one flat band across the
+# top that read as a separate titlebar, which is exactly what two columns fixes.
+[windows]
+material = "none"
+# The content column's colour, and the reason it reaches the top edge: with no
+# material on the window this is a flat fill, not a tint, and it matches
+# `[terminal].background` so the strip above the grid and the grid itself are
+# one continuous plate.
+color    = "#202020"
+
+# `acrylic` is `DesktopAcrylicKind::Base` 

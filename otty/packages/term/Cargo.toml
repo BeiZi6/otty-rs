@@ -1,0 +1,21 @@
+[package]
+name = "otty-term"
+description = "The VT engine: escape-sequence parser, grid, scrollback, reflow and selection."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+otty-core = { workspace = true }
+vte = { workspace = true }
+unicode-width = { workspace = true }
+unicode-segmentation = { workspace = true }
+unicode-bidi = { workspace = true }
+log = { workspace = true }
+serde = { workspace = true }
+base64 = { workspace = true }
+

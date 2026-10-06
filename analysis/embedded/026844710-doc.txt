@@ -1,0 +1,10 @@
+…` still works without polluting the user's system. The
+# guard avoids appending the same dir twice across nested shells.
+if [[ -n "$OTTY_BIN_DIR" && -d "$OTTY_BIN_DIR" ]]; then
+    case ":$PATH:" in
+        *":$OTTY_BIN_DIR:"*) ;;
+        *) export PATH="$OTTY_BIN_DIR:$PATH" ;;
+    esac
+fi
+
+# 

@@ -1,0 +1,32 @@
+— otherwise a host with no saved password would go straight to
+        # "Permission denied" instead of prompting. The list is a plain file
+        # (one alias per line, written by the app) precisely so this check costs
+        # a read and not a process.
+        #
+        # Decided BEFORE the terminfo probe below, which opens a connection of
+        # its own (`ControlMaster=no`): without this the probe would spend a
+        # failed password attempt on every ssh to such a host, which is exactly
+        # what fail2ban counts.
+        if [[ -n "${OTTY_ASKPASS_HOSTS:-}" && -n "$_otty_alias" && -r "${OTTY_ASKPASS_HOSTS}" ]]; then
+            local _otty_askpass_bin="${OTTY_ASKPASS_HOSTS%/*}/otty-askpass"
+            if [[ -x "$_otty_askpass_bin" ]]; then
+                local _otty_askpass_line
+                while IFS= read -r _otty_askpass_line; do
+                    [[ "$_otty_askpass_line" == "$_otty_alias" ]] || continue
+                    # `local -x` scopes the export to this call: the next
+                    # command in the pane must not inherit an SSH_ASKPASS
+                    # pointing at one host's password.
+                    local -x SSH_ASKPASS="$_otty_askpass_bin"
+                    local -x SSH_ASKPASS_REQUIRE="force"
+                    local -x OTTY_ASKPASS_ALIAS="$_otty_alias"
+                    break
+                done < "${OTTY_ASKPASS_HOSTS}"
+            fi
+        fi
+
+        # A ControlPath is only a *name* until something creates the socket.
+        # `ssh -G` prints the configured path whether or not multiplexing is
+        # actually on, so a `ControlPath` in ssh_config with ControlMaster left
+        # at its default `no` looked exactly like a live master here: nothing
+        # was minted, and `socket=` below named a path that never comes into
+        # existence 

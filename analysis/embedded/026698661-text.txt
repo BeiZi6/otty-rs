@@ -1,0 +1,9 @@
+— most CLI tools live here.
+  (subpath "/opt/homebrew")
+  (subpath "/opt/local")
+  ;; System-wide config (resolv.conf, ssl/openssl.cnf, ...).
+  (subpath "/private/etc")
+  (subpath "/private/var/db/timezone")
+  ;; Per-user TMPDIR / caches (the kernel rewrites $TMPDIR to here).
+  (subpath "/private/var/folders")
+  ;; Path traversal 

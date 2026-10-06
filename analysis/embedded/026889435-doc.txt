@@ -1,0 +1,19 @@
+…)` runs this wrapper in a
+        # command-substitution subshell whose stdout is the capture pipe.
+        __otty_osc7 "ssh://${_otty_hostname:-unknown}"
+
+        # Spelled out twice rather than expanding a possibly-empty array into
+        # the one call: the no-bootstrap line has to stay identical to what it
+        # was before this feature existed, and "identical" should be visible.
+        # (`"${arr[@]}"` on an empty array is also an error under `set -u` in
+        # bash 3.2, which is what macOS still ships.)
+        if (( ${#_otty_boot[@]} )); then
+            TERM="$_otty_term" command ssh "${_otty_opts[@]}" "$@" "${_otty_boot[@]}"
+        else
+            TERM="$_otty_term" command ssh "${_otty_opts[@]}" "$@"
+        fi
+        local _ret=$?
+
+        command rm -f "$_otty_meta_file" 2>/dev/null
+
+        # Retire the ControlMaster we minted above. Only ours 

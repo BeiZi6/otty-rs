@@ -1,0 +1,10 @@
+─
+    #
+    # The bootstrap changes the ssh command line, so every one of these
+    # answers "may we?" and every one of them fails CLOSED: when in doubt the
+    # invocation stays byte for byte what the user typed.
+
+    # Does this command line ask for something other than an interactive
+    # session? -N / -W (forwarding), -O (control command), -G (config dump),
+    # -T (no tty), -s (subsystem). BatchMode and RequestTTY are NOT looked for
+    # here 

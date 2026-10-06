@@ -1,0 +1,17 @@
+— a ControlPath the
+        # caller passed in belongs to whoever created it, hence the _otty_ctl_dir
+        # guard. Without this the master lingers for the whole ControlPersist
+        # window and its mktemp'd directory was never removed at all, so every
+        # ssh invocation leaked one empty /tmp/otty-ssh.XXXXXX forever.
+        if test -n "$_otty_ctl_dir"
+            command ssh -o "ControlPath=$_otty_ctl_path" -O exit $_otty_conn >/dev/null 2>&1
+            command rm -rf "$_otty_ctl_dir" 2>/dev/null
+        end
+        # Sweep dirs orphaned by earlier crashes. -empty means a live master's
+        # dir (it still holds its socket) is never touched. The trailing slash on
+        # /tmp/ is load-bearing: on macOS /tmp is a symlink to private/tmp and
+        # find won't descend into it without one, silently matching nothing.
+        command find /tmp/ -maxdepth 1 -type d -name 'otty-ssh.*' -empty -delete 2>/dev/null
+
+        # Restore local CWD reporting. Guarded in lockstep with the ssh:// mark
+        # above 

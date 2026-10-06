@@ -1,0 +1,11 @@
+ 2>/dev/null | tail -n 1
+echo '##NETLINUX'; cat /proc/net/dev
+echo '##HOST'; hostname 2>/dev/null || uname -n
+sleep 0.2
+echo '##CPU2'; head -n 1 /proc/stat
+;;
+Darwin)
+echo '##OS'; uname -sm
+echo '##MEMTOTAL'; sysctl -n hw.memsize
+echo '##VMSTAT'; vm_stat
+echo '##DISK'; df -Pk 

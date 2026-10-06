@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<!--
+  Otty AppleScript dictionary.
+
+  Designed to be drop-in compatible with the most common Terminal.app
+  automation verbs so existing scripts port over by swapping the app name:
+
+      tell application "Otty"
+          do script "ls -la"                       # opens a new window
+          do script "make build" in front window   # runs in an existing window
+          set t to do script "top" in window 1
+          get contents of t                         # visible screen text
+          get history of t                          # scrollback + visible
+          if busy of t then ...                     # foreground process running?
+          set custom title of t to "Build"
+          get tty of selected tab of front window
+      end tell
+
+  Everything maps onto Otty's existing session plumbing (the same primitives
+  the `otty` CLI / IPC layer uses). See Sources/Packages/AppleScript/.
+-->
+<dictionary xmlns:xi="http://www.w3.org/2003/XInclude">
+
+    <!-- Pull in the standard suite (application, window, open/quit/count/get/set…). -->
+    <xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef"
+                xpointer="xpointer(/dictionary/suite)"/>
+
+    <suite name="Otty Suite" code="OTTY" description="Terminal scripting for Otty.">
+
+        <!-- ============================ do script ============================ -->
+        <command name="do script" code="OTTYDScr"
+                 description="Run a command in a tab. With no 'in' target, a new window is opened and the command runs there.">
+            <cocoa class="OttyDoScriptCommand"/>
+            <direct-parameter type="text" optional="yes"
+                              description="The command (or shell script) to run."/>
+            <parameter name="in" code="kfil" type="specifier" optional="yes"
+                       description="The window or tab in which to run the command.">
+                <cocoa key="In"/>
+            </parameter>
+            <result type="tab" description="The tab the command ran in."/>
+        </command>
+
+        <!-- ===================== window class extension ====================== -->
+        <class-extension extends="window" description="An Otty terminal window.">
+            <element type="tab">
+                <cocoa key="tabs"/>
+            </element>
+            <property name="selected tab" code="oStb" type="tab" access="r"
+                      description="The frontmost (selected) tab of the window.">
+                <cocoa key="selectedTab"/>
+            </property>
+        </class-extension>
+
+        <!-- ============================== tab =============================== -->
+        <class name="tab" code="oTab" description="A terminal tab in an Otty window."
+               plural="tabs">
+            <cocoa class="OttyScriptingTab"/>
+
+            <property name="id" code="ID  " type="text" access="r"
+                      description="The session id (also usable as a selector with the `otty` CLI).">
+                <cocoa key="uniqueID"/>
+            </property>
+            <property name="contents" code="oCnt" type="text" access="r"
+                      description="The text currently visible on screen.">
+                <cocoa key="contents"/>
+            </property>
+            <property name="history" code="oHis" type="text" access="r"
+                      description="The full scrollback plus the visible screen, as text.">
+                <cocoa key="history"/>
+            </property>
+            <property name="busy" code="oBsy" type="boolean" access="r"
+                      description="Whether a foreground process (other than the shell) is running.">
+                <cocoa key="busy"/>
+            </property>
+            <property name="processes" code="oPrc" access="r"
+                      description="Names of the processes running in the tab.">
+                <cocoa key="processes"/>
+                <type type="text" list="yes"/>
+            </property>
+            <property name="selected" code="oSel" type="boolean" access="rw"
+                      description="Whether the tab is the selected tab of its window. Set to true to bring it forward.">
+                <cocoa key="selected"/>
+            </property>
+            <property name="custom title" code="oCtt" type="text" access="rw"
+                      description="A user-set title for the tab. Set to empty text to restore the shell-provided title.">
+                <cocoa key="customTitle"/>
+            </property>
+            <property name="tty" code="oTty" type="text" access="r"
+                      description="The tty device path of the tab's shell (e.g. /dev/ttys003).">
+                <cocoa key="tty"/>
+            </property>
+            <property name="number of rows" code="oRow" type="integer" access="r"
+                      description="The number of rows in the tab's grid.">
+                <cocoa key="numberOfRows"/>
+            </property>
+            <property name="number of columns" code="oCol" type="integer" access="r"
+                      description="The number of columns in the tab's grid.">
+                <cocoa key="numberOfColumns"/>
+            </property>
+            <property name="working directory" code="oCwd" type="text" access="r"
+                      description="The current working directory of the tab's shell.">
+                <cocoa key="workingDirectory"/>
+            </property>
+        </class>
+
+    </suite>
+</dictionary>

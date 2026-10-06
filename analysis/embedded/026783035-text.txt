@@ -1,0 +1,42 @@
+— exit status of the command that just ran (if any).
+      if ($global:__OttyCmdRan) {
+        $code = if ($__otty_ok) { 0 } else { 1 }
+        if (-not $__otty_ok -and ($__otty_exit -is [int]) -and $__otty_exit -ne 0) { $code = $__otty_exit }
+        # A line that never BECAME a command reports 127, the code every POSIX
+        # shell uses for it. PowerShell has no exit code of its own here -- both
+        # a mistyped name and a build that failed arrive as 1 -- so a consumer
+        # (the autocomplete history, which must not offer a typo back) cannot
+        # tell them apart without this. FullyQualifiedErrorId carries the .NET
+        # type name and is NOT localized, unlike the error text, and it is there
+        # in every ErrorView including pwsh 7's ConciseView.
+        if (-not $__otty_ok) {
+          try {
+            $base = if ($global:__OttyErrCount -is [int]) { $global:__OttyErrCount } else { [int]::MaxValue }
+            if ($global:Error.Count -gt $base) {
+              $er = $global:Error[0]
+              if ($er -and ($er.FullyQualifiedErrorId -is [string]) -and
+                  $er.FullyQualifiedErrorId.StartsWith('CommandNotFoundException')) { $code = 127 }
+            }
+          } catch {}
+        }
+        $out += "$e]133;D;$code$b"
+        $global:__OttyCmdRan = $false
+      }
+      # OSC 9;4 terminator for an auto-progress command. Its own `if`, not
+      # nested in the __OttyCmdRan block above: the two flags are set together
+      # but a spinner that misses its terminator spins on the tab forever,
+      # so it does not ride on another flag staying in sync.
+      if ($global:__OttyProgressActive) {
+        $global:__OttyProgressActive = $false
+        if ($__otty_ok) { $out += "$e]9;4;5;0$b" } else { $out += "$e]9;4;2$b" }
+      }
+      try {
+        $loc = Get-Location
+        if ($loc.Provider.Name -eq 'FileSystem') {
+          $p = $loc.ProviderPath -replace '\\','/'
+          $out += "$e]7;file://$env:COMPUTERNAME/$p$b"
+        }
+      } catch {}
+      # Token distinguishes our prompt mark from one emitted by a program
+      # running under us (OSC 133 is a public convention).
+      # Not inside a multiplexer only 

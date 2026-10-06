@@ -1,0 +1,4036 @@
+# strings_cli.txt: 3664 legacy symbols -> 720 modules
+
+## crates (by symbol count)
+  ptr                                 610
+  otty_config                         163
+  raw_vec                             136
+  _<&T as core::fmt::Debug>           136
+  otty_dev                            134
+  clap_builder                        132
+  slice                               128
+  regex_automata                      114
+  regex_syntax                        101
+  _<serde_json::value::ser::SerializeMap as serde_core::ser::SerializeStruct>     74
+  serde_core                           72
+  fmt                                  72
+  sys                                  69
+  _<regex_automata::meta::strategy::Pre<P> as regex_automata::meta::strategy::Strategy>     62
+  _<P as clap_builder::builder::value_parser::AnyValueParser>     61
+  serde_json                           59
+  aho_corasick                         38
+  str                                  37
+  qrcode                               37
+  sync                                 36
+  _<core::marker::PhantomData<T> as serde_core::de::DeserializeSeed>     33
+  rustc_demangle                       31
+  panicking                            31
+  num                                  30
+  _<&T as core::fmt::Display>          30
+  ops                                  29
+  collections                          28
+  clap_complete                        27
+  io                                   26
+  vec                                  23
+  gimli                                22
+  _<T as serde_core::de::Expected>     22
+  unicode                              21
+  _<alloc::vec::Vec<T> as alloc::vec::spec_from_iter_nested::SpecFromIterNested<T,I>>     21
+  toml_edit                            21
+  rusqlite                             20
+  _<T as alloc::string::SpecToString>     20
+  _<toml_edit::de::array::ArrayDeserializer as serde_core::de::Deserializer>     19
+  hashbrown                            18
+  _<toml_edit::de::table::TableDeserializer as serde_core::de::Deserializer>     18
+  _<T as core::any::Any>               16
+  _<alloc::vec::Vec<T,A> as core::fmt::Debug>     15
+  iter                                 15
+  error                                15
+  _<&mut A as serde_core::de::SeqAccess>     14
+  _<core::iter::adapters::filter_map::FilterMap<I,F> as core::iter::traits::iterator::Iterator>     14
+  thread                               13
+  _<core::option::Option<T> as core::fmt::Debug>     12
+  _<&mut A as serde_core::de::MapAccess>     11
+  _<regex_automata::meta::strategy::ReverseInner as regex_automata::meta::strategy::Strategy>     11
+  _<regex_automata::meta::strategy::ReverseSuffix as regex_automata::meta::strategy::Strategy>     11
+  winnow                               10
+  _<regex_automata::meta::strategy::ReverseAnchored as regex_automata::meta::strategy::Strategy>     10
+  cell                                 10
+  _<regex_automata::meta::strategy::Core as regex_automata::meta::strategy::Strategy>     10
+  addr2line                            10
+  backtrace_rs                         10
+  _<core::iter::adapters::map::Map<I,F> as core::iter::traits::iterator::Iterator>     10
+  memchr                                9
+  path                                  9
+  _<regex_automata::meta::strategy::Pre<P> as core::fmt::Debug>      7
+  hash                                  7
+  _<clap_builder::builder::value_parser::EnumValueParser<E> as clap_builder::builder::value_parser::TypedValueParser>      6
+  fs                                    6
+  anstream                              6
+  process                               6
+  _<alloc::vec::Vec<T> as alloc::vec::spec_from_iter::SpecFromIter<T,I>>      6
+  _<regex_automata::util::prefilter::memchr::Memchr as regex_automata::util::prefilter::PrefilterI>      5
+  _<regex_automata::util::prefilter::teddy::Teddy as regex_automata::util::prefilter::PrefilterI>      5
+  _<core::iter::adapters::cloned::Cloned<I> as core::iter::traits::iterator::Iterator>      5
+  _<regex_automata::util::prefilter::byteset::ByteSet as regex_automata::util::prefilter::PrefilterI>      4
+  _<regex_automata::util::prefilter::memmem::Memmem as regex_automata::util::prefilter::PrefilterI>      4
+  _<std::sys::stdio::unix::Stderr as std::io::Write>      4
+  _<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<_> as core::fmt::Debug>      4
+  rt                                    4
+  env                                   4
+  _<std::io::default_write_fmt::Adapter<T> as core::fmt::Write>      4
+  _<toml_edit::de::table::TableMapAccess as serde_core::de::MapAccess>      4
+  _<core::iter::adapters::flatten::FlattenCompat<I,U> as core::iter::traits::iterator::Iterator>      4
+  _<toml::value::Value as serde_core::de::Deserializer>      4
+  _<regex_automata::util::prefilter::aho_corasick::AhoCorasick as regex_automata::util::prefilter::PrefilterI>      4
+  _<winnow::combinator::impls::Map<F,G,I,O,O2,E> as winnow::parser::Parser<I,O2,E>>      4
+  _<regex_automata::util::prefilter::memchr::Memchr3 as regex_automata::util::prefilter::PrefilterI>      3
+  serde                                 3
+  _<T as alloc::vec::spec_from_elem::SpecFromElem>      3
+  _<serde_json::de::MapAccess<R> as serde_core::de::MapAccess>      3
+  _<alloc::vec::drain::Drain<T,A> as core::ops::drop::Drop>      3
+  _<core::time::Duration as core::fmt::Debug>      3
+  _<&mut serde_json::ser::Serializer<W,F> as serde_core::ser::Serializer>      3
+  _<std::panicking::panic_handler::StaticStrPayload as core::panic::PanicPayload>      3
+  object                                3
+  _<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>      3
+  indexmap                              3
+  _<<alloc::collections::btree::map::IntoIter<K,V,A> as core::ops::drop::Drop>::drop::DropGuard<K,V,A> as core::ops::drop::Drop>      3
+  otty_state                            3
+  _<winnow::combinator::multi::Repeat<P,I,O,C,E> as winnow::parser::Parser<I,C,E>>      3
+  _<regex_automata::util::prefilter::memchr::Memchr2 as regex_automata::util::prefilter::PrefilterI>      3
+  clap_lex                              3
+  anstyle                               3
+  panic                                 3
+  _<alloc::collections::btree::map::BTreeMap<K,V,A> as core::ops::drop::Drop>      3
+  _<qrcode::render::unicode::Canvas1x2 as qrcode::render::Canvas>      2
+  _<alloc::string::String as core::fmt::Write>      2
+  _<std::panicking::panic_handler::FormatStringPayload as core::panic::PanicPayload>      2
+  _<toml_edit::de::value::ValueDeserializer as serde_core::de::Deserializer>      2
+  _<std::panicking::begin_panic::Payload<A> as core::panic::PanicPayload>      2
+  otty_ssh_config                       2
+  _<clap_builder::builder::value_parser::RangedI64ValueParser<T> as clap_builder::builder::value_parser::TypedValueParser>      2
+  _<alloc::vec::Vec<T,A> as core::clone::Clone>      2
+  _<std::io::stdio::Stdin as std::io::Read>      2
+  _<<toml::value::Value as serde_core::de::Deserialize>::deserialize::ValueVisitor as serde_core::de::Visitor>      2
+  _<regex_syntax::hir::translate::TranslatorI as regex_syntax::ast::visitor::Visitor>      2
+  option                                2
+  _<toml::value::MapDeserializer as serde_core::de::MapAccess>      2
+  _<otty_config::theme_def::_::<impl serde_core::de::Deserialize for otty_config::theme_def::ElementStyle>::deserialize::__Visitor as serde_core::de::Visitor>      2
+  _<core::iter::adapters::flatten::Flatten<I> as core::iter::traits::iterator::Iterator>      2
+  _<str as serde_json::value::index::Index>      2
+  _<T as alloc::slice::<impl [T]>::to_vec_in::ConvertVec>      2
+  _<serde_json::read::SliceRead as serde_json::read::Read>      2
+  _<core::str::pattern::StrSearcher as core::str::pattern::Searcher>      2
+  regex                                 2
+  boxed                                 2
+  ffi                                   2
+  _<<serde_core::de::WithDecimalPoint as core::fmt::Display>::fmt::LookForDecimalPoint as core::fmt::Write>      2
+  _<serde_json::error::Error as serde_core::de::Error>      2
+  _<core::fmt::builders::PadAdapter as core::fmt::Write>      2
+  otty_autocomplete                     2
+  _<core::iter::adapters::filter::Filter<I,P> as core::iter::traits::iterator::Iterator>      2
+  _<otty_config::theme_def::_::<impl serde_core::de::Deserialize for otty_config::theme_def::PlatformStyle>::deserialize::__Visitor as serde_core::de::Visitor>      2
+  _<alloc::sync::Arc<T,A> as core::fmt::Debug>      2
+  core_text                             2
+  _<str as core::fmt::Debug>            1
+  _<aho_corasick::util::debug::DebugByte as core::fmt::Debug>      1
+  _<otty_config::OptionAsAlt as core::fmt::Display>      1
+  _<bool as core::fmt::Debug>           1
+  _<otty_dev::args::RemoteCommand as clap_builder::derive::Subcommand>      1
+  _<&T as rusqlite::types::to_sql::ToSql>      1
+  _<otty_dev::args::IpcArgs as clap_builder::derive::FromArgMatches>      1
+  _<otty_config::HistoryUpArrow as core::fmt::Display>      1
+  _<otty_dev::args::PaneCommand as clap_builder::derive::Subcommand>      1
+  _<toml_edit::parser::error::CustomError as core::fmt::Debug>      1
+  _<std::sys::backtrace::BacktraceLock::print::DisplayBacktrace as core::fmt::Display>      1
+  _<otty_dev::args::IgnoreArgs as clap_builder::derive::FromArgMatches>      1
+  _<alloc::string::String as core::fmt::Display>      1
+  _<clap_builder::util::escape::Escape as core::fmt::Display>      1
+  _<regex_automata::util::alphabet::Unit as core::fmt::Debug>      1
+  _<regex_automata::nfa::thompson::pikevm::Config as core::fmt::Debug>      1
+  _<otty_config::RemoteHelperPolicy as core::fmt::Display>      1
+  _<aho_corasick::dfa::DFA as core::fmt::Debug>      1
+  _<otty_dev::args::HelpProbeArgs as clap_builder::derive::FromArgMatches>      1
+  _<regex_automata::util::prefilter::memmem::Memmem as core::fmt::Debug>      1
+  _<otty_config::CursorStyle as core::fmt::Display>      1
+  _<aho_corasick::util::prefilter::Packed as core::fmt::Debug>      1
+  _<otty_config::OscColorFormat as core::fmt::Display>      1
+  _<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<1_usize> as aho_corasick::packed::teddy::builder::SearcherT>      1
+  _<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<2_usize> as aho_corasick::packed::teddy::builder::SearcherT>      1
+  toml                                  1
+  _<alloc::ffi::c_str::NulError as core::fmt::Debug>      1
+  _<otty_config::FileOpenWith as core::fmt::Display>      1
+  _<otty_config::WorkingDirectory as core::fmt::Display>      1
+  strsim                                1
+  zmij                                  1
+  _<clap_builder::builder::value_parser::BoolValueParser as clap_builder::builder::value_parser::TypedValueParser>      1
+  _<regex_syntax::hir::ClassUnicodeRange as regex_syntax::hir::interval::Interval>      1
+  _<toml_edit::parser::error::CustomError as core::fmt::Display>      1
+  _<std::sys::sync::once::queue::WaiterQueue as core::ops::drop::Drop>      1
+  _<regex_automata::util::search::PatternSetInsertError as core::fmt::Debug>      1
+  _<std::sys::sync::rwlock::queue::PanicGuard as core::ops::drop::Drop>      1
+  _<memchr::arch::all::rabinkarp::Hash as core::fmt::Debug>      1
+  array                                 1
+  _<aho_corasick::util::prefilter::StartBytesThree as aho_corasick::util::prefilter::PrefilterI>      1
+  _<otty_dev::args::StateArgs as clap_builder::derive::FromArgMatches>      1
+  _<clap_builder::builder::value_parser::StringValueParser as clap_builder::builder::value_parser::TypedValueParser>      1
+  _<alloc::collections::btree::map::Iter<K,V> as core::iter::traits::iterator::Iterator>      1
+  _<toml_edit::parser::error::CustomError as core::error::Error>      1
+  _<regex_automata::util::prefilter::byteset::ByteSet as core::fmt::Debug>      1
+  _<regex_automata::util::start::Start as core::fmt::Debug>      1
+  _<alloc::string::FromUtf8Error as core::fmt::Debug>      1
+  _<regex_automata::util::captures::GroupInfoError as core::fmt::Debug>      1
+  _<otty_config::Language as core::fmt::Display>      1
+  itoa                                  1
+  _<rusqlite::row::Rows as fallible_streaming_iterator::FallibleStreamingIterator>      1
+  _<aho_corasick::util::search::Span as core::fmt::Debug>      1
+  _<regex_syntax::ast::ClassSet as core::ops::drop::Drop>      1
+  _<regex_syntax::hir::Hir as core::ops::drop::Drop>      1
+  _<regex_automata::meta::wrappers::PikeVM as core::fmt::Debug>      1
+  _<clap_builder::error::context::ContextValue as core::cmp::PartialEq>      1
+  _<rusqlite::error::Error as core::fmt::Display>      1
+  _<otty_config::HistoryScope as core::fmt::Display>      1
+  _<core::iter::sources::from_fn::FromFn<F> as core::iter::traits::iterator::Iterator>      1
+  _<regex_automata::util::prefilter::aho_corasick::AhoCorasick as core::fmt::Debug>      1
+  _<i64 as alloc::string::SpecToString>      1
+  _<aho_corasick::packed::api::SearchKind as core::fmt::Debug>      1
+  _<serde::private::de::content::ExpectedInSeq as serde_core::de::Expected>      1
+  _<regex_automata::util::escape::DebugByte as core::fmt::Debug>      1
+  _<F as clap_builder::builder::value_parser::TypedValueParser>      1
+  _<otty_config::Color as core::fmt::Display>      1
+  _<std::path::Components as core::iter::traits::iterator::Iterator>      1
+  _<regex_automata::dfa::onepass::Slots as core::fmt::Debug>      1
+  _<aho_corasick::util::prefilter::RareBytesTwo as aho_corasick::util::prefilter::PrefilterI>      1
+  _<regex_automata::meta::strategy::Core as core::fmt::Debug>      1
+  _<core::str::iter::Split<P> as core::iter::traits::iterator::Iterator>      1
+  _<otty_config::OutputScrollAnimation as core::fmt::Display>      1
+  _<std::panicking::panic_handler::FormatStringPayload as core::fmt::Display>      1
+  _<aho_corasick::util::error::MatchError as core::fmt::Debug>      1
+  _<otty_dev::args::ConfigCommand as clap_builder::derive::Subcommand>      1
+  _<&[u8] as alloc::ffi::c_str::CString::new::SpecNewImpl>      1
+  _<otty_dev::args::TabArgs as clap_builder::derive::FromArgMatches>      1
+  _<core::iter::adapters::GenericShunt<I,R> as core::iter::traits::iterator::Iterator>      1
+  _<std::ffi::os_str::OsString as core::fmt::Debug>      1
+  _<clap_builder::builder::value_parser::RangedU64ValueParser<T> as clap_builder::builder::value_parser::TypedValueParser>      1
+  _<regex_syntax::hir::Hir as core::fmt::Debug>      1
+  _<aho_corasick::util::primitives::StateIDError as core::fmt::Debug>      1
+  _<qrcode::types::QrError as core::fmt::Debug>      1
+  _<&clap_builder::builder::styled_str::StyledStr as core::default::Default>      1
+  _<std::path::PathBuf as core::cmp::PartialEq>      1
+  _<serde_json::value::ser::SerializeVec as serde_core::ser::SerializeSeq>      1
+  _<u64 as itoa::Unsigned>              1
+  _<toml::value::SeqDeserializer as serde_core::de::SeqAccess>      1
+  _<toml_datetime::datetime::Datetime as core::fmt::Display>      1
+  _<toml::de::Error as core::fmt::Display>      1
+  _<otty_dev::args::ImportArgs as clap_builder::derive::FromArgMatches>      1
+  _<otty_dev::args::WindowCommand as clap_builder::derive::Subcommand>      1
+  _<otty_config::OnLaunch as core::fmt::Display>      1
+  _<aho_corasick::packed::api::MatchKind as core::fmt::Debug>      1
+  _<toml_datetime::datetime::Lexer as core::iter::traits::iterator::Iterator>      1
+  _<regex_syntax::hir::Hir as core::clone::Clone>      1
+  _<regex_syntax::ast::Ast as core::ops::drop::Drop>      1
+  _<toml_edit::de::array::ArraySeqAccess as serde_core::de::SeqAccess>      1
+  _<f64 as rusqlite::types::to_sql::ToSql>      1
+  _<aho_corasick::packed::rabinkarp::RabinKarp as core::fmt::Debug>      1
+  _<toml_edit::raw_string::RawString as core::fmt::Debug>      1
+  _<clap_builder::util::flat_map::FlatMap<K,V> as core::clone::Clone>      1
+  _<otty_dev::args::GlobalFlags as clap_builder::derive::Args>      1
+  _<serde_core::de::impls::StringVisitor as serde_core::de::Visitor>      1
+  _<otty_config::Config as core::default::Default>      1
+  _<aho_corasick::nfa::contiguous::NFA as core::fmt::Debug>      1
+  _<alloc::boxed::convert::<impl core::convert::From<alloc::string::String> for alloc::boxed::Box<dyn core::error::Error+core::marker::Sync+core::marker::Send>>::from::StringError as core::fmt::Debug>      1
+  _<regex_automata::meta::strategy::ReverseInner as core::fmt::Debug>      1
+  _<std::path::Components as core::cmp::PartialEq>      1
+  _<clap_builder::util::flat_set::FlatSet<T> as core::iter::traits::collect::Extend<T>>      1
+  _<toml_edit::repr::Decor as core::fmt::Debug>      1
+  _<gimli::read::abbrev::Attributes as core::ops::deref::Deref>      1
+  _<regex_automata::nfa::thompson::backtrack::Config as core::fmt::Debug>      1
+  _<otty_dev::args::RemoteArgs as clap_builder::derive::FromArgMatches>      1
+  _<clap_builder::util::any_value::AnyValue as core::fmt::Debug>      1
+  _<core_foundation::dictionary::CFDictionary<core_foundation::string::CFString,core_foundation::base::CFType> as core_text::font_descriptor::TraitAccessors>      1
+  _<std::collections::hash::set::HashSet<T,S> as core::iter::traits::collect::FromIterator<T>>      1
+  _<core::str::error::Utf8Error as core::fmt::Display>      1
+  _<regex_automata::util::alphabet::ByteClasses as core::fmt::Debug>      1
+  _<memchr::memmem::searcher::Searcher as core::fmt::Debug>      1
+  _<regex_automata::meta::strategy::ReverseSuffix as core::fmt::Debug>      1
+  _<regex_automata::util::start::StartByteMap as core::fmt::Debug>      1
+  _<regex_automata::util::look::LookSet as core::fmt::Debug>      1
+  _<otty_config::ConfirmCloseWindow as core::fmt::Display>      1
+  _<regex_automata::util::prefilter::memchr::Memchr as core::fmt::Debug>      1
+  _<regex_automata::meta::regex::RegexInfo as core::fmt::Debug>      1
+  libsqlite3_sys                        1
+  _<std::sys::fs::unix::ReadDir as core::iter::traits::iterator::Iterator>      1
+  _<core::str::lossy::Utf8Chunks as core::iter::traits::iterator::Iterator>      1
+  _<alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<&T,core::slice::iter::Iter<T>>>      1
+  _<otty_config::Ligatures as core::fmt::Display>      1
+  _<otty_dev::args::JumpArgs as clap_builder::derive::FromArgMatches>      1
+  _<rusqlite::types::value_ref::ValueRef as core::fmt::Debug>      1
+  _<otty_config::WindowsTextRendering as core::fmt::Display>      1
+  _<otty_config::QuickTerminalCwd as core::fmt::Display>      1
+  _<regex_automata::hybrid::dfa::Config as core::fmt::Debug>      1
+  _<otty_dev::args::WatchAgentArgs as clap_builder::derive::FromArgMatches>      1
+  _<qrcode::types::QrError as core::fmt::Display>      1
+  _<regex::error::Error as core::fmt::Display>      1
+  _<&[u8] as object::read::read_ref::ReadRef>      1
+  _<otty_config::CursorAnimation as core::fmt::Display>      1
+  _<toml_edit::key::Key as core::clone::Clone>      1
+  time                                  1
+  _<otty_dev::args::FeaturesArgs as clap_builder::derive::FromArgMatches>      1
+  _<otty_dev::args::ExternalImportArgs as clap_builder::derive::Args>      1
+  _<otty_dev::args::ViewArgs as clap_builder::derive::FromArgMatches>      1
+  _<std::path::Display as core::fmt::Display>      1
+  _<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<3_usize> as aho_corasick::packed::teddy::builder::SearcherT>      1
+  _<regex_automata::util::prefilter::memchr::Memchr3 as core::fmt::Debug>      1
+  _<otty_config::LinkSchemeMode as core::fmt::Display>      1
+  otty_remote_shim                      1
+  _<char as core::fmt::Debug>           1
+  _<std::backtrace_rs::symbolize::SymbolName as core::fmt::Display>      1
+  _<aho_corasick::util::prefilter::StartBytesOne as aho_corasick::util::prefilter::PrefilterI>      1
+  _<otty_dev::args::ExternalImportArgs as clap_builder::derive::FromArgMatches>      1
+  _<otty_config::WindowSize as core::fmt::Display>      1
+  _<otty_config::AutocompleteDescriptionLanguage as core::fmt::Display>      1
+  _<core::hash::sip::Hasher<S> as core::hash::Hasher>      1
+  _<aho_corasick::util::primitives::SmallIndexError as core::fmt::Debug>      1
+  _<serde_json::value::Value as core::fmt::Display>      1
+  _<std::io::stdio::Stdout as std::io::Write>      1
+  _<otty_dev::args::ViewArgs as clap_builder::derive::Args>      1
+  _<otty_config::CtrlCAction as core::fmt::Display>      1
+  _<serde_core::de::WithDecimalPoint as core::fmt::Display>      1
+  _<otty_config::AutocompleteInlineProvider as core::fmt::Display>      1
+  _<T as core::convert::Into<U>>        1
+  _<winnow::combinator::impls::Span<F,I,O,E> as winnow::parser::Parser<I,core::ops::range::Range<usize>,E>>      1
+  _<regex_automata::util::prefilter::teddy::Teddy as core::fmt::Debug>      1
+  _<otty_dev::args::ViewMode as clap_builder::derive::ValueEnum>      1
+  _<i64 as rusqlite::types::to_sql::ToSql>      1
+  _<i32 as alloc::string::SpecToString>      1
+  _<regex_automata::hybrid::id::LazyStateID as core::fmt::Debug>      1
+  _<serde_json::read::StrRead as serde_json::read::Read>      1
+  _<aho_corasick::util::prefilter::StartBytesTwo as core::fmt::Debug>      1
+  toml_datetime                         1
+  _<rusqlite::error::Error as core::fmt::Debug>      1
+  _<alloc::string::String as rusqlite::types::to_sql::ToSql>      1
+  _<std::path::Component as core::cmp::PartialEq>      1
+  _<aho_corasick::util::prefilter::RareByteOffsets as core::fmt::Debug>      1
+  _<otty_config::RightClickAction as core::fmt::Display>      1
+  _<std::sync::poison::PoisonError<T> as core::fmt::Debug>      1
+  _<otty_dev::args::Command as clap_builder::derive::FromArgMatches>      1
+  _<bool as core::fmt::Display>         1
+  panic_unwind                          1
+  _<aho_corasick::util::prefilter::RareBytesOne as core::fmt::Debug>      1
+  _<&mut serde_json::de::Deserializer<R> as serde_core::de::Deserializer>      1
+  _<alloc::vec::Vec<T,A> as core::ops::drop::Drop>      1
+  otty_ssh_argv                         1
+  _<core::alloc::layout::LayoutError as core::fmt::Debug>      1
+  _<core::ops::range::Range<Idx> as core::fmt::Debug>      1
+  _<otty_dev::args::Command as clap_builder::derive::Subcommand>      1
+  _<otty_config::NewTabPosition as core::fmt::Display>      1
+  _<regex_automata::util::primitives::StateID as core::fmt::Debug>      1
+  _<&mut T as core::fmt::Debug>         1
+  _<core::char::TryFromCharError as core::fmt::Debug>      1
+  _<gimli::read::line::FileEntry<R,Offset> as core::clone::Clone>      1
+  _<core::str::iter::Chars as core::iter::traits::iterator::Iterator>      1
+  _<rustc_demangle::SizeLimitExhausted as core::fmt::Debug>      1
+  _<otty_dev::args::BadgeKind as clap_builder::derive::ValueEnum>      1
+  _<std::io::stdio::StderrLock as anstream::stream::IsTerminal>      1
+  _<alloc::ffi::c_str::NulError as core::fmt::Display>      1
+  _<core::num::error::ParseIntError as core::fmt::Debug>      1
+  _<otty_config::AutocompleteCandidates as core::fmt::Display>      1
+  _<std::thread::local::AccessError as core::fmt::Debug>      1
+  _<regex_automata::meta::wrappers::Hybrid as core::fmt::Debug>      1
+  _<std::panicking::begin_panic::Payload<A> as core::fmt::Display>      1
+  _<aho_corasick::util::prefilter::Memmem as core::fmt::Debug>      1
+  _<serde_json::value::ser::SerializeVec as serde_core::ser::SerializeTuple>      1
+  _<otty_config::ConfigError as core::fmt::Display>      1
+  _<aho_corasick::util::prefilter::StartBytesThree as core::fmt::Debug>      1
+  _<regex_automata::nfa::thompson::nfa::Inner as core::fmt::Debug>      1
+  _<f64 as zmij::private::Sealed>       1
+  _<std::fs::ReadDir as core::iter::traits::iterator::Iterator>      1
+  _<core::str::pattern::CharSearcher as core::str::pattern::Searcher>      1
+  _<clap_builder::builder::str::Str as core::fmt::Display>      1
+  _<core::ops::range::RangeInclusive<Idx> as core::fmt::Debug>      1
+  _<regex_syntax::hir::LookSet as core::fmt::Debug>      1
+  _<otty_dev::args::Cli as clap_builder::derive::CommandFactory>      1
+  _<aho_corasick::util::search::MatchKind as core::fmt::Debug>      1
+  escape                                1
+  _<otty_config::WindowLayout as core::fmt::Display>      1
+  _<std::path::Components as core::iter::traits::double_ended::DoubleEndedIterator>      1
+  _<otty_config::AutocompleteShortcut as core::fmt::Display>      1
+  _<otty_config::Color as serde_core::ser::Serialize>      1
+  _<clap_builder::builder::arg::Arg as core::fmt::Display>      1
+  _<alloc::collections::btree::map::IntoIter<K,V,A> as core::ops::drop::Drop>      1
+  _<core::cell::BorrowMutError as core::fmt::Display>      1
+  _<aho_corasick::util::alphabet::ByteClasses as core::fmt::Debug>      1
+  _<otty_dev::args::SshArgs as clap_builder::derive::FromArgMatches>      1
+  _<regex_automata::util::primitives::PatternID as core::fmt::Debug>      1
+  _<toml::de::Deserializer as serde_core::de::Deserializer>      1
+  _<&str as serde_core::de::Expected>      1
+  _<core::num::dec2flt::ParseFloatError as core::fmt::Display>      1
+  _<std::io::stdio::Stderr as std::io::Write>      1
+  _<core::iter::adapters::take::Take<I> as core::iter::traits::iterator::Iterator>      1
+  _<serde_json::value::ser::Serializer as serde_core::ser::Serializer>      1
+  _<otty_config::CtrlShortcuts as core::fmt::Display>      1
+  _<core::num::error::TryFromIntError as core::fmt::Display>      1
+  _<alloc::string::String as core::clone::Clone>      1
+  _<core::str::error::Utf8Error as core::fmt::Debug>      1
+  _<otty_config::ClipboardAccess as core::fmt::Display>      1
+  _<serde_json::value::index::Type as core::fmt::Display>      1
+  _<std::io::stdio::StdoutLock as anstream::stream::IsTerminal>      1
+  _<otty_dev::args::SshCommand as clap_builder::derive::Subcommand>      1
+  _<() as core::fmt::Debug>             1
+  _<clap_builder::builder::arg::Arg as core::clone::Clone>      1
+  core_foundation                       1
+  _<rustc_demangle::SizeLimitedFmtAdapter<F> as core::fmt::Write>      1
+  _<clap_builder::parser::error::MatchesError as core::fmt::Display>      1
+  _<serde_json::de::SeqAccess<R> as serde_core::de::SeqAccess>      1
+  _<core::fmt::Arguments as core::fmt::Display>      1
+  _<&std::io::stdio::Stdout as std::io::Write>      1
+  _<otty_config::FontBlending as core::fmt::Display>      1
+  _<otty_dev::args::TabCommand as clap_builder::derive::Subcommand>      1
+  _<regex_automata::dfa::onepass::Epsilons as core::fmt::Debug>      1
+  _<clap_builder::parser::matches::matched_arg::MatchedArg as core::clone::Clone>      1
+  _<otty_dev::args::ExternalExportArgs as clap_builder::derive::Args>      1
+  rust_oom                              1
+  _<regex_automata::util::search::MatchError as core::fmt::Display>      1
+  _<serde_json::error::ErrorCode as core::fmt::Display>      1
+  _<otty_config::CursorBlink as core::fmt::Display>      1
+  _<regex_automata::util::prefilter::Prefilter as core::fmt::Debug>      1
+  _<std::thread::spawnhook::SpawnHooks as core::ops::drop::Drop>      1
+  intrinsics                            1
+  _<char as core::fmt::Display>         1
+  _<qrcode::optimize::Parser as core::iter::traits::iterator::Iterator>      1
+  _<regex_automata::util::search::MatchError as core::fmt::Debug>      1
+  _<aho_corasick::packed::teddy::generic::Teddy<_> as core::fmt::Debug>      1
+  _<otty_config::SessionLogMode as core::fmt::Display>      1
+  _<serde_json::error::Error as core::fmt::Display>      1
+  _<clap_builder::builder::command::Command as core::clone::Clone>      1
+  _<otty_config::RemoteTakeover as core::fmt::Display>      1
+  _<regex_automata::meta::strategy::ReverseAnchored as core::fmt::Debug>      1
+  _<core::str::lossy::Debug as core::fmt::Debug>      1
+  _<regex_automata::meta::wrappers::OnePass as core::fmt::Debug>      1
+  _<std::io::stdio::StdoutLock as std::io::Write>      1
+  _<otty_config::theme_import::ThemeImportError as core::fmt::Display>      1
+  _<otty_dev::args::LearnArgs as clap_builder::derive::FromArgMatches>      1
+  _<otty_config::FontStyleMode as core::fmt::Display>      1
+  _<otty_dev::args::JumpPathArgs as clap_builder::derive::Args>      1
+  _<libsqlite3_sys::error::Error as core::fmt::Debug>      1
+  _<core::fmt::Error as core::fmt::Debug>      1
+  _<otty_config::TerminalScrollPastEnd as core::fmt::Display>      1
+  string                                1
+  _<*mut T as core::fmt::Debug>         1
+  _<otty_config::TerminalScrollPastFirstLine as core::fmt::Display>      1
+  _<regex_automata::hybrid::error::CacheError as core::fmt::Debug>      1
+  _<regex_syntax::debug::Byte as core::fmt::Debug>      1
+  _<core::num::error::ParseIntError as core::fmt::Display>      1
+  _<otty_dev::args::ThemeImportArgs as clap_builder::derive::FromArgMatches>      1
+  _<serde_json::error::Error as core::fmt::Debug>      1
+  _<aho_corasick::util::prefilter::RareBytesTwo as core::fmt::Debug>      1
+  _<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<4_usize> as aho_corasick::packed::teddy::builder::SearcherT>      1
+  _<otty_config::WindowShowTabBar as core::fmt::Display>      1
+  _<memchr::arch::all::rabinkarp::Finder as core::fmt::Debug>      1
+  _<serde_core::de::Unexpected as core::fmt::Display>      1
+  _<winnow::error::ErrMode<E> as winnow::error::ParserError<I>>      1
+  _<serde_json::error::JsonUnexpected as core::fmt::Display>      1
+  _<serde::private::de::content::ContentRefDeserializer<E> as serde_core::de::Deserializer>      1
+  _<aho_corasick::util::prefilter::RareBytesThree as core::fmt::Debug>      1
+  _<regex_automata::meta::wrappers::ReverseHybrid as core::fmt::Debug>      1
+  _<regex_syntax::utf8::Utf8Sequences as core::iter::traits::iterator::Iterator>      1
+  char                                  1
+  _<otty_config::Language as core::str::traits::FromStr>      1
+  _<otty_dev::args::PaneCommand as clap_builder::derive::FromArgMatches>      1
+  _<toml_edit::internal_string::InternalString as core::fmt::Debug>      1
+  result                                1
+  _<anstyle::style::StyleDisplay as core::fmt::Display>      1
+  _<regex_automata::dfa::onepass::PatternEpsilons as core::fmt::Debug>      1
+  _<otty_dev::args::ThemeImportArgs as clap_builder::derive::Args>      1
+  _<core::cell::BorrowError as core::fmt::Display>      1
+  _<toml_edit::de::datetime::DatetimeDeserializer as serde_core::de::MapAccess>      1
+  _<otty_dev::args::ExportArgs as clap_builder::derive::FromArgMatches>      1
+  _<rustc_demangle::v0::Ident as core::fmt::Display>      1
+  _<alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<T,I>>      1
+  borrow                                1
+  _<regex_automata::util::alphabet::ByteSet as core::fmt::Debug>      1
+  _<std::ffi::os_str::OsStr as clap_lex::ext::OsStrExt>      1
+  _<otty_config::LinkOpenWith as core::fmt::Display>      1
+  _<&str as core::str::pattern::Pattern>      1
+  _<core::num::error::TryFromIntError as core::fmt::Debug>      1
+  _<otty_config::ScrollToBottom as core::fmt::Display>      1
+  _<regex_automata::nfa::thompson::nfa::Transition as core::fmt::Debug>      1
+  _<otty_dev::args::AgentHookArgs as clap_builder::derive::FromArgMatches>      1
+  _<aho_corasick::util::prefilter::RareBytesThree as aho_corasick::util::prefilter::PrefilterI>      1
+  _<std::io::error::Error as core::fmt::Display>      1
+  _<otty_config::ConfirmCloseTab as core::fmt::Display>      1
+  _<alloc::collections::btree::map::BTreeMap<K,V,A> as core::clone::Clone>      1
+  _<std::sys::fs::unix::Dir as core::ops::drop::Drop>      1
+  _<otty_config::NotificationForeground as core::fmt::Display>      1
+  _<regex_automata::meta::wrappers::BoundedBacktracker as core::fmt::Debug>      1
+  _<regex_automata::meta::error::RetryFailError as core::convert::From<regex_automata::util::search::MatchError>>      1
+  _<std::io::buffered::bufreader::BufReader<R> as std::io::Read>      1
+  _<aho_corasick::util::prefilter::StartBytesOne as core::fmt::Debug>      1
+  _<clap_builder::builder::styled_str::StyledStr as core::fmt::Display>      1
+  _<std::io::error::ErrorKind as core::fmt::Debug>      1
+  _<aho_corasick::util::prefilter::Memmem as aho_corasick::util::prefilter::PrefilterI>      1
+  _<alloc::boxed::convert::<impl core::convert::From<alloc::string::String> for alloc::boxed::Box<dyn core::error::Error+core::marker::Sync+core::marker::Send>>::from::StringError as core::fmt::Display>      1
+  _<clap_builder::builder::value_parser::PathBufValueParser as clap_builder::builder::value_parser::TypedValueParser>      1
+  _<otty_config::RestoreProcesses as core::fmt::Display>      1
+  _<aho_corasick::util::prefilter::Packed as aho_corasick::util::prefilter::PrefilterI>      1
+  _<aho_corasick::util::prefilter::StartBytesTwo as aho_corasick::util::prefilter::PrefilterI>      1
+  _<regex_automata::nfa::thompson::nfa::NFA as core::fmt::Debug>      1
+  _<aho_corasick::util::prefilter::RareBytesOne as aho_corasick::util::prefilter::PrefilterI>      1
+  _<otty_dev::args::CompletionsArgs as clap_builder::derive::FromArgMatches>      1
+  _<memchr::cow::CowBytes as core::fmt::Debug>      1
+  _<regex_automata::util::prefilter::memchr::Memchr2 as core::fmt::Debug>      1
+  _<core::num::dec2flt::ParseFloatError as core::fmt::Debug>      1
+  _<std::io::stdio::StderrLock as std::io::Write>      1
+  _<std::io::error::Error as core::fmt::Debug>      1
+  _<regex_syntax::hir::translate::HirFrame as core::fmt::Debug>      1
+  _<regex_automata::hybrid::id::LazyStateIDError as core::fmt::Debug>      1
+  _<winnow::error::ContextError<C> as winnow::error::FromExternalError<I,E>>      1
+  _<regex_syntax::hir::Hir as core::cmp::PartialEq>      1
+
+## module tree
+
+_<&T as core::fmt::Debug>   (1)
+    fmt
+
+_<&T as core::fmt::Display>   (1)
+    fmt
+
+_<&T as rusqlite::types::to_sql::ToSql>   (1)
+    to_sql
+
+_<&[u8] as alloc::ffi::c_str::CString::new::SpecNewImpl>   (1)
+    spec_new_impl
+
+_<&[u8] as object::read::read_ref::ReadRef>   (1)
+    read_bytes_at_until
+
+_<&clap_builder::builder::styled_str::StyledStr as core::default::Default>   (1)
+    DEFAULT
+
+_<&mut A as serde_core::de::MapAccess>   (1)
+    next_value
+
+_<&mut A as serde_core::de::SeqAccess>   (1)
+    next_element
+
+_<&mut T as core::fmt::Debug>   (1)
+    fmt
+
+_<&mut serde_json::de::Deserializer<R> as serde_core::de::Deserializer>   (1)
+    deserialize_any
+
+_<&mut serde_json::ser::Serializer<W,F> as serde_core::ser::Serializer>   (1)
+    serialize_str
+
+_<&std::io::stdio::Stdout as std::io::Write>   (1)
+    write_fmt
+
+_<&str as core::str::pattern::Pattern>   (1)
+    is_contained_in
+
+_<&str as serde_core::de::Expected>   (1)
+    fmt
+
+_<() as core::fmt::Debug>   (1)
+    fmt
+
+_<*mut T as core::fmt::Debug>   (1)
+    fmt
+
+_<<alloc::collections::btree::map::IntoIter<K,V,A> as core::ops::drop::Drop>::drop::DropGuard<K,V,A> as core::ops::drop::Drop>   (1)
+    drop
+
+_<<serde_core::de::WithDecimalPoint as core::fmt::Display>::fmt::LookForDecimalPoint as core::fmt::Write>   (2)
+    write_char
+    write_str
+
+_<<toml::value::Value as serde_core::de::Deserialize>::deserialize::ValueVisitor as serde_core::de::Visitor>   (2)
+    visit_map
+    visit_seq
+
+_<F as clap_builder::builder::value_parser::TypedValueParser>   (1)
+    parse_ref
+
+_<P as clap_builder::builder::value_parser::AnyValueParser>   (5)
+    clone_any
+    parse_ref
+    parse_ref_
+    possible_values
+    type_id
+
+_<T as alloc::slice::<impl [T]>::to_vec_in::ConvertVec>   (1)
+    to_vec
+
+_<T as alloc::string::SpecToString>   (1)
+    spec_to_string
+
+_<T as alloc::vec::spec_from_elem::SpecFromElem>   (1)
+    from_elem
+
+_<T as core::any::Any>   (1)
+    type_id
+
+_<T as core::convert::Into<U>>   (1)
+    into
+
+_<T as serde_core::de::Expected>   (1)
+    fmt
+
+_<aho_corasick::dfa::DFA as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::nfa::contiguous::NFA as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::packed::api::MatchKind as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::packed::api::SearchKind as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::packed::rabinkarp::RabinKarp as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<1_usize> as aho_corasick::packed::teddy::builder::SearcherT>   (1)
+    find
+
+_<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<2_usize> as aho_corasick::packed::teddy::builder::SearcherT>   (1)
+    find
+
+_<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<3_usize> as aho_corasick::packed::teddy::builder::SearcherT>   (1)
+    find
+
+_<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<4_usize> as aho_corasick::packed::teddy::builder::SearcherT>   (1)
+    find
+
+_<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<_> as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::packed::teddy::generic::Teddy<_> as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::alphabet::ByteClasses as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::debug::DebugByte as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::error::MatchError as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::Memmem as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::Memmem as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::Packed as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::Packed as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::RareByteOffsets as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::RareBytesOne as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::RareBytesOne as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::RareBytesThree as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::RareBytesThree as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::RareBytesTwo as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::RareBytesTwo as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::StartBytesOne as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::StartBytesOne as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::StartBytesThree as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::StartBytesThree as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::prefilter::StartBytesTwo as aho_corasick::util::prefilter::PrefilterI>   (1)
+    find_in
+
+_<aho_corasick::util::prefilter::StartBytesTwo as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::primitives::SmallIndexError as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::primitives::StateIDError as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::search::MatchKind as core::fmt::Debug>   (1)
+    fmt
+
+_<aho_corasick::util::search::Span as core::fmt::Debug>   (1)
+    fmt
+
+_<alloc::boxed::convert::<impl core::convert::From<alloc::string::String> for alloc::boxed::Box<dyn core::error::Error+core::marker::Sync+core::marker::Send>>::from::StringError as core::fmt::Debug>   (1)
+    fmt
+
+_<alloc::boxed::convert::<impl core::convert::From<alloc::string::String> for alloc::boxed::Box<dyn core::error::Error+core::marker::Sync+core::marker::Send>>::from::StringError as core::fmt::Display>   (1)
+    fmt
+
+_<alloc::collections::btree::map::BTreeMap<K,V,A> as core::clone::Clone>   (1)
+    clone_subtree
+
+_<alloc::collections::btree::map::BTreeMap<K,V,A> as core::ops::drop::Drop>   (1)
+    drop
+
+_<alloc::collections::btree::map::IntoIter<K,V,A> as core::ops::drop::Drop>   (1)
+    drop
+
+_<alloc::collections::btree::map::Iter<K,V> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<alloc::ffi::c_str::NulError as core::fmt::Debug>   (1)
+    fmt
+
+_<alloc::ffi::c_str::NulError as core::fmt::Display>   (1)
+    fmt
+
+_<alloc::string::FromUtf8Error as core::fmt::Debug>   (1)
+    fmt
+
+_<alloc::string::String as core::clone::Clone>   (1)
+    clone
+
+_<alloc::string::String as core::fmt::Display>   (1)
+    fmt
+
+_<alloc::string::String as core::fmt::Write>   (2)
+    write_char
+    write_str
+
+_<alloc::string::String as rusqlite::types::to_sql::ToSql>   (1)
+    to_sql
+
+_<alloc::sync::Arc<T,A> as core::fmt::Debug>   (1)
+    fmt
+
+_<alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<&T,core::slice::iter::Iter<T>>>   (1)
+    spec_extend
+
+_<alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<T,I>>   (1)
+    spec_extend
+
+_<alloc::vec::Vec<T,A> as core::clone::Clone>   (1)
+    clone
+
+_<alloc::vec::Vec<T,A> as core::fmt::Debug>   (1)
+    fmt
+
+_<alloc::vec::Vec<T,A> as core::ops::drop::Drop>   (1)
+    drop
+
+_<alloc::vec::Vec<T> as alloc::vec::spec_from_iter::SpecFromIter<T,I>>   (1)
+    from_iter
+
+_<alloc::vec::Vec<T> as alloc::vec::spec_from_iter_nested::SpecFromIterNested<T,I>>   (1)
+    from_iter
+
+_<alloc::vec::drain::Drain<T,A> as core::ops::drop::Drop>   (1)
+    drop
+
+_<anstyle::style::StyleDisplay as core::fmt::Display>   (1)
+    fmt
+
+_<bool as core::fmt::Debug>   (1)
+    fmt
+
+_<bool as core::fmt::Display>   (1)
+    fmt
+
+_<char as core::fmt::Debug>   (1)
+    fmt
+
+_<char as core::fmt::Display>   (1)
+    fmt
+
+_<clap_builder::builder::arg::Arg as core::clone::Clone>   (1)
+    clone
+
+_<clap_builder::builder::arg::Arg as core::fmt::Display>   (1)
+    fmt
+
+_<clap_builder::builder::command::Command as core::clone::Clone>   (1)
+    clone
+
+_<clap_builder::builder::str::Str as core::fmt::Display>   (1)
+    fmt
+
+_<clap_builder::builder::styled_str::StyledStr as core::fmt::Display>   (1)
+    fmt
+
+_<clap_builder::builder::value_parser::BoolValueParser as clap_builder::builder::value_parser::TypedValueParser>   (1)
+    parse_ref
+
+_<clap_builder::builder::value_parser::EnumValueParser<E> as clap_builder::builder::value_parser::TypedValueParser>   (1)
+    parse_ref
+
+_<clap_builder::builder::value_parser::PathBufValueParser as clap_builder::builder::value_parser::TypedValueParser>   (1)
+    parse
+
+_<clap_builder::builder::value_parser::RangedI64ValueParser<T> as clap_builder::builder::value_parser::TypedValueParser>   (1)
+    parse_ref
+
+_<clap_builder::builder::value_parser::RangedU64ValueParser<T> as clap_builder::builder::value_parser::TypedValueParser>   (1)
+    parse_ref
+
+_<clap_builder::builder::value_parser::StringValueParser as clap_builder::builder::value_parser::TypedValueParser>   (1)
+    parse
+
+_<clap_builder::error::context::ContextValue as core::cmp::PartialEq>   (1)
+    eq
+
+_<clap_builder::parser::error::MatchesError as core::fmt::Display>   (1)
+    fmt
+
+_<clap_builder::parser::matches::matched_arg::MatchedArg as core::clone::Clone>   (1)
+    clone
+
+_<clap_builder::util::any_value::AnyValue as core::fmt::Debug>   (1)
+    fmt
+
+_<clap_builder::util::escape::Escape as core::fmt::Display>   (1)
+    fmt
+
+_<clap_builder::util::flat_map::FlatMap<K,V> as core::clone::Clone>   (1)
+    clone
+
+_<clap_builder::util::flat_set::FlatSet<T> as core::iter::traits::collect::Extend<T>>   (1)
+    extend
+
+_<core::alloc::layout::LayoutError as core::fmt::Debug>   (1)
+    fmt
+
+_<core::cell::BorrowError as core::fmt::Display>   (1)
+    fmt
+
+_<core::cell::BorrowMutError as core::fmt::Display>   (1)
+    fmt
+
+_<core::char::TryFromCharError as core::fmt::Debug>   (1)
+    fmt
+
+_<core::fmt::Arguments as core::fmt::Display>   (1)
+    fmt
+
+_<core::fmt::Error as core::fmt::Debug>   (1)
+    fmt
+
+_<core::fmt::builders::PadAdapter as core::fmt::Write>   (2)
+    write_char
+    write_str
+
+_<core::hash::sip::Hasher<S> as core::hash::Hasher>   (1)
+    write
+
+_<core::iter::adapters::GenericShunt<I,R> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::iter::adapters::cloned::Cloned<I> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::iter::adapters::filter::Filter<I,P> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::iter::adapters::filter_map::FilterMap<I,F> as core::iter::traits::iterator::Iterator>   (2)
+    next
+    size_hint
+
+_<core::iter::adapters::flatten::Flatten<I> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::iter::adapters::flatten::FlattenCompat<I,U> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::iter::adapters::flatten::FlattenCompat<I,U> as core::iter::traits::iterator::Iterator>::try_fold   (1)
+    _{{closure}}
+
+_<core::iter::adapters::map::Map<I,F> as core::iter::traits::iterator::Iterator>   (2)
+    next
+    size_hint
+
+_<core::iter::adapters::take::Take<I> as core::iter::traits::iterator::Iterator>   (1)
+    nth
+
+_<core::iter::sources::from_fn::FromFn<F> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::marker::PhantomData<T> as serde_core::de::DeserializeSeed>   (1)
+    deserialize
+
+_<core::num::dec2flt::ParseFloatError as core::fmt::Debug>   (1)
+    fmt
+
+_<core::num::dec2flt::ParseFloatError as core::fmt::Display>   (1)
+    fmt
+
+_<core::num::error::ParseIntError as core::fmt::Debug>   (1)
+    fmt
+
+_<core::num::error::ParseIntError as core::fmt::Display>   (1)
+    fmt
+
+_<core::num::error::TryFromIntError as core::fmt::Debug>   (1)
+    fmt
+
+_<core::num::error::TryFromIntError as core::fmt::Display>   (1)
+    fmt
+
+_<core::ops::range::Range<Idx> as core::fmt::Debug>   (1)
+    fmt
+
+_<core::ops::range::RangeInclusive<Idx> as core::fmt::Debug>   (1)
+    fmt
+
+_<core::option::Option<T> as core::fmt::Debug>   (1)
+    fmt
+
+_<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>   (1)
+    any
+
+_<core::str::error::Utf8Error as core::fmt::Debug>   (1)
+    fmt
+
+_<core::str::error::Utf8Error as core::fmt::Display>   (1)
+    fmt
+
+_<core::str::iter::Chars as core::iter::traits::iterator::Iterator>   (1)
+    count
+
+_<core::str::iter::Split<P> as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::str::lossy::Debug as core::fmt::Debug>   (1)
+    fmt
+
+_<core::str::lossy::Utf8Chunks as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<core::str::pattern::CharSearcher as core::str::pattern::Searcher>   (1)
+    next_match
+
+_<core::str::pattern::StrSearcher as core::str::pattern::Searcher>   (2)
+    next
+    next_match
+
+_<core::time::Duration as core::fmt::Debug>   (2)
+    fmt
+    fmt_decimal
+
+_<core::time::Duration as core::fmt::Debug>::fmt   (1)
+    _{{closure}}
+
+_<core_foundation::dictionary::CFDictionary<core_foundation::string::CFString,core_foundation::base::CFType> as core_text::font_descriptor::TraitAccessors>   (1)
+    symbolic_traits
+
+_<f64 as rusqlite::types::to_sql::ToSql>   (1)
+    to_sql
+
+_<f64 as zmij::private::Sealed>   (1)
+    write_to_zmij_buffer
+
+_<gimli::read::abbrev::Attributes as core::ops::deref::Deref>   (1)
+    deref
+
+_<gimli::read::line::FileEntry<R,Offset> as core::clone::Clone>   (1)
+    clone
+
+_<i32 as alloc::string::SpecToString>   (1)
+    spec_to_string
+
+_<i64 as alloc::string::SpecToString>   (1)
+    spec_to_string
+
+_<i64 as rusqlite::types::to_sql::ToSql>   (1)
+    to_sql
+
+_<libsqlite3_sys::error::Error as core::fmt::Debug>   (1)
+    fmt
+
+_<memchr::arch::all::rabinkarp::Finder as core::fmt::Debug>   (1)
+    fmt
+
+_<memchr::arch::all::rabinkarp::Hash as core::fmt::Debug>   (1)
+    fmt
+
+_<memchr::cow::CowBytes as core::fmt::Debug>   (1)
+    fmt
+
+_<memchr::memmem::searcher::Searcher as core::fmt::Debug>   (1)
+    fmt
+
+_<otty_config::AutocompleteCandidates as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::AutocompleteDescriptionLanguage as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::AutocompleteInlineProvider as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::AutocompleteShortcut as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::ClipboardAccess as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::Color as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::Color as serde_core::ser::Serialize>   (1)
+    serialize
+
+_<otty_config::Config as core::default::Default>   (1)
+    default
+
+_<otty_config::ConfigError as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::ConfirmCloseTab as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::ConfirmCloseWindow as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::CtrlCAction as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::CtrlShortcuts as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::CursorAnimation as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::CursorBlink as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::CursorStyle as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::FileOpenWith as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::FontBlending as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::FontStyleMode as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::HistoryScope as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::HistoryUpArrow as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::Language as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::Language as core::str::traits::FromStr>   (1)
+    from_str
+
+_<otty_config::Ligatures as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::LinkOpenWith as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::LinkSchemeMode as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::NewTabPosition as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::NotificationForeground as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::OnLaunch as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::OptionAsAlt as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::OscColorFormat as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::OutputScrollAnimation as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::QuickTerminalCwd as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::RemoteHelperPolicy as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::RemoteTakeover as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::RestoreProcesses as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::RightClickAction as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::ScrollToBottom as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::SessionLogMode as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::TerminalScrollPastEnd as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::TerminalScrollPastFirstLine as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::WindowLayout as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::WindowShowTabBar as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::WindowSize as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::WindowsTextRendering as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::WorkingDirectory as core::fmt::Display>   (1)
+    fmt
+
+_<otty_config::theme_def::_::<impl serde_core::de::Deserialize for otty_config::theme_def::ElementStyle>::deserialize::__Visitor as serde_core::de::Visitor>   (2)
+    visit_map
+    visit_seq
+
+_<otty_config::theme_def::_::<impl serde_core::de::Deserialize for otty_config::theme_def::PlatformStyle>::deserialize::__Visitor as serde_core::de::Visitor>   (2)
+    visit_map
+    visit_seq
+
+_<otty_config::theme_import::ThemeImportError as core::fmt::Display>   (1)
+    fmt
+
+_<otty_dev::args::AgentHookArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::BadgeKind as clap_builder::derive::ValueEnum>   (1)
+    to_possible_value
+
+_<otty_dev::args::Cli as clap_builder::derive::CommandFactory>   (1)
+    command
+
+_<otty_dev::args::Command as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::Command as clap_builder::derive::Subcommand>   (1)
+    augment_subcommands
+
+_<otty_dev::args::CompletionsArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::ConfigCommand as clap_builder::derive::Subcommand>   (1)
+    augment_subcommands
+
+_<otty_dev::args::ExportArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::ExternalExportArgs as clap_builder::derive::Args>   (1)
+    augment_args
+
+_<otty_dev::args::ExternalImportArgs as clap_builder::derive::Args>   (1)
+    augment_args
+
+_<otty_dev::args::ExternalImportArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::FeaturesArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::GlobalFlags as clap_builder::derive::Args>   (1)
+    augment_args
+
+_<otty_dev::args::HelpProbeArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::IgnoreArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::ImportArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::IpcArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::JumpArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::JumpPathArgs as clap_builder::derive::Args>   (1)
+    augment_args
+
+_<otty_dev::args::LearnArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::PaneCommand as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::PaneCommand as clap_builder::derive::Subcommand>   (1)
+    augment_subcommands
+
+_<otty_dev::args::RemoteArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::RemoteCommand as clap_builder::derive::Subcommand>   (1)
+    augment_subcommands
+
+_<otty_dev::args::SshArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::SshCommand as clap_builder::derive::Subcommand>   (1)
+    augment_subcommands
+
+_<otty_dev::args::StateArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::TabArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::TabCommand as clap_builder::derive::Subcommand>   (1)
+    augment_subcommands
+
+_<otty_dev::args::ThemeImportArgs as clap_builder::derive::Args>   (1)
+    augment_args
+
+_<otty_dev::args::ThemeImportArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::ViewArgs as clap_builder::derive::Args>   (1)
+    augment_args
+
+_<otty_dev::args::ViewArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::ViewMode as clap_builder::derive::ValueEnum>   (1)
+    to_possible_value
+
+_<otty_dev::args::WatchAgentArgs as clap_builder::derive::FromArgMatches>   (1)
+    from_arg_matches_mut
+
+_<otty_dev::args::WindowCommand as clap_builder::derive::Subcommand>   (1)
+    augment_subcommands
+
+_<qrcode::optimize::Parser as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<qrcode::render::unicode::Canvas1x2 as qrcode::render::Canvas>   (2)
+    into_image
+    new
+
+_<qrcode::types::QrError as core::fmt::Debug>   (1)
+    fmt
+
+_<qrcode::types::QrError as core::fmt::Display>   (1)
+    fmt
+
+_<regex::error::Error as core::fmt::Display>   (1)
+    fmt
+
+_<regex_automata::dfa::onepass::Epsilons as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::dfa::onepass::PatternEpsilons as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::dfa::onepass::Slots as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::hybrid::dfa::Config as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::hybrid::error::CacheError as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::hybrid::id::LazyStateID as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::hybrid::id::LazyStateIDError as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::error::RetryFailError as core::convert::From<regex_automata::util::search::MatchError>>   (1)
+    from
+
+_<regex_automata::meta::regex::RegexInfo as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::strategy::Core as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::strategy::Core as regex_automata::meta::strategy::Strategy>   (10)
+    create_cache
+    is_accelerated
+    is_match
+    memory_usage
+    name
+    reset_cache
+    search
+    search_half
+    search_slots
+    which_overlapping_matches
+
+_<regex_automata::meta::strategy::Pre<P> as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::strategy::Pre<P> as regex_automata::meta::strategy::Strategy>   (11)
+    create_cache
+    group_info
+    is_accelerated
+    is_match
+    memory_usage
+    name
+    reset_cache
+    search
+    search_half
+    search_slots
+    which_overlapping_matches
+
+_<regex_automata::meta::strategy::ReverseAnchored as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::strategy::ReverseAnchored as regex_automata::meta::strategy::Strategy>   (10)
+    create_cache
+    group_info
+    is_match
+    memory_usage
+    name
+    reset_cache
+    search
+    search_half
+    search_slots
+    which_overlapping_matches
+
+_<regex_automata::meta::strategy::ReverseInner as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::strategy::ReverseInner as regex_automata::meta::strategy::Strategy>   (11)
+    create_cache
+    group_info
+    is_accelerated
+    is_match
+    memory_usage
+    name
+    reset_cache
+    search
+    search_half
+    search_slots
+    which_overlapping_matches
+
+_<regex_automata::meta::strategy::ReverseSuffix as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::strategy::ReverseSuffix as regex_automata::meta::strategy::Strategy>   (11)
+    create_cache
+    group_info
+    is_accelerated
+    is_match
+    memory_usage
+    name
+    reset_cache
+    search
+    search_half
+    search_slots
+    which_overlapping_matches
+
+_<regex_automata::meta::wrappers::BoundedBacktracker as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::wrappers::Hybrid as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::wrappers::OnePass as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::wrappers::PikeVM as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::meta::wrappers::ReverseHybrid as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::nfa::thompson::backtrack::Config as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::nfa::thompson::nfa::Inner as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::nfa::thompson::nfa::NFA as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::nfa::thompson::nfa::Transition as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::nfa::thompson::pikevm::Config as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::alphabet::ByteClasses as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::alphabet::ByteSet as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::alphabet::Unit as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::captures::GroupInfoError as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::escape::DebugByte as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::look::LookSet as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::Prefilter as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::aho_corasick::AhoCorasick as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::aho_corasick::AhoCorasick as regex_automata::util::prefilter::PrefilterI>   (4)
+    find
+    memory_usage
+    name
+    prefix
+
+_<regex_automata::util::prefilter::byteset::ByteSet as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::byteset::ByteSet as regex_automata::util::prefilter::PrefilterI>   (4)
+    find
+    is_fast
+    name
+    prefix
+
+_<regex_automata::util::prefilter::memchr::Memchr as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::memchr::Memchr as regex_automata::util::prefilter::PrefilterI>   (5)
+    find
+    is_fast
+    memory_usage
+    name
+    prefix
+
+_<regex_automata::util::prefilter::memchr::Memchr2 as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::memchr::Memchr2 as regex_automata::util::prefilter::PrefilterI>   (3)
+    find
+    name
+    prefix
+
+_<regex_automata::util::prefilter::memchr::Memchr3 as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::memchr::Memchr3 as regex_automata::util::prefilter::PrefilterI>   (3)
+    find
+    name
+    prefix
+
+_<regex_automata::util::prefilter::memmem::Memmem as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::memmem::Memmem as regex_automata::util::prefilter::PrefilterI>   (4)
+    find
+    memory_usage
+    name
+    prefix
+
+_<regex_automata::util::prefilter::teddy::Teddy as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::prefilter::teddy::Teddy as regex_automata::util::prefilter::PrefilterI>   (5)
+    find
+    is_fast
+    memory_usage
+    name
+    prefix
+
+_<regex_automata::util::primitives::PatternID as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::primitives::StateID as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::search::MatchError as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::search::MatchError as core::fmt::Display>   (1)
+    fmt
+
+_<regex_automata::util::search::PatternSetInsertError as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::start::Start as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_automata::util::start::StartByteMap as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_syntax::ast::Ast as core::ops::drop::Drop>   (1)
+    drop
+
+_<regex_syntax::ast::ClassSet as core::ops::drop::Drop>   (1)
+    drop
+
+_<regex_syntax::debug::Byte as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_syntax::hir::ClassUnicodeRange as regex_syntax::hir::interval::Interval>   (1)
+    case_fold_simple
+
+_<regex_syntax::hir::Hir as core::clone::Clone>   (1)
+    clone
+
+_<regex_syntax::hir::Hir as core::cmp::PartialEq>   (1)
+    eq
+
+_<regex_syntax::hir::Hir as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_syntax::hir::Hir as core::ops::drop::Drop>   (1)
+    drop
+
+_<regex_syntax::hir::LookSet as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_syntax::hir::translate::HirFrame as core::fmt::Debug>   (1)
+    fmt
+
+_<regex_syntax::hir::translate::TranslatorI as regex_syntax::ast::visitor::Visitor>   (2)
+    visit_class_set_item_post
+    visit_post
+
+_<regex_syntax::utf8::Utf8Sequences as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<rusqlite::error::Error as core::fmt::Debug>   (1)
+    fmt
+
+_<rusqlite::error::Error as core::fmt::Display>   (1)
+    fmt
+
+_<rusqlite::row::Rows as fallible_streaming_iterator::FallibleStreamingIterator>   (1)
+    advance
+
+_<rusqlite::types::value_ref::ValueRef as core::fmt::Debug>   (1)
+    fmt
+
+_<rustc_demangle::SizeLimitExhausted as core::fmt::Debug>   (1)
+    fmt
+
+_<rustc_demangle::SizeLimitedFmtAdapter<F> as core::fmt::Write>   (1)
+    write_str
+
+_<rustc_demangle::v0::Ident as core::fmt::Display>   (1)
+    fmt
+
+_<serde::private::de::content::ContentRefDeserializer<E> as serde_core::de::Deserializer>   (1)
+    deserialize_str
+
+_<serde::private::de::content::ExpectedInSeq as serde_core::de::Expected>   (1)
+    fmt
+
+_<serde_core::de::Unexpected as core::fmt::Display>   (1)
+    fmt
+
+_<serde_core::de::WithDecimalPoint as core::fmt::Display>   (1)
+    fmt
+
+_<serde_core::de::impls::StringVisitor as serde_core::de::Visitor>   (1)
+    visit_bytes
+
+_<serde_json::de::MapAccess<R> as serde_core::de::MapAccess>   (2)
+    has_next_key
+    next_value_seed
+
+_<serde_json::de::SeqAccess<R> as serde_core::de::SeqAccess>   (1)
+    has_next_element
+
+_<serde_json::error::Error as core::fmt::Debug>   (1)
+    fmt
+
+_<serde_json::error::Error as core::fmt::Display>   (1)
+    fmt
+
+_<serde_json::error::Error as serde_core::de::Error>   (1)
+    custom
+
+_<serde_json::error::ErrorCode as core::fmt::Display>   (1)
+    fmt
+
+_<serde_json::error::JsonUnexpected as core::fmt::Display>   (1)
+    fmt
+
+_<serde_json::read::SliceRead as serde_json::read::Read>   (2)
+    ignore_str
+    parse_str
+
+_<serde_json::read::StrRead as serde_json::read::Read>   (1)
+    parse_str
+
+_<serde_json::value::Value as core::fmt::Display>   (1)
+    fmt
+
+_<serde_json::value::index::Type as core::fmt::Display>   (1)
+    fmt
+
+_<serde_json::value::ser::SerializeMap as serde_core::ser::SerializeStruct>   (1)
+    serialize_field
+
+_<serde_json::value::ser::SerializeVec as serde_core::ser::SerializeSeq>   (1)
+    serialize_element
+
+_<serde_json::value::ser::SerializeVec as serde_core::ser::SerializeTuple>   (1)
+    serialize_element
+
+_<serde_json::value::ser::Serializer as serde_core::ser::Serializer>   (1)
+    serialize_seq
+
+_<std::backtrace_rs::symbolize::SymbolName as core::fmt::Display>   (1)
+    fmt
+
+_<std::collections::hash::set::HashSet<T,S> as core::iter::traits::collect::FromIterator<T>>   (1)
+    from_iter
+
+_<std::ffi::os_str::OsStr as clap_lex::ext::OsStrExt>   (1)
+    split_once
+
+_<std::ffi::os_str::OsString as core::fmt::Debug>   (1)
+    fmt
+
+_<std::fs::ReadDir as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<std::io::buffered::bufreader::BufReader<R> as std::io::Read>   (1)
+    read
+
+_<std::io::default_write_fmt::Adapter<T> as core::fmt::Write>   (1)
+    write_str
+
+_<std::io::error::Error as core::fmt::Debug>   (1)
+    fmt
+
+_<std::io::error::Error as core::fmt::Display>   (1)
+    fmt
+
+_<std::io::error::ErrorKind as core::fmt::Debug>   (1)
+    fmt
+
+_<std::io::stdio::Stderr as std::io::Write>   (1)
+    flush
+
+_<std::io::stdio::StderrLock as anstream::stream::IsTerminal>   (1)
+    is_terminal
+
+_<std::io::stdio::StderrLock as std::io::Write>   (1)
+    write_all
+
+_<std::io::stdio::Stdin as std::io::Read>   (2)
+    read
+    read_to_string
+
+_<std::io::stdio::Stdout as std::io::Write>   (1)
+    flush
+
+_<std::io::stdio::StdoutLock as anstream::stream::IsTerminal>   (1)
+    is_terminal
+
+_<std::io::stdio::StdoutLock as std::io::Write>   (1)
+    write_all
+
+_<std::panicking::begin_panic::Payload<A> as core::fmt::Display>   (1)
+    fmt
+
+_<std::panicking::begin_panic::Payload<A> as core::panic::PanicPayload>   (2)
+    get
+    take_box
+
+_<std::panicking::panic_handler::FormatStringPayload as core::fmt::Display>   (1)
+    fmt
+
+_<std::panicking::panic_handler::FormatStringPayload as core::panic::PanicPayload>   (2)
+    get
+    take_box
+
+_<std::panicking::panic_handler::StaticStrPayload as core::panic::PanicPayload>   (3)
+    as_str
+    get
+    take_box
+
+_<std::path::Component as core::cmp::PartialEq>   (1)
+    eq
+
+_<std::path::Components as core::cmp::PartialEq>   (1)
+    eq
+
+_<std::path::Components as core::iter::traits::double_ended::DoubleEndedIterator>   (1)
+    next_back
+
+_<std::path::Components as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<std::path::Display as core::fmt::Display>   (1)
+    fmt
+
+_<std::path::PathBuf as core::cmp::PartialEq>   (1)
+    eq
+
+_<std::sync::poison::PoisonError<T> as core::fmt::Debug>   (1)
+    fmt
+
+_<std::sys::backtrace::BacktraceLock::print::DisplayBacktrace as core::fmt::Display>   (1)
+    fmt
+
+_<std::sys::fs::unix::Dir as core::ops::drop::Drop>   (1)
+    drop
+
+_<std::sys::fs::unix::ReadDir as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<std::sys::stdio::unix::Stderr as std::io::Write>   (4)
+    flush
+    is_write_vectored
+    write
+    write_vectored
+
+_<std::sys::sync::once::queue::WaiterQueue as core::ops::drop::Drop>   (1)
+    drop
+
+_<std::sys::sync::rwlock::queue::PanicGuard as core::ops::drop::Drop>   (1)
+    drop
+
+_<std::thread::local::AccessError as core::fmt::Debug>   (1)
+    fmt
+
+_<std::thread::spawnhook::SpawnHooks as core::ops::drop::Drop>   (1)
+    drop
+
+_<str as core::fmt::Debug>   (1)
+    fmt
+
+_<str as serde_json::value::index::Index>   (2)
+    index_into
+    index_or_insert
+
+_<toml::de::Deserializer as serde_core::de::Deserializer>   (1)
+    deserialize_any
+
+_<toml::de::Error as core::fmt::Display>   (1)
+    fmt
+
+_<toml::value::MapDeserializer as serde_core::de::MapAccess>   (1)
+    next_value_seed
+
+_<toml::value::SeqDeserializer as serde_core::de::SeqAccess>   (1)
+    next_element_seed
+
+_<toml::value::Value as serde_core::de::Deserializer>   (1)
+    deserialize_any
+
+_<toml_datetime::datetime::Datetime as core::fmt::Display>   (1)
+    fmt
+
+_<toml_datetime::datetime::Lexer as core::iter::traits::iterator::Iterator>   (1)
+    next
+
+_<toml_edit::de::array::ArrayDeserializer as serde_core::de::Deserializer>   (1)
+    deserialize_any
+
+_<toml_edit::de::array::ArraySeqAccess as serde_core::de::SeqAccess>   (1)
+    next_element_seed
+
+_<toml_edit::de::datetime::DatetimeDeserializer as serde_core::de::MapAccess>   (1)
+    next_value_seed
+
+_<toml_edit::de::table::TableDeserializer as serde_core::de::Deserializer>   (1)
+    deserialize_any
+
+_<toml_edit::de::table::TableMapAccess as serde_core::de::MapAccess>   (1)
+    next_value_seed
+
+_<toml_edit::de::value::ValueDeserializer as serde_core::de::Deserializer>   (2)
+    deserialize_any
+    deserialize_ignored_any
+
+_<toml_edit::internal_string::InternalString as core::fmt::Debug>   (1)
+    fmt
+
+_<toml_edit::key::Key as core::clone::Clone>   (1)
+    clone
+
+_<toml_edit::parser::error::CustomError as core::error::Error>   (1)
+    description
+
+_<toml_edit::parser::error::CustomError as core::fmt::Debug>   (1)
+    fmt
+
+_<toml_edit::parser::error::CustomError as core::fmt::Display>   (1)
+    fmt
+
+_<toml_edit::raw_string::RawString as core::fmt::Debug>   (1)
+    fmt
+
+_<toml_edit::repr::Decor as core::fmt::Debug>   (1)
+    fmt
+
+_<u64 as itoa::Unsigned>   (1)
+    fmt
+
+_<winnow::combinator::impls::Map<F,G,I,O,O2,E> as winnow::parser::Parser<I,O2,E>>   (1)
+    parse_next
+
+_<winnow::combinator::impls::Span<F,I,O,E> as winnow::parser::Parser<I,core::ops::range::Range<usize>,E>>   (1)
+    parse_next
+
+_<winnow::combinator::multi::Repeat<P,I,O,C,E> as winnow::parser::Parser<I,C,E>>   (1)
+    _{{closure}}
+
+_<winnow::error::ContextError<C> as winnow::error::FromExternalError<I,E>>   (1)
+    from_external_error
+
+_<winnow::error::ErrMode<E> as winnow::error::ParserError<I>>   (1)
+    or
+
+addr2line   (5)
+    has_backward_slash_root
+    name_attr
+    name_entry
+    path_push
+    render_file
+
+addr2line::frame   (1)
+    next
+
+addr2line::function   (1)
+    parse_children
+
+addr2line::lookup   (1)
+    new_lookup
+
+addr2line::unit   (1)
+    find_function_or_location
+
+addr2line::unit::ResUnit<R>   (1)
+    _{{closure}}
+
+aho_corasick   (2)
+    try_find_fwd
+    try_find_overlapping_fwd
+
+aho_corasick::automaton   (2)
+    try_find
+    try_find_overlapping
+
+aho_corasick::dfa   (2)
+    build_from_noncontiguous
+    set_matches
+
+aho_corasick::dfa::Builder   (1)
+    _{{closure}}
+
+aho_corasick::nfa::contiguous   (1)
+    build_from_noncontiguous
+
+aho_corasick::nfa::noncontiguous   (16)
+    add_match
+    add_transition
+    add_unanchored_start_state_loop
+    alloc_state
+    build
+    build_trie
+    close_start_state_loop_for_leftmost
+    copy_matches
+    densify
+    fill_failure_transitions
+    init_full_state
+    init_unanchored_start_state
+    insert
+    new
+    set_anchored_start_state
+    shuffle
+
+aho_corasick::packed::api   (1)
+    build
+
+aho_corasick::packed::pattern   (1)
+    add
+
+aho_corasick::packed::rabinkarp   (2)
+    find_at
+    verify
+
+aho_corasick::packed::teddy::generic   (1)
+    new
+
+aho_corasick::util::alphabet   (1)
+    byte_classes
+
+aho_corasick::util::error   (1)
+    invalid_input_unanchored
+
+aho_corasick::util::prefilter   (2)
+    add
+    build
+
+anstream   (2)
+    choice
+    write_all
+
+anstream::adapter   (1)
+    next_str
+
+anstream::adapter::strip   (1)
+    add
+
+anstream::auto   (1)
+    new
+
+anstyle::color   (2)
+    write_code
+    write_str
+
+anstyle::style   (1)
+    fmt_to
+
+array   (1)
+    fmt
+
+backtrace_rs::backtrace::libunwind   (1)
+    trace_fn
+
+backtrace_rs::print   (1)
+    print_raw_with_column
+
+backtrace_rs::symbolize   (2)
+    mmap
+    name
+
+backtrace_rs::symbolize::gimli   (3)
+    find_frames
+    find_header
+    new
+
+backtrace_rs::symbolize::gimli::Cache   (1)
+    MAPPINGS_CACHE
+
+backtrace_rs::symbolize::gimli::macho   (2)
+    parse
+    section
+
+borrow   (1)
+    to_mut
+
+boxed   (1)
+    new_uninit_in
+
+cell   (2)
+    panic_already_borrowed
+    panic_already_mutably_borrowed
+
+cell::once   (1)
+    try_init
+
+cell::panic_already_borrowed   (1)
+    runtime
+
+cell::panic_already_mutably_borrowed   (1)
+    runtime
+
+char::methods   (1)
+    escape_debug_ext
+
+clap_builder   (1)
+    format_error
+
+clap_builder::builder::arg   (9)
+    get_long_and_visible_aliases
+    get_short_and_visible_aliases
+    get_value_hint
+    help
+    long_help
+    stylize_arg_suffix
+    stylized
+    value_name
+    value_parser
+
+clap_builder::builder::arg::Arg   (1)
+    DEFAULT
+
+clap_builder::builder::arg_group   (1)
+    args
+
+clap_builder::builder::command   (17)
+    _build_bin_names_internal
+    _build_recursive
+    _build_self
+    _build_subcommand
+    _do_parse
+    _propagate_subcommand
+    about
+    arg
+    format_group
+    get_arg_conflicts_with
+    get_name_and_visible_aliases
+    get_subcommands_containing
+    required_graph
+    subcommand
+    subcommands
+    unroll_args_in_group
+    write_help_err
+
+clap_builder::builder::command::Command   (1)
+    DEFAULT
+
+clap_builder::builder::possible_value   (1)
+    matches
+
+clap_builder::builder::styled_str   (4)
+    display_width
+    indent
+    push_str
+    trim_end
+
+clap_builder::error   (20)
+    argument_conflict
+    did_you_mean
+    exit
+    extend_context_unchecked
+    for_app
+    get
+    get_help_flag
+    insert_context_unchecked
+    invalid_utf8
+    invalid_value
+    no_equals
+    print
+    raw
+    subcommand_conflict
+    too_many_values
+    unknown_argument
+    unrecognized_subcommand
+    value_validation
+    with_cmd
+    write_values_list
+
+clap_builder::mkeymap   (1)
+    push
+
+clap_builder::output   (3)
+    display_width
+    option_sort_key
+    positional_sort_key
+
+clap_builder::output::help_template   (11)
+    help
+    new
+    sc_spec_vals
+    spec_vals
+    use_long_pv
+    write_about
+    write_args
+    write_author
+    write_flat_subcommands
+    write_subcommands
+    write_templated_help
+
+clap_builder::output::usage   (5)
+    create_usage_with_title
+    get_required_usage_from
+    new
+    write_arg_usage
+    write_usage_no_title
+
+clap_builder::parser   (1)
+    gather_direct_conflicts
+
+clap_builder::parser::arg_matcher   (6)
+    add_val_to
+    fill_in_global_values
+    into_inner
+    remove
+    start_occurrence_of_external
+    subcommand
+
+clap_builder::parser::error   (1)
+    unwrap
+
+clap_builder::parser::features::suggestions   (1)
+    _{{closure}}
+
+clap_builder::parser::matches   (1)
+    unwrap_downcast_into{{reify.shim}}
+
+clap_builder::parser::matches::arg_matches   (4)
+    try_get_one
+    try_remove_arg_t
+    try_remove_many
+    try_remove_one
+
+clap_builder::parser::matches::matched_arg   (2)
+    into_vals_flatten
+    new_val_group
+
+clap_builder::parser::parser   (11)
+    add_defaults
+    did_you_mean_error
+    get_matches_with
+    match_arg_error
+    parse_help_subcommand
+    parse_opt_value
+    possible_subcommand
+    push_arg_values
+    react
+    resolve_pending
+    start_custom_arg
+
+clap_builder::parser::validator   (2)
+    gather_conflicts
+    validate
+
+clap_builder::util::any_value   (1)
+    downcast_into
+
+clap_builder::util::escape   (1)
+    needs_escaping
+
+clap_builder::util::flat_map   (3)
+    insert
+    or_insert
+    remove_entry
+
+clap_builder::util::flat_set   (1)
+    insert
+
+clap_complete::aot::generator   (5)
+    all_subcommands
+    find_subcommand_with_path
+    flags
+    possible_values
+    subcommands
+
+clap_complete::aot::shells   (14)
+    all_options_for_path
+    arg_conflicts
+    escape_help
+    escape_value
+    gen_fish_inner
+    generate_aliases
+    generate_inner
+    get_args_of
+    get_subcommands_of
+    option_details_for_path
+    parser_of
+    subcommands_of
+    vals_for
+    value_completion
+
+clap_complete::aot::shells::bash   (1)
+    add_command
+
+clap_complete::aot::shells::zsh   (2)
+    add_subcommands
+    push_conflicts
+
+clap_lex   (3)
+    is_long
+    is_negative_number
+    is_short
+
+collections::btree::fix   (1)
+    fix_node_and_affected_ancestors
+
+collections::btree::map   (2)
+    dying_next
+    insert
+
+collections::btree::map::entry   (1)
+    insert_entry
+
+collections::btree::node   (4)
+    bulk_steal_left
+    bulk_steal_right
+    insert_fit
+    merge_tracking_child_edge
+
+collections::btree::remove   (1)
+    remove_leaf_kv
+
+collections::vec_deque   (1)
+    grow
+
+core_foundation::dictionary   (1)
+    from_CFType_pairs
+
+core_text::font_descriptor   (2)
+    get_string_attribute
+    traits
+
+env   (4)
+    _var
+    _var_os
+    current_dir
+    temp_dir
+
+error   (4)
+    cause
+    description
+    provide
+    type_id
+
+escape   (1)
+    escape_unicode
+
+ffi::c_str   (2)
+    _from_vec_unchecked
+    from_bytes_with_nul
+
+fmt   (19)
+    debug_struct_field1_finish
+    debug_struct_field4_finish
+    debug_struct_field5_finish
+    debug_struct_fields_finish
+    debug_tuple_field2_finish
+    debug_tuple_field3_finish
+    debug_tuple_fields_finish
+    float_to_decimal_common_exact
+    float_to_decimal_common_shortest
+    float_to_exponential_common_shortest
+    format
+    format_inner
+    pad
+    pad_formatted_parts
+    pad_integral
+    write
+    write_char
+    write_fmt
+    write_formatted_parts
+
+fmt::Formatter   (1)
+    write_prefix
+
+fmt::builders   (2)
+    entry
+    field
+
+fmt::float   (1)
+    fmt
+
+fmt::num   (1)
+    fmt
+
+fmt::num::imp   (3)
+    _fmt
+    _fmt_inner
+    fmt
+
+fs   (4)
+    _create
+    _open
+    create_dir_all
+    inner
+
+gimli::read   (4)
+    parse_attribute
+    parse_directory_v5
+    parse_file_v5
+    skip_attributes
+
+gimli::read::abbrev   (1)
+    insert
+
+gimli::read::aranges   (1)
+    parse
+
+gimli::read::dwarf   (2)
+    attr_string
+    new
+
+gimli::read::index   (1)
+    parse
+
+gimli::read::line   (1)
+    parse
+
+gimli::read::reader   (4)
+    read_offset
+    read_sized_offset
+    read_sleb128
+    read_uleb128
+
+gimli::read::rnglists   (1)
+    next
+
+gimli::read::unit   (5)
+    next
+    next_entry
+    u16_value
+    u8_value
+    value
+
+hash   (1)
+    hash_one
+
+hash::random::RandomState::new::KEYS::_{{constant}}   (1)
+    __RUST_STD_INTERNAL_VAL
+
+hashbrown::map   (2)
+    get
+    insert
+
+hashbrown::raw   (3)
+    fallible_with_capacity
+    find_insert_index
+    reserve_rehash
+
+indexmap::inner   (2)
+    insert_unique
+    reserve
+
+indexmap::map   (1)
+    entry
+
+intrinsics   (1)
+    typed_swap_nonoverlapping
+
+io   (8)
+    _eprint
+    _print
+    default_read_exact
+    default_read_to_end
+    small_probe_read
+    write_all
+    write_all_vectored
+    write_fmt
+
+io::buffered::bufwriter   (2)
+    flush_buf
+    write_all_cold
+
+io::error   (3)
+    decode_repr
+    kind
+    new
+
+io::impls   (1)
+    write_all
+
+io::stdio   (3)
+    INSTANCE
+    lock
+    read_line
+
+iter::traits::iterator   (3)
+    advance_by
+    nth
+    try_fold
+
+iter::traits::iterator::Iterator::min_by_key   (1)
+    _{{closure}}
+
+itoa   (1)
+    DECIMAL_PAIRS
+
+libsqlite3_sys::error   (1)
+    new
+
+memchr::arch::all   (1)
+    is_equal_raw
+
+memchr::arch::all::twoway   (1)
+    forward
+
+memchr::memmem   (6)
+    build_forward_with_ranker
+    prefilter_kind_neon
+    searcher_kind_empty
+    searcher_kind_neon
+    searcher_kind_one_byte
+    searcher_kind_two_way_with_prefilter
+
+num   (3)
+    digits_to_dec_str
+    from_ascii_radix
+    from_str
+
+num::bignum   (2)
+    mul_digits
+    mul_pow2
+
+num::dec2flt   (5)
+    POWER_OF_FIVE_128
+    compute_float
+    from_str
+    parse_decimal_seq
+    parse_number
+
+num::dec2flt::decimal_seq   (3)
+    left_shift
+    right_shift
+    round
+
+num::flt2dec::strategy   (12)
+    CACHED_POW10
+    POW10
+    POW5TO128
+    POW5TO16
+    POW5TO256
+    POW5TO32
+    POW5TO64
+    format_exact
+    format_exact_opt
+    format_shortest
+    format_shortest_opt
+    mul_pow10
+
+num::flt2dec::strategy::grisu   (1)
+    possibly_round
+
+object::read   (1)
+    parse_u64_digits
+
+object::read::archive   (2)
+    parse
+    parse_aixbig
+
+ops::function   (4)
+    call
+    call_mut
+    call_once
+    call_once{{vtable.shim}}
+
+option   (2)
+    expect_failed
+    unwrap_failed
+
+otty_autocomplete   (2)
+    parse_help_output
+    split_spec_and_desc
+
+otty_config   (75)
+    CACHE
+    SAYS_NOTHING
+    USER_THEME_WRITES
+    _{{closure}}
+    app_support_dir
+    build_install
+    canonical_key
+    canonical_material
+    capture_inline_color
+    claim_local_key
+    component
+    config_dir
+    edit_list_value
+    export
+    file_label
+    flatten
+    format_bypass_modifiers
+    from_hex
+    get_value
+    is_recognized_font_ext
+    is_transparent_color_keyword
+    key_origin
+    list_entry_name
+    list_spelling
+    load_or_default
+    load_user_theme
+    local_path_for
+    normalize_color
+    normalize_recipe_replay
+    overlay_keys
+    parse
+    parse_bool
+    parse_bypass_modifiers
+    parse_cell_height_adjust
+    parse_details_view
+    parse_field_pairs
+    parse_hex
+    parse_inline_string_array
+    parse_key_value
+    parse_layers
+    parse_line
+    parse_quick_access
+    parse_rgb_byte
+    parse_tab_rule
+    parse_theme_color_with_alpha
+    parse_theme_file_with
+    parse_theme_hex_color
+    parse_theme_text
+    preview_import_with_base
+    read_optional
+    relay_url_override
+    remove_keys
+    render_details_view
+    render_field_pairs
+    reset_marker_key
+    resolve_against
+    sanitize_inset
+    save_preserving_scoped
+    save_user_theme
+    serialize
+    set_agent_command
+    set_agent_quota_off
+    set_hint_pattern
+    set_value
+    similar_lookup
+    slugify_theme_name
+    strip_empty_strings
+    strip_toml_quotes
+    themed_background
+    title_case
+    to_json
+    toml_render_value
+    toml_scalar_as_string
+    toml_string
+    write_atomic
+
+otty_config::Config   (2)
+    _{{closure}}
+    json_f32
+
+otty_config::_   (1)
+    serialize
+
+otty_config::classify_orphan_line   (1)
+    _{{closure}}
+
+otty_config::external_theme   (1)
+    _{{closure}}
+
+otty_config::local_overlay   (5)
+    covers
+    load_layered
+    parse_layered_named
+    save_layered
+    save_layered_to
+
+otty_config::theme::BuiltinTheme   (1)
+    _{{closure}}
+
+otty_config::theme_def   (1)
+    from_toml
+
+otty_config::theme_def::_   (1)
+    deserialize
+
+otty_dev   (7)
+    download_to_temp
+    encode
+    main
+    print_json_success
+    print_table
+    run
+    url_basename
+
+otty_dev::commands   (77)
+    call_with_timeout
+    cli_cwd
+    cmd_list
+    cmd_try
+    configured_term
+    doctor
+    expand_to_pathbuf
+    export
+    hosts
+    import_external
+    import_source
+    import_theme
+    import_zoxide
+    inspect
+    is_executable
+    judge
+    load_config
+    local_config_path
+    location_label
+    parse_caps
+    parse_source_path
+    preview
+    print_status
+    print_text_report
+    read_text
+    render
+    render_picker_hud
+    report
+    report_forget
+    resolve_dir
+    resolve_path_pub
+    run
+    run_256color
+    run_beep
+    run_box_drawing
+    run_bracketed_paste
+    run_change_color
+    run_cjk
+    run_clipboard_read
+    run_clipboard_write
+    run_color_scheme_update
+    run_cursor_shape
+    run_ed_scroll_clear
+    run_emoji
+    run_error_state
+    run_font_blending
+    run_hyperlink
+    run_iterm_image
+    run_jump
+    run_kitty_image
+    run_ligature
+    run_mouse_shape
+    run_nerd_font
+    run_notification
+    run_notification_kitty
+    run_notification_title
+    run_osc7
+    run_progress
+    run_rtl
+    run_semantic_prompt
+    run_set_title
+    run_sixel_image
+    run_styles
+    run_sync_update
+    run_text_style
+    run_true_color
+    run_unicode
+    section
+    set_enabled
+    set_font_family
+    spawn
+    split_deeplink
+    ssh_with
+    swallow_signal
+    to_cstring
+    validate_term
+    write_bytes
+
+otty_dev::commands::config   (2)
+    read
+    write
+
+otty_dev::commands::features   (2)
+    _{{closure}}
+    handler
+
+otty_dev::commands::features::sigreset   (1)
+    arm
+
+otty_dev::commands::learn   (6)
+    app_support_dir
+    parse_option_line
+    probe
+    record
+    short_path
+    split_on_gap
+
+otty_dev::commands::learn::cwd_record   (1)
+    _{{closure}}
+
+otty_dev::commands::ssh   (2)
+    _{{closure}}
+    detail
+
+otty_dev::commands::ssh_wrap   (1)
+    _{{closure}}
+
+otty_dev::commands::state   (1)
+    _{{closure}}
+
+otty_dev::ipc   (3)
+    check_error
+    connect_with_timeout
+    handle_response
+
+otty_dev::ipc::client   (3)
+    apply_timeouts
+    platform_connect
+    request
+
+otty_dev::ipc::client::IpcClient   (1)
+    _{{closure}}
+
+otty_remote_shim   (1)
+    host_tokens
+
+otty_ssh_argv   (1)
+    scan
+
+otty_ssh_config   (1)
+    split_values
+
+otty_ssh_config::load   (1)
+    read_file
+
+otty_state   (2)
+    column_exists
+    open
+
+otty_state::anywhere   (1)
+    parse
+
+panic   (3)
+    SHOULD_CAPTURE
+    as_str
+    get_backtrace_style
+
+panic_unwind::imp   (1)
+    exception_cleanup
+
+panicking   (16)
+    _{{closure}}
+    assert_failed
+    assert_failed_inner
+    begin_panic
+    is_zero_slow_path
+    panic
+    panic_bounds_check
+    panic_cannot_unwind
+    panic_const_div_by_zero
+    panic_const_rem_by_zero
+    panic_fmt
+    panic_in_cleanup
+    panic_nounwind
+    panic_nounwind_fmt
+    panic_nounwind_nobacktrace
+    panic_with_hook
+
+panicking::default_hook   (1)
+    FIRST_PANIC
+
+panicking::panic_count::LOCAL_PANIC_COUNT::_{{constant}}   (1)
+    __RUST_STD_INTERNAL_VAL
+
+path   (9)
+    _join
+    _strip_prefix
+    as_path
+    compare_components
+    file_stem
+    is_dir
+    is_file
+    parent
+    parse_next_component_back
+
+process   (6)
+    abort
+    exit
+    kill
+    output
+    status
+    wait
+
+ptr   (507)
+    drop_in_place<(alloc::string::String,serde_json::value::Value)>
+    drop_in_place<(alloc::string::String,toml::value::Value)>
+    drop_in_place<(alloc::vec::Vec<*const core::ffi::c_void>,alloc::vec::Vec<*const core::ffi::c_void>)>
+    drop_in_place<(alloc::vec::Vec<toml_edit::key::Key>,(toml_edit::key::Key,toml_edit::item::Item))>
+    drop_in_place<(alloc::vec::Vec<toml_edit::key::Key>,core::ops::range::Range<usize>)>
+    drop_in_place<(serde_core::private::content::Content,serde_core::private::content::Content)>
+    drop_in_place<(std::ffi::os_str::OsString,std::ffi::os_str::OsString)>
+    drop_in_place<(toml_edit::raw_string::RawString,toml_edit::internal_string::InternalString)>
+    drop_in_place<(usize,(usize,(alloc::string::String,core::option::Option<alloc::string::String>)))>
+    drop_in_place<<alloc::collections::btree::map::IntoIter<K,V,A> as core::ops::drop::Drop>::drop::DropGuard<alloc::string::String,serde_json::value::Value,alloc::alloc::Global>>
+    drop_in_place<<alloc::collections::btree::map::IntoIter<K,V,A> as core::ops::drop::Drop>::drop::DropGuard<alloc::string::String,toml::value::Value,alloc::alloc::Global>>
+    drop_in_place<<alloc::collections::btree::map::IntoIter<K,V,A> as core::ops::drop::Drop>::drop::DropGuard<u64,core::result::Result<alloc::sync::Arc<gimli::read::abbrev::Abbreviations>,gimli::read::Error>,alloc::alloc::Global>>
+    drop_in_place<<alloc::vec::drain::Drain<T,A> as core::ops::drop::Drop>::drop::DropGuard<regex_syntax::ast::ClassSetItem,alloc::alloc::Global>>
+    drop_in_place<<alloc::vec::drain::Drain<T,A> as core::ops::drop::Drop>::drop::DropGuard<regex_syntax::hir::Hir,alloc::alloc::Global>>
+    drop_in_place<[(alloc::vec::Vec<toml_edit::key::Key>,(toml_edit::key::Key,toml_edit::item::Item))]>
+    drop_in_place<[alloc::string::String]>
+    drop_in_place<[alloc::vec::Vec<aho_corasick::util::primitives::PatternID>; 8]>
+    drop_in_place<[core::option::Option<alloc::string::String>; 16]>
+    drop_in_place<[core::option::Option<core::option::Option<std::backtrace_rs::symbolize::gimli::Mapping>>]>
+    drop_in_place<[indexmap::Bucket<toml_edit::key::Key,toml_edit::item::Item>]>
+    drop_in_place<[otty_config::AgentCommand]>
+    drop_in_place<[otty_config::QuickAccessItem]>
+    drop_in_place<[regex_syntax::hir::Hir]>
+    drop_in_place<[std::path::PathBuf; 6]>
+    drop_in_place<[toml_edit::item::Item]>
+    drop_in_place<addr2line::Context<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>
+    drop_in_place<addr2line::function::LazyFunction<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>
+    drop_in_place<addr2line::unit::ResUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>
+    drop_in_place<addr2line::unit::ResUnits<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>
+    drop_in_place<addr2line::unit::SupUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>
+    drop_in_place<addr2line::unit::SupUnits<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>
+    drop_in_place<aho_corasick::dfa::DFA>
+    drop_in_place<aho_corasick::nfa::contiguous::NFA>
+    drop_in_place<aho_corasick::nfa::noncontiguous::NFA>
+    drop_in_place<aho_corasick::nfa::noncontiguous::QueuedSet>
+    drop_in_place<aho_corasick::packed::api::Builder>
+    drop_in_place<aho_corasick::packed::api::Searcher>
+    drop_in_place<aho_corasick::packed::pattern::Patterns>
+    drop_in_place<aho_corasick::packed::rabinkarp::RabinKarp>
+    drop_in_place<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<1_usize>>
+    drop_in_place<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<2_usize>>
+    drop_in_place<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<3_usize>>
+    drop_in_place<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<4_usize>>
+    drop_in_place<aho_corasick::packed::teddy::generic::Teddy<8_usize>>
+    drop_in_place<aho_corasick::util::error::MatchError>
+    drop_in_place<aho_corasick::util::prefilter::Builder>
+    drop_in_place<aho_corasick::util::prefilter::Memmem>
+    drop_in_place<aho_corasick::util::prefilter::Packed>
+    drop_in_place<alloc::boxed::Box<[addr2line::function::LazyFunction<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>]>>
+    drop_in_place<alloc::boxed::Box<[alloc::string::String]>>
+    drop_in_place<alloc::boxed::Box<clap_builder::parser::matches::arg_matches::SubCommand>>
+    drop_in_place<alloc::boxed::Box<dyn core::error::Error+core::marker::Sync+core::marker::Send>>
+    drop_in_place<alloc::boxed::Box<dyn core::ops::function::Fn<()>+Output = regex_automata::meta::regex::Cache+core::marker::Sync+core::panic::unwind_safe::RefUnwindSafe+core::panic::unwind_safe::UnwindSafe+core::marker::Send>>
+    drop_in_place<alloc::boxed::Box<dyn core::ops::function::FnOnce<()>+Output = ()+core::marker::Send>>
+    drop_in_place<alloc::boxed::Box<otty_config::theme_def::ElementStyle>>
+    drop_in_place<alloc::boxed::Box<otty_config::theme_def::PlatformStyle>>
+    drop_in_place<alloc::boxed::Box<panic_unwind::imp::Exception>>
+    drop_in_place<alloc::boxed::Box<regex_automata::meta::regex::Cache>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::Alternation>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::ClassBracketed>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::ClassSet>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::ClassUnicode>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::Concat>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::Group>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::Repetition>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::ast::SetFlags>>
+    drop_in_place<alloc::boxed::Box<regex_syntax::hir::Hir>>
+    drop_in_place<alloc::boxed::Box<std::thread::lifecycle::ThreadInit>>
+    drop_in_place<alloc::boxed::convert::<impl core::convert::From<alloc::string::String> for alloc::boxed::Box<dyn core::error::Error+core::marker::Sync+core::marker::Send>>::from::StringError>
+    drop_in_place<alloc::collections::btree::dedup_sorted_iter::DedupSortedIter<alloc::string::String,alloc::collections::btree::set_val::SetValZST,core::iter::adapters::map::Map<alloc::vec::into_iter::IntoIter<alloc::string::String>,alloc::collections::btree::set::BTreeSet<alloc::string::String>::from_sorted_iter<alloc::vec::into_iter::IntoIter<alloc::string::String>>::{{closure}}>>>
+    drop_in_place<alloc::collections::btree::map::BTreeMap<&str,&core::result::Result<alloc::string::String,alloc::string::String>>>
+    drop_in_place<alloc::collections::btree::map::BTreeMap<(usize,&str),&clap_builder::builder::command::Command>>
+    drop_in_place<alloc::collections::btree::map::BTreeMap<(usize,clap_builder::builder::styled_str::StyledStr),&clap_builder::builder::command::Command>>
+    drop_in_place<alloc::collections::btree::map::BTreeMap<alloc::boxed::Box<[u8]>,usize>>
+    drop_in_place<alloc::collections::btree::map::BTreeMap<alloc::string::String,alloc::string::String>>
+    drop_in_place<alloc::collections::btree::map::BTreeMap<alloc::string::String,otty_dev::commands::font::FontGroup>>
+    drop_in_place<alloc::collections::btree::map::BTreeMap<std::ffi::os_str::OsString,std::ffi::os_str::OsString>>
+    drop_in_place<alloc::collections::btree::map::IntoIter<std::ffi::os_str::OsString,std::ffi::os_str::OsString>>
+    drop_in_place<alloc::collections::btree::map::IntoValues<alloc::string::String,otty_dev::commands::font::FontGroup>>
+    drop_in_place<alloc::collections::btree::set::BTreeSet<&str>>
+    drop_in_place<alloc::collections::btree::set::BTreeSet<alloc::string::String>>
+    drop_in_place<alloc::ffi::c_str::NulError>
+    drop_in_place<alloc::string::FromUtf8Error>
+    drop_in_place<alloc::string::String>
+    drop_in_place<alloc::sync::ArcInner<aho_corasick::nfa::contiguous::NFA>>
+    drop_in_place<alloc::sync::ArcInner<aho_corasick::packed::pattern::Patterns>>
+    drop_in_place<alloc::sync::ArcInner<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<1_usize>>>
+    drop_in_place<alloc::sync::ArcInner<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<2_usize>>>
+    drop_in_place<alloc::sync::ArcInner<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<3_usize>>>
+    drop_in_place<alloc::sync::ArcInner<aho_corasick::packed::teddy::builder::aarch64::SlimNeon<4_usize>>>
+    drop_in_place<alloc::sync::ArcInner<gimli::read::dwarf::Dwarf<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>
+    drop_in_place<alloc::sync::ArcInner<regex_automata::meta::regex::RegexI>>
+    drop_in_place<alloc::sync::ArcInner<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::aho_corasick::AhoCorasick>>>
+    drop_in_place<alloc::sync::ArcInner<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::memmem::Memmem>>>
+    drop_in_place<alloc::sync::ArcInner<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::teddy::Teddy>>>
+    drop_in_place<alloc::sync::ArcInner<regex_automata::meta::strategy::ReverseSuffix>>
+    drop_in_place<alloc::sync::ArcInner<regex_automata::nfa::thompson::nfa::Inner>>
+    drop_in_place<alloc::sync::ArcInner<regex_automata::util::prefilter::teddy::Teddy>>
+    drop_in_place<alloc::sync::ArcInner<std::sync::poison::mutex::Mutex<*mut libsqlite3_sys::bindings::sqlite3>>>
+    drop_in_place<alloc::sync::ArcInner<std::sys::fs::unix::InnerReadDir>>
+    drop_in_place<alloc::sync::Weak<dyn aho_corasick::ahocorasick::AcAutomaton,&alloc::alloc::Global>>
+    drop_in_place<alloc::vec::Vec<(alloc::string::String,&toml::value::Value)>>
+    drop_in_place<alloc::vec::Vec<(alloc::string::String,alloc::string::String,alloc::string::String)>>
+    drop_in_place<alloc::vec::Vec<(alloc::string::String,core::result::Result<alloc::string::String,alloc::string::String>)>>
+    drop_in_place<alloc::vec::Vec<(alloc::string::String,otty_dev::commands::ssh::Verdict)>>
+    drop_in_place<alloc::vec::Vec<(alloc::vec::Vec<toml_edit::key::Key>,(toml_edit::key::Key,toml_edit::item::Item))>>
+    drop_in_place<alloc::vec::Vec<(clap_builder::util::id::Id,clap_builder::builder::arg_predicate::ArgPredicate,core::option::Option<alloc::vec::Vec<clap_builder::builder::os_str::OsStr>>)>>
+    drop_in_place<alloc::vec::Vec<(f64,alloc::string::String)>>
+    drop_in_place<alloc::vec::Vec<(serde_core::private::content::Content,serde_core::private::content::Content)>>
+    drop_in_place<alloc::vec::Vec<(std::ffi::os_str::OsString,std::ffi::os_str::OsString)>>
+    drop_in_place<alloc::vec::Vec<addr2line::function::LazyFunction<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>
+    drop_in_place<alloc::vec::Vec<addr2line::line::LineSequence>>
+    drop_in_place<alloc::vec::Vec<addr2line::unit::ResUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>
+    drop_in_place<alloc::vec::Vec<addr2line::unit::SupUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>
+    drop_in_place<alloc::vec::Vec<alloc::borrow::Cow<str>>>
+    drop_in_place<alloc::vec::Vec<alloc::boxed::Box<dyn core::ops::function::FnOnce<()>+Output = ()+core::marker::Send>>>
+    drop_in_place<alloc::vec::Vec<alloc::string::String>>
+    drop_in_place<alloc::vec::Vec<alloc::vec::Vec<aho_corasick::util::primitives::PatternID>>>
+    drop_in_place<alloc::vec::Vec<alloc::vec::Vec<alloc::string::String>>>
+    drop_in_place<alloc::vec::Vec<alloc::vec::Vec<clap_builder::util::any_value::AnyValue>>>
+    drop_in_place<alloc::vec::Vec<alloc::vec::Vec<std::ffi::os_str::OsString>>>
+    drop_in_place<alloc::vec::Vec<alloc::vec::Vec<u8>>>
+    drop_in_place<alloc::vec::Vec<clap_builder::builder::arg::Arg>>
+    drop_in_place<alloc::vec::Vec<clap_builder::builder::arg_group::ArgGroup>>
+    drop_in_place<alloc::vec::Vec<clap_builder::builder::command::Command>>
+    drop_in_place<alloc::vec::Vec<clap_builder::builder::possible_value::PossibleValue>>
+    drop_in_place<alloc::vec::Vec<clap_builder::builder::styled_str::StyledStr>>
+    drop_in_place<alloc::vec::Vec<clap_builder::util::any_value::AnyValue>>
+    drop_in_place<alloc::vec::Vec<core::option::Option<alloc::string::String>>>
+    drop_in_place<alloc::vec::Vec<core::option::Option<alloc::sync::Arc<str>>>>
+    drop_in_place<alloc::vec::Vec<core::option::Option<clap_builder::builder::styled_str::StyledStr>>>
+    drop_in_place<alloc::vec::Vec<core::option::Option<core::option::Option<std::backtrace_rs::symbolize::gimli::Mapping>>>>
+    drop_in_place<alloc::vec::Vec<indexmap::Bucket<toml_edit::key::Key,toml_edit::item::Item>>>
+    drop_in_place<alloc::vec::Vec<otty_autocomplete::help_parse::ProbeOption>>
+    drop_in_place<alloc::vec::Vec<otty_autocomplete::help_parse::ProbeSubcommand>>
+    drop_in_place<alloc::vec::Vec<otty_config::DetailsView>>
+    drop_in_place<alloc::vec::Vec<otty_config::Keybind>>
+    drop_in_place<alloc::vec::Vec<otty_config::QuickAccessItem>>
+    drop_in_place<alloc::vec::Vec<otty_config::TabRule>>
+    drop_in_place<alloc::vec::Vec<otty_config::external_config::ImportEntry>>
+    drop_in_place<alloc::vec::Vec<otty_config::external_config::ImportSimilar>>
+    drop_in_place<alloc::vec::Vec<otty_dev::commands::font::FontGroup>>
+    drop_in_place<alloc::vec::Vec<otty_dev::commands::font::FontInfo>>
+    drop_in_place<alloc::vec::Vec<otty_ssh_config::load::HostEntry>>
+    drop_in_place<alloc::vec::Vec<otty_state::anywhere::HostMeta>>
+    drop_in_place<alloc::vec::Vec<regex_automata::nfa::thompson::literal_trie::Frame>>
+    drop_in_place<alloc::vec::Vec<regex_automata::nfa::thompson::map::Utf8BoundedEntry>>
+    drop_in_place<alloc::vec::Vec<regex_automata::nfa::thompson::nfa::State>>
+    drop_in_place<alloc::vec::Vec<regex_automata::util::determinize::state::State>>
+    drop_in_place<alloc::vec::Vec<regex_automata::util::pool::inner::CacheLine<std::sync::poison::mutex::Mutex<alloc::vec::Vec<alloc::boxed::Box<regex_automata::meta::regex::Cache>>>>>>
+    drop_in_place<alloc::vec::Vec<regex_syntax::ast::Ast>>
+    drop_in_place<alloc::vec::Vec<regex_syntax::ast::ClassSet>>
+    drop_in_place<alloc::vec::Vec<regex_syntax::hir::Hir>>
+    drop_in_place<alloc::vec::Vec<regex_syntax::hir::Properties>>
+    drop_in_place<alloc::vec::Vec<regex_syntax::hir::literal::Literal>>
+    drop_in_place<alloc::vec::Vec<serde_core::private::content::Content>>
+    drop_in_place<alloc::vec::Vec<serde_json::value::Value>>
+    drop_in_place<alloc::vec::Vec<std::ffi::os_str::OsString>>
+    drop_in_place<alloc::vec::Vec<std::path::PathBuf>>
+    drop_in_place<alloc::vec::Vec<toml::value::Value>>
+    drop_in_place<alloc::vec::Vec<toml_edit::item::Item>>
+    drop_in_place<alloc::vec::Vec<toml_edit::key::Key>>
+    drop_in_place<alloc::vec::drain::Drain<regex_syntax::hir::ClassBytesRange>>
+    drop_in_place<alloc::vec::drain::Drain<regex_syntax::hir::ClassUnicodeRange>>
+    drop_in_place<alloc::vec::drain::Drain<regex_syntax::hir::literal::Literal>>
+    drop_in_place<alloc::vec::in_place_drop::InPlaceDrop<alloc::string::String>>
+    drop_in_place<alloc::vec::in_place_drop::InPlaceDstDataSrcBufDrop<(f64,alloc::string::String),alloc::string::String>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<(alloc::string::String,&toml::value::Value)>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<(alloc::string::String,alloc::string::String)>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<(alloc::string::String,alloc::string::String,alloc::string::String)>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<alloc::boxed::Box<dyn core::ops::function::FnOnce<()>+Output = ()+core::marker::Send>>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<alloc::string::String>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<clap_builder::builder::arg::Arg>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<clap_builder::builder::possible_value::PossibleValue>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<clap_builder::builder::styled_str::StyledStr>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<otty_dev::commands::font::FontInfo>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<regex_syntax::hir::Hir>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<std::ffi::os_str::OsString>>
+    drop_in_place<alloc::vec::into_iter::IntoIter<std::path::PathBuf>>
+    drop_in_place<clap_builder::builder::arg::Arg>
+    drop_in_place<clap_builder::builder::arg_group::ArgGroup>
+    drop_in_place<clap_builder::builder::command::Command>
+    drop_in_place<clap_builder::builder::ext::Extensions>
+    drop_in_place<clap_builder::builder::possible_value::PossibleValue>
+    drop_in_place<clap_builder::builder::value_parser::ValueParser>
+    drop_in_place<clap_builder::error::Error>
+    drop_in_place<clap_builder::error::ErrorInner>
+    drop_in_place<clap_builder::error::context::ContextValue>
+    drop_in_place<clap_builder::parser::arg_matcher::ArgMatcher>
+    drop_in_place<clap_builder::parser::matches::arg_matches::ArgMatches>
+    drop_in_place<clap_builder::parser::matches::arg_matches::SubCommand>
+    drop_in_place<clap_builder::parser::matches::matched_arg::MatchedArg>
+    drop_in_place<clap_builder::parser::parser::ParseResult>
+    drop_in_place<clap_builder::parser::validator::Validator>
+    drop_in_place<clap_builder::util::any_value::AnyValue>
+    drop_in_place<clap_builder::util::flat_map::FlatMap<clap_builder::util::id::Id,alloc::vec::Vec<clap_builder::util::id::Id>>>
+    drop_in_place<clap_builder::util::flat_map::FlatMap<clap_builder::util::id::Id,clap_builder::parser::matches::matched_arg::MatchedArg>>
+    drop_in_place<clap_builder::util::flat_set::FlatSet<clap_builder::builder::styled_str::StyledStr>>
+    drop_in_place<clap_builder::util::graph::ChildGraph<clap_builder::util::id::Id>>
+    drop_in_place<clap_lex::RawArgs>
+    drop_in_place<core::array::iter::IntoIter<(clap_builder::error::context::ContextKind,clap_builder::error::context::ContextValue),1_usize>>
+    drop_in_place<core::array::iter::IntoIter<(clap_builder::error::context::ContextKind,clap_builder::error::context::ContextValue),2_usize>>
+    drop_in_place<core::array::iter::IntoIter<(clap_builder::error::context::ContextKind,clap_builder::error::context::ContextValue),3_usize>>
+    drop_in_place<core::array::iter::IntoIter<alloc::string::String,3_usize>>
+    drop_in_place<core::array::iter::IntoIter<alloc::string::String,9_usize>>
+    drop_in_place<core::cell::RefCell<alloc::vec::Vec<regex_syntax::ast::CaptureName>>>
+    drop_in_place<core::cell::RefCell<alloc::vec::Vec<regex_syntax::ast::parse::ClassState>>>
+    drop_in_place<core::cell::RefCell<regex_automata::nfa::thompson::compiler::Utf8State>>
+    drop_in_place<core::cell::RefCell<rusqlite::inner_connection::InnerConnection>>
+    drop_in_place<core::cell::UnsafeCell<core::option::Option<core::result::Result<alloc::vec::Vec<u8>,alloc::boxed::Box<dyn core::any::Any+core::marker::Send>>>>>
+    drop_in_place<core::iter::adapters::chain::Chain<core::iter::sources::once::Once<alloc::string::String>,core::iter::adapters::map::Map<clap_builder::parser::matches::arg_matches::Values<alloc::string::String>,<alloc::string::String as core::convert::From<alloc::string::String>>::from>>>
+    drop_in_place<core::iter::adapters::enumerate::Enumerate<alloc::collections::btree::map::IntoIter<(usize,clap_builder::builder::styled_str::StyledStr),&clap_builder::builder::command::Command>>>
+    drop_in_place<core::iter::adapters::enumerate::Enumerate<alloc::vec::into_iter::IntoIter<std::ffi::os_str::OsString>>>
+    drop_in_place<core::iter::adapters::filter::Filter<core::iter::adapters::map::Map<alloc::vec::into_iter::IntoIter<alloc::string::String>,otty_config::Config::parse_key_value::{{closure}}>,otty_config::Config::parse_key_value::{{closure}}>>
+    drop_in_place<core::iter::adapters::filter_map::FilterMap<rusqlite::row::MappedRows<otty_dev::commands::learn::help_probe::ensure_specs_columns::{{closure}}>,core::result::Result<alloc::string::String,rusqlite::error::Error>::ok>>
+    drop_in_place<core::iter::adapters::flatten::FlatMap<core::slice::iter::Iter<clap_builder::builder::command::Command>,alloc::vec::Vec<&str>,clap_builder::builder::command::Command::get_name_and_visible_aliases>>
+    drop_in_place<core::iter::adapters::flatten::Flatten<alloc::vec::into_iter::IntoIter<alloc::vec::Vec<clap_builder::util::any_value::AnyValue>>>>
+    drop_in_place<core::iter::adapters::flatten::Flatten<alloc::vec::into_iter::IntoIter<core::option::Option<clap_builder::builder::styled_str::StyledStr>>>>
+    drop_in_place<core::iter::adapters::flatten::Flatten<core::iter::adapters::filter_map::FilterMap<core::slice::iter::Iter<clap_builder::builder::arg::Arg>,clap_complete::aot::generator::utils::longs_and_visible_aliases::{{closure}}>>>
+    drop_in_place<core::iter::adapters::flatten::Flatten<std::fs::ReadDir>>
+    drop_in_place<core::iter::adapters::map::Map<alloc::vec::into_iter::IntoIter<(f64,alloc::string::String)>,clap_builder::parser::features::suggestions::did_you_mean<&alloc::string::String,core::slice::iter::Iter<alloc::string::String>>::{{closure}}>>
+    drop_in_place<core::iter::adapters::map::Map<alloc::vec::into_iter::IntoIter<alloc::string::String>,alloc::collections::btree::set::BTreeSet<alloc::string::String>::from_sorted_iter<alloc::vec::into_iter::IntoIter<alloc::string::String>>::{{closure}}>>
+    drop_in_place<core::mem::drop_guard::DropGuard<&mut core::mem::maybe_uninit::MaybeUninit<libc::unix::bsd::apple::b64::pthread_attr_t>,std::sys::thread::unix::Thread::new::{{closure}}>>
+    drop_in_place<core::option::Option<(alloc::string::String,core::option::Option<alloc::string::String>)>>
+    drop_in_place<core::option::Option<(alloc::string::String,toml::value::Value)>>
+    drop_in_place<core::option::Option<(toml_edit::key::Key,toml_edit::item::Item)>>
+    drop_in_place<core::option::Option<aho_corasick::packed::api::Builder>>
+    drop_in_place<core::option::Option<alloc::boxed::Box<clap_builder::parser::matches::arg_matches::SubCommand>>>
+    drop_in_place<core::option::Option<alloc::boxed::Box<otty_config::theme_def::ElementStyle>>>
+    drop_in_place<core::option::Option<alloc::boxed::Box<otty_config::theme_def::PlatformStyle>>>
+    drop_in_place<core::option::Option<alloc::vec::Vec<alloc::string::String>>>
+    drop_in_place<core::option::Option<alloc::vec::into_iter::IntoIter<clap_builder::util::any_value::AnyValue>>>
+    drop_in_place<core::option::Option<clap_builder::builder::value_parser::ValueParser>>
+    drop_in_place<core::option::Option<clap_builder::parser::parser::PendingArg>>
+    drop_in_place<core::option::Option<core::option::Option<regex_automata::util::prefilter::Prefilter>>>
+    drop_in_place<core::option::Option<core::result::Result<std::fs::DirEntry,std::io::error::Error>>>
+    drop_in_place<core::option::Option<gimli::read::line::IncompleteLineProgram<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>,usize>>>
+    drop_in_place<core::option::Option<object::read::ObjectMap>>
+    drop_in_place<core::option::Option<otty_config::external_theme::ThemeInstall>>
+    drop_in_place<core::option::Option<otty_config::theme_def::CursorShapeStyle>>
+    drop_in_place<core::option::Option<otty_config::theme_def::FontValue>>
+    drop_in_place<core::option::Option<otty_config::theme_def::PanelSection>>
+    drop_in_place<core::option::Option<otty_config::theme_def::SidebarStyle>>
+    drop_in_place<core::option::Option<otty_config::theme_def::TabBarStyle>>
+    drop_in_place<core::option::Option<otty_config::theme_def::TabStyle>>
+    drop_in_place<core::option::Option<otty_dev::ipc::protocol::IpcError>>
+    drop_in_place<core::option::Option<regex_automata::nfa::thompson::nfa::NFA>>
+    drop_in_place<core::option::Option<regex_automata::nfa::thompson::pikevm::Cache>>
+    drop_in_place<core::option::Option<regex_automata::util::prefilter::Prefilter>>
+    drop_in_place<core::option::Option<std::backtrace_rs::symbolize::gimli::Mapping>>
+    drop_in_place<core::result::Result<&core::result::Result<addr2line::function::Function<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>,gimli::read::Error>,(&core::result::Result<addr2line::function::Function<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>,gimli::read::Error>,core::result::Result<addr2line::function::Function<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>,gimli::read::Error>)>>
+    drop_in_place<core::result::Result<&core::result::Result<addr2line::function::Functions<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>,gimli::read::Error>,(&core::result::Result<addr2line::function::Functions<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>,gimli::read::Error>,core::result::Result<addr2line::function::Functions<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>,gimli::read::Error>)>>
+    drop_in_place<core::result::Result<&core::result::Result<addr2line::line::Lines,gimli::read::Error>,(&core::result::Result<addr2line::line::Lines,gimli::read::Error>,core::result::Result<addr2line::line::Lines,gimli::read::Error>)>>
+    drop_in_place<core::result::Result<&core::result::Result<core::option::Option<alloc::boxed::Box<addr2line::unit::DwoUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>,gimli::read::Error>,(&core::result::Result<core::option::Option<alloc::boxed::Box<addr2line::unit::DwoUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>,gimli::read::Error>,core::result::Result<core::option::Option<alloc::boxed::Box<addr2line::unit::DwoUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>,gimli::read::Error>)>>
+    drop_in_place<core::result::Result<&std::thread::thread::Thread,(&std::thread::thread::Thread,std::thread::thread::Thread)>>
+    drop_in_place<core::result::Result<(),alloc::boxed::Box<dyn core::any::Any+core::marker::Send>>>
+    drop_in_place<core::result::Result<(),clap_builder::error::Error>>
+    drop_in_place<core::result::Result<(),std::io::error::Error>>
+    drop_in_place<core::result::Result<addr2line::function::Functions<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>,gimli::read::Error>>
+    drop_in_place<core::result::Result<addr2line::line::Lines,gimli::read::Error>>
+    drop_in_place<core::result::Result<alloc::borrow::Cow<str>,winnow::error::ErrMode<winnow::error::ContextError>>>
+    drop_in_place<core::result::Result<core::option::Option<alloc::boxed::Box<addr2line::unit::DwoUnit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>>>>,gimli::read::Error>>
+    drop_in_place<core::result::Result<core::option::Option<alloc::string::String>,toml_edit::de::Error>>
+    drop_in_place<core::result::Result<core::option::Option<serde_core::private::content::Content>,toml_edit::de::Error>>
+    drop_in_place<core::result::Result<otty_config::Color,otty_config::ConfigError>>
+    drop_in_place<core::result::Result<otty_config::Config,otty_config::ConfigError>>
+    drop_in_place<core::result::Result<otty_config::theme_def::FontValue,toml::de::Error>>
+    drop_in_place<core::result::Result<otty_dev::ipc::protocol::IpcError,serde_json::error::Error>>
+    drop_in_place<core::result::Result<otty_dev::ipc::protocol::IpcResponse,otty_dev::output::CliError>>
+    drop_in_place<core::result::Result<otty_dev::ipc::protocol::IpcResponse,serde_json::error::Error>>
+    drop_in_place<core::result::Result<regex_syntax::ast::Ast,regex_syntax::ast::Error>>
+    drop_in_place<core::result::Result<regex_syntax::hir::ClassUnicode,regex_syntax::hir::Error>>
+    drop_in_place<core::result::Result<serde_json::value::Value,serde_json::error::Error>>
+    drop_in_place<core::result::Result<std::sync::poison::mutex::MutexGuard<()>,std::sync::poison::PoisonError<std::sync::poison::mutex::MutexGuard<()>>>>
+    drop_in_place<core::result::Result<usize,std::io::error::Error>>
+    drop_in_place<gimli::read::abbrev::Abbreviations>
+    drop_in_place<gimli::read::abbrev::AbbreviationsCache>
+    drop_in_place<gimli::read::dwarf::Unit<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>,usize>>
+    drop_in_place<gimli::read::line::LineRows<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>,gimli::read::line::IncompleteLineProgram<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>,usize>,usize>>
+    drop_in_place<hashbrown::scopeguard::ScopeGuard<&mut hashbrown::raw::RawTableInner,hashbrown::raw::RawTableInner::rehash_in_place::{{closure}}>>
+    drop_in_place<hashbrown::scopeguard::ScopeGuard<hashbrown::raw::RawTableInner,hashbrown::raw::RawTableInner::prepare_resize<hashbrown::alloc::inner::Global>::{{closure}}>>
+    drop_in_place<indexmap::Bucket<toml_edit::key::Key,toml_edit::item::Item>>
+    drop_in_place<indexmap::map::IndexMap<toml_edit::key::Key,toml_edit::item::Item>>
+    drop_in_place<otty_autocomplete::help_parse::ProbeOption>
+    drop_in_place<otty_autocomplete::help_parse::ProbeResult>
+    drop_in_place<otty_autocomplete::help_parse::ProbeSubcommand>
+    drop_in_place<otty_config::Config>
+    drop_in_place<otty_config::ConfigError>
+    drop_in_place<otty_config::DetailsView>
+    drop_in_place<otty_config::Keybind>
+    drop_in_place<otty_config::OpenWithApp>
+    drop_in_place<otty_config::QuickAccessItem>
+    drop_in_place<otty_config::TabRule>
+    drop_in_place<otty_config::ThemeDefMemo>
+    drop_in_place<otty_config::WorkingDirectory>
+    drop_in_place<otty_config::external_config::ExportReport>
+    drop_in_place<otty_config::external_config::ImportEntry>
+    drop_in_place<otty_config::external_config::ImportReport>
+    drop_in_place<otty_config::external_config::ImportSimilar>
+    drop_in_place<otty_config::external_theme::ExternalThemeColors>
+    drop_in_place<otty_config::external_theme::ThemeInstall>
+    drop_in_place<otty_config::theme_def::CursorShapeStyle>
+    drop_in_place<otty_config::theme_def::CursorThemeStyle>
+    drop_in_place<otty_config::theme_def::ElementStyle>
+    drop_in_place<otty_config::theme_def::MetaSection>
+    drop_in_place<otty_config::theme_def::PanelSection>
+    drop_in_place<otty_config::theme_def::PlatformStyle>
+    drop_in_place<otty_config::theme_def::SidebarStyle>
+    drop_in_place<otty_config::theme_def::TabBarStyle>
+    drop_in_place<otty_config::theme_def::TabStyle>
+    drop_in_place<otty_config::theme_def::TerminalSection>
+    drop_in_place<otty_config::theme_def::ThemeDef>
+    drop_in_place<otty_config::theme_def::TokenSection>
+    drop_in_place<otty_config::theme_import::ThemeImportError>
+    drop_in_place<otty_config::theme_import::ThemeImportPreview>
+    drop_in_place<otty_dev::args::ConfigArgs>
+    drop_in_place<otty_dev::args::FeaturesArgs>
+    drop_in_place<otty_dev::args::FontArgs>
+    drop_in_place<otty_dev::args::GlobalFlags>
+    drop_in_place<otty_dev::args::ImportArgs>
+    drop_in_place<otty_dev::args::IpcArgs>
+    drop_in_place<otty_dev::args::JumpArgs>
+    drop_in_place<otty_dev::args::LaunchArgs>
+    drop_in_place<otty_dev::args::OpenArgs>
+    drop_in_place<otty_dev::args::PaneArgs>
+    drop_in_place<otty_dev::args::RemoteArgs>
+    drop_in_place<otty_dev::args::SshArgs>
+    drop_in_place<otty_dev::args::TabArgs>
+    drop_in_place<otty_dev::args::WatchArgs>
+    drop_in_place<otty_dev::args::WindowArgs>
+    drop_in_place<otty_dev::commands::config::ConfigFiles>
+    drop_in_place<otty_dev::commands::features::sigreset::ResetOnSignal>
+    drop_in_place<otty_dev::commands::font::FontGroup>
+    drop_in_place<otty_dev::commands::font::FontInfo>
+    drop_in_place<otty_dev::commands::learn::help_probe::OptionSpec>
+    drop_in_place<otty_dev::commands::learn::help_probe::ParsedSpec>
+    drop_in_place<otty_dev::commands::learn::help_probe::ProbeReport>
+    drop_in_place<otty_dev::commands::learn::help_probe::SubcommandSpec>
+    drop_in_place<otty_dev::commands::ssh::Verdict>
+    drop_in_place<otty_dev::commands::ssh_wrap::Resolved>
+    drop_in_place<otty_dev::download::TempDir>
+    drop_in_place<otty_dev::ipc::client::IpcClient>
+    drop_in_place<otty_dev::ipc::protocol::IpcRequest>
+    drop_in_place<otty_dev::ipc::protocol::IpcResponse>
+    drop_in_place<otty_ssh_argv::SshArgvScan>
+    drop_in_place<otty_ssh_config::load::HostEntry>
+    drop_in_place<otty_ssh_config::load::Loader>
+    drop_in_place<otty_ssh_config::parse::Directive>
+    drop_in_place<otty_state::anywhere::HostMeta>
+    drop_in_place<regex::builders::Builder>
+    drop_in_place<regex::builders::string::RegexBuilder>
+    drop_in_place<regex_automata::dfa::onepass::Builder>
+    drop_in_place<regex_automata::dfa::onepass::InternalBuilder>
+    drop_in_place<regex_automata::hybrid::dfa::Builder>
+    drop_in_place<regex_automata::hybrid::dfa::Cache>
+    drop_in_place<regex_automata::hybrid::dfa::Config>
+    drop_in_place<regex_automata::hybrid::dfa::DFA>
+    drop_in_place<regex_automata::hybrid::error::BuildError>
+    drop_in_place<regex_automata::hybrid::regex::Regex>
+    drop_in_place<regex_automata::meta::error::BuildError>
+    drop_in_place<regex_automata::meta::regex::Builder::build_many_from_hir<regex_syntax::hir::Hir>::{{closure}}>
+    drop_in_place<regex_automata::meta::regex::Builder>
+    drop_in_place<regex_automata::meta::regex::Cache>
+    drop_in_place<regex_automata::meta::regex::Config>
+    drop_in_place<regex_automata::meta::regex::RegexInfo>
+    drop_in_place<regex_automata::meta::regex::RegexInfoI>
+    drop_in_place<regex_automata::meta::reverse_inner::InnerPrefilter>
+    drop_in_place<regex_automata::meta::strategy::Core>
+    drop_in_place<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::aho_corasick::AhoCorasick>>
+    drop_in_place<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::byteset::ByteSet>>
+    drop_in_place<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::memchr::Memchr>>
+    drop_in_place<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::memmem::Memmem>>
+    drop_in_place<regex_automata::meta::strategy::Pre<regex_automata::util::prefilter::teddy::Teddy>>
+    drop_in_place<regex_automata::meta::strategy::ReverseAnchored>
+    drop_in_place<regex_automata::meta::strategy::ReverseInner>
+    drop_in_place<regex_automata::meta::strategy::ReverseSuffix>
+    drop_in_place<regex_automata::meta::wrappers::BoundedBacktracker>
+    drop_in_place<regex_automata::meta::wrappers::BoundedBacktrackerCache>
+    drop_in_place<regex_automata::meta::wrappers::Hybrid>
+    drop_in_place<regex_automata::meta::wrappers::OnePass>
+    drop_in_place<regex_automata::meta::wrappers::PikeVM>
+    drop_in_place<regex_automata::meta::wrappers::ReverseHybrid>
+    drop_in_place<regex_automata::nfa::thompson::backtrack::BoundedBacktracker>
+    drop_in_place<regex_automata::nfa::thompson::backtrack::Builder>
+    drop_in_place<regex_automata::nfa::thompson::backtrack::Config>
+    drop_in_place<regex_automata::nfa::thompson::builder::Builder>
+    drop_in_place<regex_automata::nfa::thompson::builder::State>
+    drop_in_place<regex_automata::nfa::thompson::compiler::Compiler>
+    drop_in_place<regex_automata::nfa::thompson::error::BuildError>
+    drop_in_place<regex_automata::nfa::thompson::literal_trie::Frame>
+    drop_in_place<regex_automata::nfa::thompson::literal_trie::LiteralTrie>
+    drop_in_place<regex_automata::nfa::thompson::nfa::Inner>
+    drop_in_place<regex_automata::nfa::thompson::nfa::NFA>
+    drop_in_place<regex_automata::nfa::thompson::nfa::State>
+    drop_in_place<regex_automata::nfa::thompson::pikevm::ActiveStates>
+    drop_in_place<regex_automata::nfa::thompson::pikevm::Builder>
+    drop_in_place<regex_automata::nfa::thompson::pikevm::Config>
+    drop_in_place<regex_automata::nfa::thompson::pikevm::PikeVM>
+    drop_in_place<regex_automata::nfa::thompson::range_trie::RangeTrie>
+    drop_in_place<regex_automata::util::captures::Captures>
+    drop_in_place<regex_automata::util::captures::GroupInfoError>
+    drop_in_place<regex_automata::util::captures::GroupInfoInner>
+    drop_in_place<regex_automata::util::pool::Pool<regex_automata::meta::regex::Cache,alloc::boxed::Box<dyn core::ops::function::Fn<()>+Output = regex_automata::meta::regex::Cache+core::marker::Sync+core::panic::unwind_safe::RefUnwindSafe+core::panic::unwind_safe::UnwindSafe+core::marker::Send>>>
+    drop_in_place<regex_automata::util::pool::inner::CacheLine<std::sync::poison::mutex::Mutex<alloc::vec::Vec<alloc::boxed::Box<regex_automata::meta::regex::Cache>>>>>
+    drop_in_place<regex_automata::util::pool::inner::Pool<regex_automata::meta::regex::Cache,alloc::boxed::Box<dyn core::ops::function::Fn<()>+Output = regex_automata::meta::regex::Cache+core::marker::Sync+core::panic::unwind_safe::RefUnwindSafe+core::panic::unwind_safe::UnwindSafe+core::marker::Send>>>
+    drop_in_place<regex_automata::util::prefilter::aho_corasick::AhoCorasick>
+    drop_in_place<regex_automata::util::prefilter::teddy::Teddy>
+    drop_in_place<regex_automata::util::sparse_set::SparseSet>
+    drop_in_place<regex_syntax::ast::Alternation>
+    drop_in_place<regex_syntax::ast::Ast>
+    drop_in_place<regex_syntax::ast::ClassSet>
+    drop_in_place<regex_syntax::ast::ClassSetBinaryOp>
+    drop_in_place<regex_syntax::ast::ClassSetItem>
+    drop_in_place<regex_syntax::ast::ClassSetUnion>
+    drop_in_place<regex_syntax::ast::ClassUnicode>
+    drop_in_place<regex_syntax::ast::Concat>
+    drop_in_place<regex_syntax::ast::Group>
+    drop_in_place<regex_syntax::ast::GroupKind>
+    drop_in_place<regex_syntax::ast::Repetition>
+    drop_in_place<regex_syntax::ast::parse::ClassState>
+    drop_in_place<regex_syntax::ast::parse::GroupState>
+    drop_in_place<regex_syntax::ast::parse::Parser>
+    drop_in_place<regex_syntax::ast::parse::Primitive>
+    drop_in_place<regex_syntax::error::Spans>
+    drop_in_place<regex_syntax::hir::Capture>
+    drop_in_place<regex_syntax::hir::Hir>
+    drop_in_place<regex_syntax::hir::HirKind>
+    drop_in_place<regex_syntax::hir::literal::PreferenceTrie>
+    drop_in_place<regex_syntax::hir::literal::Seq>
+    drop_in_place<regex_syntax::hir::translate::HirFrame>
+    drop_in_place<regex_syntax::hir::translate::Translator>
+    drop_in_place<rusqlite::Connection>
+    drop_in_place<rusqlite::cache::StatementCache>
+    drop_in_place<rusqlite::error::Error>
+    drop_in_place<rusqlite::raw_statement::RawStatement>
+    drop_in_place<rusqlite::row::Rows>
+    drop_in_place<rusqlite::statement::Statement>
+    drop_in_place<rusqlite::transaction::Transaction>
+    drop_in_place<rusqlite::types::to_sql::ToSqlOutput>
+    drop_in_place<serde_core::private::content::Content>
+    drop_in_place<serde_json::error::Error>
+    drop_in_place<serde_json::error::ErrorCode>
+    drop_in_place<serde_json::value::Value>
+    drop_in_place<serde_json::value::ser::SerializeMap>
+    drop_in_place<serde_json::value::ser::SerializeVec>
+    drop_in_place<std::backtrace_rs::backtrace::libunwind::Bomb>
+    drop_in_place<std::backtrace_rs::symbolize::gimli::Context>
+    drop_in_place<std::backtrace_rs::symbolize::gimli::macho::Object>
+    drop_in_place<std::backtrace_rs::symbolize::gimli::stash::Stash>
+    drop_in_place<std::collections::hash::map::HashMap<alloc::string::String,alloc::string::String>>
+    drop_in_place<std::collections::hash::map::HashMap<alloc::string::String,alloc::vec::Vec<alloc::string::String>>>
+    drop_in_place<std::collections::hash::map::HashMap<alloc::string::String,usize>>
+    drop_in_place<std::collections::hash::map::HashMap<alloc::sync::Arc<str>,regex_automata::util::primitives::SmallIndex>>
+    drop_in_place<std::collections::hash::map::HashMap<regex_automata::util::determinize::state::State,regex_automata::hybrid::id::LazyStateID>>
+    drop_in_place<std::collections::hash::map::IntoIter<alloc::string::String,alloc::string::String>>
+    drop_in_place<std::collections::hash::set::HashSet<alloc::string::String>>
+    drop_in_place<std::collections::hash::set::HashSet<std::path::PathBuf>>
+    drop_in_place<std::collections::hash::set::IntoIter<alloc::string::String>>
+    drop_in_place<std::env::Args>
+    drop_in_place<std::env::VarsOs>
+    drop_in_place<std::ffi::os_str::OsString>
+    drop_in_place<std::io::buffered::bufwriter::BufWriter<W>::flush_buf::BufGuard>
+    drop_in_place<std::io::buffered::linewriter::LineWriter<std::io::stdio::StdoutRaw>>
+    drop_in_place<std::io::default_write_fmt::Adapter<std::io::cursor::Cursor<&mut [u8]>>>
+    drop_in_place<std::io::error::Custom>
+    drop_in_place<std::io::error::Error>
+    drop_in_place<std::panicking::panic_handler::FormatStringPayload>
+    drop_in_place<std::process::Child>
+    drop_in_place<std::process::Command>
+    drop_in_place<std::process::Output>
+    drop_in_place<std::process::StdioPipes>
+    drop_in_place<std::sync::poison::PoisonError<std::sync::poison::mutex::MutexGuard<*mut libsqlite3_sys::bindings::sqlite3>>>
+    drop_in_place<std::sync::poison::mutex::MutexGuard<*mut libsqlite3_sys::bindings::sqlite3>>
+    drop_in_place<std::sync::poison::rwlock::RwLockReadGuard<()>>
+    drop_in_place<std::sys::pal::unix::stack_overflow::Handler>
+    drop_in_place<std::sys::pal::unix::sync::mutex::AttrGuard>
+    drop_in_place<std::sys::process::env::CommandEnv>
+    drop_in_place<std::sys::process::unix::common::ChildPipes>
+    drop_in_place<std::sys::process::unix::common::cstring_array::CStringArray>
+    drop_in_place<std::thread::join_handle::JoinHandle<alloc::vec::Vec<u8>>>
+    drop_in_place<std::thread::lifecycle::Packet<alloc::vec::Vec<u8>>>
+    drop_in_place<std::thread::lifecycle::ThreadInit>
+    drop_in_place<std::thread::lifecycle::spawn_unchecked<otty_dev::commands::help_probe::run_probe::{{closure}},alloc::vec::Vec<u8>>::{{closure}}>
+    drop_in_place<std::thread::spawnhook::ChildSpawnHooks>
+    drop_in_place<std::thread::spawnhook::SpawnHooks>
+    drop_in_place<toml::value::MapDeserializer>
+    drop_in_place<toml::value::SeqDeserializer>
+    drop_in_place<toml::value::Value>
+    drop_in_place<toml_edit::array::Array>
+    drop_in_place<toml_edit::array_of_tables::ArrayOfTables>
+    drop_in_place<toml_edit::de::array::ArraySeqAccess>
+    drop_in_place<toml_edit::de::table::TableMapAccess>
+    drop_in_place<toml_edit::error::TomlError>
+    drop_in_place<toml_edit::inline_table::InlineTable>
+    drop_in_place<toml_edit::item::Item>
+    drop_in_place<toml_edit::key::Key>
+    drop_in_place<toml_edit::parser::error::CustomError>
+    drop_in_place<toml_edit::parser::state::ParseState>
+    drop_in_place<toml_edit::repr::Decor>
+    drop_in_place<toml_edit::repr::Formatted<alloc::string::String>>
+    drop_in_place<toml_edit::repr::Formatted<f64>>
+    drop_in_place<toml_edit::repr::Formatted<toml_datetime::datetime::Datetime>>
+    drop_in_place<toml_edit::table::Table>
+    drop_in_place<toml_edit::value::Value>
+    drop_in_place<winnow::error::ContextError>
+    drop_in_place<winnow::error::ErrMode<winnow::error::ContextError>>
+    drop_in_place<winnow::error::ParseError<winnow::stream::stateful::Stateful<winnow::stream::locating::LocatingSlice<&winnow::stream::bstr::BStr>,toml_edit::parser::prelude::RecursionCheck>,winnow::error::ContextError>>
+
+qrcode   (18)
+    ALIGNMENT_PATTERN_POSITIONS
+    ALL_PATTERNS_MICRO_QR
+    ALL_PATTERNS_QR
+    DATA_BYTES_PER_BLOCK
+    DATA_LENGTHS
+    EC_BYTES_PER_BLOCK
+    FORMAT_INFOS_MICRO_QR
+    FORMAT_INFOS_QR
+    FORMAT_INFO_COORDS_MICRO_QR
+    FORMAT_INFO_COORDS_QR_MAIN
+    FORMAT_INFO_COORDS_QR_SIDE
+    GENERATOR_POLYNOMIALS
+    STATE_TRANSITION
+    VERSION_INFOS
+    VERSION_INFO_COORDS_BL
+    VERSION_INFO_COORDS_TR
+    encode_auto
+    with_bits
+
+qrcode::bits   (2)
+    push_header
+    push_number
+
+qrcode::canvas   (14)
+    apply_mask
+    checkerboard
+    compute_adjacent_penalty_score
+    compute_finder_penalty_score
+    diagonal_lines
+    diamonds
+    draw_codewords
+    draw_finder_pattern_at
+    draw_format_info_patterns_with_number
+    fields
+    horizontal_lines
+    large_checkerboard
+    meadow
+    vertical_lines
+
+qrcode::canvas::Canvas   (1)
+    _{{closure}}
+
+qrcode::optimize   (1)
+    encoded_len
+
+raw_vec   (7)
+    capacity_overflow
+    deallocate
+    finish_grow
+    grow_amortized
+    grow_one
+    handle_error
+    with_capacity_in
+
+raw_vec::RawVecInner<A>   (1)
+    do_reserve_and_handle
+
+regex::builders   (1)
+    new
+
+regex::regex::string   (1)
+    new
+
+regex_automata::dfa::onepass   (8)
+    add_dfa_state_for_nfa_state
+    add_empty_state
+    compile_transition
+    explicit_slots
+    shuffle_states
+    stack_push
+    try_search_slots
+    try_search_slots_imp
+
+regex_automata::hybrid   (5)
+    find_fwd
+    find_overlapping_fwd
+    find_rev
+    minimum_cache_capacity
+    skip_empty_utf8_splits_overlapping
+
+regex_automata::hybrid::dfa   (12)
+    build_from_nfa
+    cache_next_state
+    cache_start_group
+    clear_cache
+    configure
+    dead_id
+    init_cache
+    new
+    next_eoi_state
+    next_state
+    next_state_id
+    set_transition
+
+regex_automata::hybrid::dfa::DFA   (1)
+    _{{closure}}
+
+regex_automata::hybrid::regex   (2)
+    reset
+    try_search
+
+regex_automata::meta   (12)
+    class_is_disjoint_from_literal
+    flatten
+    has_disjoint_class_separator
+    has_disjoint_class_separator_at
+    has_no_earlier_match
+    hir_can_consume_byte
+    hir_is_disjoint_from_class
+    hybrid_try_search_half_fwd
+    hybrid_try_search_half_rev
+    new
+    prefilter_with_literals
+    strip_literal_suffix_at
+
+regex_automata::meta::regex   (1)
+    build
+
+regex_automata::meta::regex::Builder   (1)
+    _{{closure}}
+
+regex_automata::meta::strategy   (4)
+    is_match_nofail
+    new
+    search_nofail
+    search_slots_nofail
+
+regex_automata::meta::wrappers   (3)
+    get
+    new
+    try_which_overlapping_matches
+
+regex_automata::nfa::thompson::backtrack   (3)
+    search_imp
+    try_search_slots
+    try_search_slots_imp
+
+regex_automata::nfa::thompson::builder   (2)
+    add
+    patch
+
+regex_automata::nfa::thompson::compiler   (16)
+    add
+    add_empty
+    add_union
+    add_union_reverse
+    c
+    c_alt_iter
+    c_at_least
+    c_bounded
+    c_cap
+    c_concat
+    compile
+    compile_from
+    configure
+    finish
+    new
+    patch
+
+regex_automata::nfa::thompson::nfa   (1)
+    add
+
+regex_automata::nfa::thompson::pikevm   (5)
+    reset
+    search_imp
+    search_slots
+    search_slots_imp
+    which_overlapping_imp
+
+regex_automata::nfa::thompson::range_trie   (1)
+    add_empty
+
+regex_automata::util   (4)
+    add_nfa_states
+    epsilon_closure
+    skip_splits_fwd
+    skip_splits_rev
+
+regex_automata::util::captures   (2)
+    add_first_group
+    new
+
+regex_automata::util::determinize::state   (3)
+    dead
+    into_nfa
+    match_pattern
+
+regex_automata::util::look   (9)
+    is_end_crlf
+    is_start_crlf
+    is_word_ascii
+    is_word_end_half_unicode
+    is_word_end_unicode
+    is_word_start_half_unicode
+    is_word_start_unicode
+    is_word_unicode
+    is_word_unicode_negate
+
+regex_automata::util::prefilter   (2)
+    from_choice
+    new
+
+regex_automata::util::search   (4)
+    gave_up
+    haystack_too_long
+    quit
+    set_span
+
+regex_automata::util::sparse_set   (1)
+    resize
+
+regex_syntax   (14)
+    ages
+    canonical_gencat
+    canonical_prop
+    canonical_script
+    gcb
+    hir_class
+    is_escapeable_character
+    property_values
+    sb
+    script_extension
+    symbolic_name_normalize
+    try_is_word_character
+    utf8_decode
+    wb
+
+regex_syntax::ast   (6)
+    empty
+    from_name
+    into_ast
+    push
+    repetition
+    specialize_err
+
+regex_syntax::ast::parse   (37)
+    bump
+    bump_and_bump_space
+    bump_space
+    char
+    check
+    into_class_literal
+    maybe_parse_ascii_class
+    maybe_parse_special_word_boundary
+    parse_capture_name
+    parse_counted_repetition
+    parse_decimal
+    parse_escape
+    parse_flag
+    parse_flags
+    parse_group
+    parse_hex
+    parse_hex_brace
+    parse_hex_digits
+    parse_octal
+    parse_perl_class
+    parse_set_class
+    parse_set_class_item
+    parse_set_class_open
+    parse_set_class_range
+    parse_uncounted_repetition
+    parse_unicode_class
+    peek
+    peek_space
+    pop_class
+    pop_class_op
+    pop_group
+    pop_group_end
+    push_alternate
+    push_class_op
+    push_class_open
+    push_group
+    unclosed_class_error
+
+regex_syntax::error   (3)
+    add
+    from_formatter
+    notate
+
+regex_syntax::hir   (11)
+    alternation
+    case_fold_simple
+    class
+    concat
+    empty
+    into_kind
+    into_parts
+    literal
+    negate
+    push
+    repetition
+
+regex_syntax::hir::interval   (3)
+    canonicalize
+    difference
+    intersect
+
+regex_syntax::hir::literal   (6)
+    cross
+    cross_preamble
+    extract
+    minimize
+    optimize_by_preference
+    union
+
+regex_syntax::hir::literal::PreferenceTrie   (1)
+    _{{closure}}
+
+regex_syntax::hir::translate   (8)
+    bytes_fold_and_negate
+    class_literal_byte
+    convert_unicode_class_error
+    hir_perl_byte_class
+    hir_perl_unicode_class
+    hir_unicode_class
+    push
+    set_flags
+
+regex_syntax::unicode   (2)
+    canonical_binary
+    imp
+
+regex_syntax::utf8   (2)
+    new
+    reverse
+
+result   (1)
+    unwrap_failed
+
+rt   (3)
+    CLEANUP
+    cleanup
+    handle_rt_panic
+
+rt::lang_start_internal::_{{closure}}   (1)
+    _{{closure}}
+
+rusqlite   (5)
+    error_from_handle
+    error_from_sqlite_code
+    execute
+    execute_batch
+    is_identifier
+
+rusqlite::column   (1)
+    column_name
+
+rusqlite::inner_connection   (3)
+    close
+    open_with_flags
+    prepare
+
+rusqlite::pragma   (2)
+    pragma_update
+    wrap_and_escape
+
+rusqlite::row   (1)
+    get
+
+rusqlite::statement   (3)
+    bind_parameter
+    execute_with_bound_parameters
+    value_ref
+
+rusqlite::transaction   (1)
+    commit
+
+rust_oom   (1)
+    _{{closure}}
+
+rustc_demangle   (2)
+    basic_type
+    try_demangle
+
+rustc_demangle::v0   (20)
+    backref
+    hex_nibbles
+    ident
+    in_binder
+    integer_62
+    namespace
+    opt_integer_62
+    print_backref
+    print_const
+    print_const_str_literal
+    print_const_uint
+    print_lifetime_from_index
+    print_pat
+    print_path
+    print_path_maybe_open_generics
+    print_quoted_escaped_chars
+    print_sep_list
+    print_type
+    skipping_printing
+    try_parse_uint
+
+rustc_demangle::v0::Printer   (1)
+    _{{closure}}
+
+serde::private::de   (1)
+    content_unexpected
+
+serde::private::de::content   (2)
+    deserialize_float
+    invalid_type
+
+serde_core::de   (11)
+    __deserialize_content_v1
+    duplicate_field
+    invalid_length
+    invalid_type
+    invalid_value
+    next_element
+    next_entry
+    next_value
+    visit_map
+    visit_seq
+    visit_string
+
+serde_core::de::impls   (1)
+    deserialize
+
+serde_core::ser   (1)
+    collect_seq
+
+serde_core::ser::impls   (1)
+    serialize
+
+serde_json   (10)
+    ESCAPE
+    HEX0
+    HEX1
+    POW10
+    error
+    from_trait
+    make_error
+    parse_escape
+    parse_unicode_escape
+    to_value
+
+serde_json::de   (14)
+    end_map
+    end_seq
+    error
+    ignore_integer
+    invalid_type
+    parse_decimal
+    parse_decimal_overflow
+    parse_exponent
+    parse_exponent_overflow
+    parse_integer
+    parse_long_integer
+    parse_number
+    peek_error
+    peek_invalid_type
+
+serde_json::error   (3)
+    fix_position
+    io
+    syntax
+
+serde_json::read   (3)
+    position_of_index
+    skip_to_escape
+    skip_to_escape_slow
+
+serde_json::value::de   (1)
+    deserialize
+
+serde_json::value::ser   (1)
+    serialize
+
+slice   (4)
+    len_mismatch_fail
+    memchr_aligned
+    memrchr
+    slice_index_fail
+
+slice::copy_from_slice_impl::len_mismatch_fail   (1)
+    runtime
+
+slice::index::slice_index_fail   (1)
+    runtime
+
+slice::sort   (2)
+    driftsort_main
+    ipnsort
+
+slice::sort::shared   (8)
+    bidirectional_merge
+    insert_tail
+    insertion_sort_shift_left
+    median3_rec
+    panic_on_ord_violation
+    small_sort_general
+    sort4_stable
+    sort8_stable
+
+slice::sort::stable   (2)
+    quicksort
+    sort
+
+slice::sort::unstable   (2)
+    heapsort
+    quicksort
+
+str   (13)
+    do_count_chars
+    find
+    from_utf8
+    join_generic_copy
+    next_code_point
+    replace
+    slice_error_fail
+    slice_error_fail_rt
+    split_once
+    to_lowercase
+    trim_end_matches
+    trim_matches
+    trim_start_matches
+
+str::iter   (2)
+    next
+    next_back
+
+str::pattern   (2)
+    new
+    next
+
+string   (1)
+    from_utf8_lossy
+
+strsim   (1)
+    jaro
+
+sync   (2)
+    drop_slow
+    panic_poisoned
+
+sync::once::Once   (1)
+    _{{closure}}
+
+sync::once_lock   (1)
+    initialize
+
+sys   (10)
+    __rust_begin_short_backtrace
+    __rust_end_short_backtrace
+    canonicalize
+    copy
+    hashmap_random_keys
+    lock
+    metadata
+    output_filename
+    read_dir
+    remove_file
+
+sys::backtrace   (1)
+    _{{closure}}
+
+sys::backtrace::_print_fmt   (1)
+    _{{closure}}
+
+sys::env   (1)
+    env_read_lock
+
+sys::fd::unix   (1)
+    read_to_end
+
+sys::fs   (2)
+    _{{closure}}
+    canonicalize
+
+sys::fs::rename   (1)
+    _{{closure}}
+
+sys::fs::unix   (2)
+    open_c
+    remove_dir_all_recursive
+
+sys::fs::unix::DirBuilder   (1)
+    _{{closure}}
+
+sys::os_str::bytes::Slice   (1)
+    slow_path
+
+sys::pal   (2)
+    abort_internal
+    decode_error_kind
+
+sys::pal::common   (1)
+    run_with_cstr_allocating
+
+sys::pal::unix   (3)
+    anon_pipe
+    exit
+    read2
+
+sys::pal::unix::pipe   (1)
+    write
+
+sys::pal::unix::stack_overflow   (4)
+    drop_handler
+    make_handler
+    set_current_info
+    signal_handler
+
+sys::pal::unix::sync::mutex   (1)
+    init
+
+sys::pal::unix::sync::mutex::Mutex   (1)
+    fail
+
+sys::pal::unix::time   (2)
+    now
+    sub_timespec
+
+sys::personality::dwarf   (1)
+    read_encoded_offset
+
+sys::personality::gcc   (1)
+    _{{closure}}
+
+sys::process::unix::common   (3)
+    arg
+    new
+    to_child_stdio
+
+sys::process::unix::unix   (3)
+    do_exec
+    spawn
+    wait
+
+sys::sync::once   (1)
+    wait
+
+sys::sync::once::queue   (1)
+    call
+
+sys::sync::once_box   (1)
+    initialize
+
+sys::sync::rwlock::queue   (3)
+    read_unlock_contended
+    unlock_contended
+    unlock_queue
+
+sys::thread::unix   (1)
+    new
+
+sys::thread::unix::Thread   (1)
+    thread_start
+
+sys::thread_local::destructors   (2)
+    DTORS
+    register
+
+sys::thread_local::guard::apple   (2)
+    REGISTERED
+    run_dtors
+
+sys::thread_local::native   (1)
+    destroy
+
+thread   (5)
+    CURRENT
+    init_current
+    panic_access_error
+    run_spawn_hooks
+    sleep
+
+thread::current   (2)
+    ID
+    _{{closure}}
+
+thread::id::ThreadId   (1)
+    exhausted
+
+thread::lifecycle   (1)
+    join
+
+thread::scoped   (2)
+    decrement_num_running_threads
+    overflow
+
+thread::spawnhook::SPAWN_HOOKS::_{{constant}}   (1)
+    __RUST_STD_INTERNAL_VAL
+
+thread::thread   (1)
+    new
+
+time   (1)
+    elapsed
+
+toml::de   (1)
+    add_key
+
+toml_datetime   (1)
+    s_to_nanoseconds
+
+toml_edit   (1)
+    validate_struct_keys
+
+toml_edit::de   (2)
+    add_key
+    parse
+
+toml_edit::de::array   (1)
+    into_deserializer
+
+toml_edit::de::table   (1)
+    into_deserializer
+
+toml_edit::item   (2)
+    into_value
+    span
+
+toml_edit::parser   (7)
+    apply_raw
+    array_value
+    basic_string
+    key
+    line_ending
+    line_trailing
+    literal_string
+
+toml_edit::parser::datetime   (1)
+    SCALE
+
+toml_edit::parser::error   (2)
+    duplicate_key
+    extend_wrong_type
+
+toml_edit::parser::state   (2)
+    descend_path
+    finalize_table
+
+toml_edit::parser::value   (1)
+    _{{closure}}
+
+toml_edit::table   (1)
+    into_inline_table
+
+unicode   (1)
+    is_printable
+
+unicode::unicode_data   (8)
+    BITSET_CANONICAL
+    BITSET_CHUNKS_MAP
+    BITSET_INDEX_CHUNKS
+    BITSET_MAPPING
+    OFFSETS
+    SHORT_OFFSET_RUNS
+    WHITESPACE_MAP
+    lookup_slow
+
+vec   (5)
+    dedup_by
+    from_iter_in_place
+    push_mut
+    resize
+    shrink_to_fit
+
+vec::Vec<T,A>   (2)
+    _{{closure}}
+    assert_failed
+
+winnow::combinator   (1)
+    _{{closure}}
+
+winnow::combinator::branch   (1)
+    _{{closure}}
+
+winnow::error   (1)
+    map
+
+winnow::parser::Parser::parse   (1)
+    _{{closure}}
+
+winnow::token   (1)
+    _{{closure}}
+
+zmij   (1)
+    STATIC_DATA

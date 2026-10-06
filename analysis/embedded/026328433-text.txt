@@ -1,0 +1,4 @@
+; padding:6px 16px; }
+.user-head .dot { font-size:9px; }
+.user-body,.user-rest { padding:0 16px; white-space:pre-wrap; word-break:break-word; }
+.more-btn { margin:6px 16px 0; background:none; border:none; color:

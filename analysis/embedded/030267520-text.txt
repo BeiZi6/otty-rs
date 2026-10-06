@@ -1,0 +1,5 @@
+SELECT s.name, s.spec, i.overlay
+FROM specs s
+LEFT JOIN spec_i18n i ON i.name = s.name AND i.lang = ?
+WHERE s.name LIKE ? ESCAPE '\'
+ORDER BY length(s.name) ASC LIMIT ?

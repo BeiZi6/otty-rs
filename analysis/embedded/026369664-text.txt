@@ -1,0 +1,8 @@
+^ restore
+noop
+Formatting argument out of range
+\\\{\{}\}data is not corrupt or out of sync with the code---
+name: Plain Text
+file_extensions: [txt]
+scope: text.plain
+contexts: {main: []}Plain Textprototype$top_level_mainAll syntax sets ought to have a plain text syntax

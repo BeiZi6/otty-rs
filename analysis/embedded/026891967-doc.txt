@@ -1,0 +1,36 @@
+─
+# Mirror of the bash/zsh logic: if "Install CLI" hasn't been run, the host
+# passes the bundled binary's bin dir via $OTTY_BIN_DIR. fish_user_paths is
+# the right level to prepend (won't fight the user's own PATH setup).
+if test -n "$OTTY_BIN_DIR" -a -d "$OTTY_BIN_DIR"
+    if not contains -- "$OTTY_BIN_DIR" $PATH
+        set -gx PATH "$OTTY_BIN_DIR" $PATH
+    end
+end
+
+set -g __otty_cmd_executed ""
+set -g __otty_progress_active ""
+
+# Match command line against $OTTY_PROGRESS_COMMANDS (pipe-separated list of
+# whitespace-delimited prefixes, e.g. "git push").
+function __otty_progress_match
+    set -l cmd $argv[1]
+    test -z "$OTTY_PROGRESS_COMMANDS"; and return 1
+    # Strip leading `NAME=value` env assignments.
+    while string match -rq '^[A-Za-z_][A-Za-z0-9_]*=.* .*$' -- $cmd
+        set cmd (string replace -r '^[^ ]+ +' '' -- $cmd)
+    end
+    for p in (string split '|' -- $OTTY_PROGRESS_COMMANDS)
+        test -z "$p"; and continue
+        if test "$cmd" = "$p"
+            return 0
+        end
+        if string match -q "$p *" -- $cmd
+            return 0
+        end
+    end
+    return 1
+end
+
+function __otty_prompt_start --on-event fish_prompt
+    # Capture $status immediately 

@@ -1,0 +1,5 @@
+font_mono_italic# otty-original:ctrl+shift+alt+tctrl+shift+alt+ectrl+shift+minusctrl+shift+enterctrl+shift+rightctrl+shift+slashctrl+shift+alt+sgeometric-shapesgeometric_shapesapp-notificationapp_notificationworkingDirectorytabIconPlacementsessionLogSizeMbcursorStyleBlinkmacosOptionAsAltrightClickActionisDarkAppearanceshiftArrowSelectcliCustomAliasesdefaultGitClientcontainerPaddingconfirmClosePaneipcAllowSendKeysquickTerminalCwdrecipeReplayFileForeground ColorBackground Colorscrollback_pagerscrollback_linesbold_italic_fontio.appmakes.otty# Mouse & Input
+window-padding-xwindow-padding-yvibrancy-regularrgba(0,0,0,0.04)rgba(0,0,0,0.06)window.padding.xwindow.padding.yfont.bold.familycursor.thickness[colors.cursor]
+[colors.normal]
+[colors.bright]
+CursorShapeStyleCursorThemeStyleenum CtrlCActionenum CursorBlinkenum CursorStyleenum OptionAsAlt´k

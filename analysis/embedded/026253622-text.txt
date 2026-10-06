@@ -1,0 +1,8 @@
+!((*tag_directive).prefix).is_null()!((*tag_directive).handle).is_null()(*parser).encoding == YAML_ANY_ENCODING(*emitter).encoding == YAML_ANY_ENCODING!anchor.is_null()!output.is_null()mapping > 0 && ((*document).nodes.start).wrapping_offset(mapping as isize) <=
+(*document).nodes.top(*((*document).nodes.start).wrapping_offset((mapping - 1) as isize)).type_ ==
+YAML_MAPPING_NODEkey > 0 && ((*document).nodes.start).wrapping_offset(key as isize) <=
+(*document).nodes.topvalue > 0 && ((*document).nodes.start).wrapping_offset(value as isize) <=
+(*document).nodes.topsequence > 0 && ((*document).nodes.start).wrapping_offset(sequence as isize)
+<= (*document).nodes.top(*((*document).nodes.start).wrapping_offset((sequence - 1) as isize)).type_ ==
+YAML_SEQUENCE_NODEitem > 0 && ((*document).nodes.start).wrapping_offset(item as isize) <=
+(*document).nodes.toparithmetic overflow(*emitter).opened/Users/abner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unsafe-libyaml-0.2.11/src/dumper.rs!(*emitter).opened

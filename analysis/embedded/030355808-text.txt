@@ -1,0 +1,9 @@
+DELETE FROM dir_frecency WHERE ignored = 0 AND path NOT IN (
+    SELECT path FROM dir_frecency WHERE ignored = 0
+    ORDER BY (score * CASE
+        WHEN (strftime('%s','now') - last_seen) < 3600 THEN 4.0
+        WHEN (strftime('%s','now') - last_seen) < 86400 THEN 2.0
+        WHEN (strftime('%s','now') - last_seen) < 604800 THEN 0.5
+        ELSE 0.25
+    END) DESC
+    LIMIT 

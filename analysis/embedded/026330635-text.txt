@@ -1,0 +1,3 @@
+; padding:10px 12px; border-radius:8px; overflow-x:auto; line-height:1.35; }
+.md pre code { background:none; padding:0; }
+.md blockquote { margin:.4em 0; padding-left:12px; border-left:2px solid 

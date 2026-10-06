@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS command_history (
+    context  TEXT NOT NULL,
+    argument TEXT NOT NULL,
+    score    REAL NOT NULL DEFAULT 1.0,
+    last_used INTEGER NOT NULL,
+    PRIMARY KEY (context, argument)
+)

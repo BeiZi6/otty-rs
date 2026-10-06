@@ -1,0 +1,12 @@
+# Autocomplete
+# Privileges
+# Secure Input
+# Quick Terminal
+# Recipe
+# Open Quickly
+# Frecency / Jump
+# Editor
+# Language
+# App Behavior
+# Keybinds
+mouse-shift-capturepolarity flipped: ghostty `true` = capture forwarded 

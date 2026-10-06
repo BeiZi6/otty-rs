@@ -1,0 +1,5 @@
+— they read the sequence
+# straight from stdin without enabling any keyboard protocol, so the encoder
+# emits it even in legacy mode (same convention as kitty/Ghostty). zle doesn't
+# speak CSI u: unbound, the unmatched tail self-inserts as literal `;2u`.
+# Bind it to a real newline insert instead 

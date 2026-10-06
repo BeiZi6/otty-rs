@@ -1,0 +1,50 @@
+— $STARSHIP_CONFIG, defaulting to
+# ~/.config/starship.toml on every platform.
+paths = ["~/.config/starship.toml"]
+
+exclude = ["~/.cache/starship/"]
+
+secret = []
+
+# Re-read on every prompt with no in-memory state, so a rewrite mid-session
+# is harmless.
+side_effect = false
+
+# No machine_lines: the config is presentation only. Machine-specific values
+# would be in the shell rc that exports STARSHIP_CONFIG, which belongs to the
+# shell entry, not here.
+direnvid       = "direnv"
+name     = "direnv"
+homepage = "https://direnv.net"
+description = "An environment switcher for the shell, loading and unloading variables as you change directory."
+detect   = ["direnv"]
+platforms = ["macos", "linux"]
+
+# direnv.toml(1): $XDG_CONFIG_HOME/direnv/direnv.toml, plus the direnvrc
+# shell library loaded before every .envrc.
+paths = [
+  "~/.config/direnv/direnv.toml",
+  "~/.config/direnv/direnvrc",
+  "~/.config/direnv/lib/",
+  "~/.direnvrc",
+]
+
+# The allow store is a set of hashes of absolute .envrc paths on this machine.
+exclude = ["~/.local/share/direnv/allow/", "~/.config/direnv/allow/"]
+
+secret = []
+
+side_effect = false
+
+# whitelist entries are absolute paths to directories on this machine.
+[[machine_lines]]
+file  = "~/.config/direnv/direnv.toml"
+match = { key_path = ["whitelist.prefix", "whitelist.exact"] }
+id       = "mise"
+name     = "mise"
+homepage = "https://mise.jdx.dev"
+description = "Dev tools, environment variables and tasks in one project configuration."
+icon     = "https://mise.jdx.dev/favicon.svg"
+detect   = ["mise"]
+
+# https://mise.jdx.dev/configuration.html 

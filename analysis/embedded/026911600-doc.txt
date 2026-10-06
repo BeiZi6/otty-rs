@@ -1,0 +1,18 @@
+— the
+                    # key Otty's saved passwords are filed under. `hostname`
+                    # above is the resolved address and would not match.
+                    set _otty_alias $_parts[2]
+                case "controlpath"
+                    # `none` is OpenSSH's way of saying "no multiplexing", and
+                    # some versions omit the line entirely when it is unset
+                    # (macOS's OpenSSH 10.2 does), so absent and `none` mean
+                    # the same thing.
+                    if test "$_parts[2]" != "none"
+                        set _otty_ctl_path $_parts[2]
+                    end
+                case "controlmaster"
+                    set _otty_ctl_master $_parts[2]
+            end
+        end
+
+        # 

@@ -1,0 +1,4 @@
+— from the user's ssh_config, or
+            # from the caller's own `-o ControlPath=<socket>`, which is how
+            # Otty's split-pane "inherit SSH" rides the existing master with no
+            # re-auth and no proxy/alias re-resolution 

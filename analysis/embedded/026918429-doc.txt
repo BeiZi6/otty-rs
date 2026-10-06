@@ -1,0 +1,16 @@
+— is honored as-is, and
+            # nothing is minted over it. Both cases arrive the same way, in
+            # $_otty_ctl_path off `ssh -G` above; there is deliberately no
+            # second scan of argv, because having two sources for one answer is
+            # what let the config-file case go unnoticed.
+            if test -z "$_otty_ctl_path"
+                # ControlPath must stay short: macOS caps Unix-domain socket
+                # paths at 104 bytes and $TMPDIR (/var/folders/...) already eats
+                # ~49 of them, so the socket goes directly under /tmp instead.
+                # mktemp -d yields a fresh 0700 dir, keeping this race-free.
+                #
+                # Deliberately no fallback when mktemp is unavailable. A
+                # predictable name like /tmp/otty-ssh.$fish_pid in a
+                # world-writable directory can be pre-created by another local
+                # user, and this path becomes the `-o ControlPath` that every
+                # panel exec and SFTP transfer rides 

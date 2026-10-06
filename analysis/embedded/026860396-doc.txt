@@ -1,0 +1,3 @@
+…) can tell it apart from plain Enter (same convention as
+# kitty/Ghostty). readline doesn't speak CSI u: unbound, the unmatched tail
+# self-inserts as literal `;2u`. Map it to quoted-insert + LF 

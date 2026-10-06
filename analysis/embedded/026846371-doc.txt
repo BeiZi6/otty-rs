@@ -1,0 +1,5 @@
+— prompt start.
+    # See the zsh payload: the token is what distinguishes our prompt mark
+    # from one emitted by a program running under us.
+    # Not inside a multiplexer only. A nested shell inherits the very same
+    # token, and a multiplexer can forward marks to the outer terminal 

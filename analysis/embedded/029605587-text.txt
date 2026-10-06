@@ -1,0 +1,14 @@
+— comma-separated list used when the primary font lacks a
+  glyph (e.g. CJK characters, Powerline icons).
+
+You can also edit `~/.config/otty/config.toml` directly:
+
+```toml
+font-family = "Iosevka Term"
+font-size   = 13
+```
+
+## More
+
+Full docs: <https://docs.otty.sh/customization/fonts>
+ttfotfttcotcAnsi  ColorCursor ColorCursor Text ColorSelection ColorSelected Text ColorRed ComponentGreen ComponentBlue Component<key></key><dict></dict><real></real>window_padding_widthui-paddingOtty's padding is theme-driven (`[container].padding`); kitty's single number maps to all four sidesactive_tab_backgroundOtty derives tab background from the active theme; closest knob is the chrome `ui-active` colorinactive_tab_backgroundSame 

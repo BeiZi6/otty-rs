@@ -1,0 +1,6 @@
+— a chpwd hook runs INSIDE the triggering command's redirections, so
+# `cd sub > out` writes the escape into out. That emission never reached the
+# terminal to begin with (the redirect swallowed it), so gating on it forfeits
+# no reporting we actually have today, and it stops the file corruption.
+# Routing to /dev/tty instead would recover those, but a failed `>/dev/tty`
+# prints "device not configured" regardless of where 2>/dev/null is placed 

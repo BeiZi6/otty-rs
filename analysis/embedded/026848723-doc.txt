@@ -1,0 +1,9 @@
+— never clobbering the foreign trap
+# (that just reverses who loses).
+#
+# This logic MUST run at top level, hence the eval'd string appended to
+# PROMPT_COMMAND rather than a function. bash does not let non-traced
+# functions see the DEBUG trap: inside a function `trap -p DEBUG` reads
+# EMPTY, and a DEBUG trap set there is reverted when the function returns
+# if one existed at entry (both measured on bash 3.2). A function version
+# of this re-arm reads "no trap", clobber-installs, and evaporates 

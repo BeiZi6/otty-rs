@@ -1,0 +1,20 @@
+─
+# fish's default `up-or-search` already prefix-matches, so `prefix-search` just
+# makes that explicit and pins it against a user rebinding.
+#
+# `sequential` is deliberately NOT implemented here. fish offers prefix search
+# and "previous match" (which matches anywhere in the line), but no widget that
+# ignores what is typed and walks the history entry by entry. Binding
+# `history-search-backward` would silently give substring search instead of
+# sequential walking, so fish keeps its own default rather than a wrong one.
+if status is-interactive
+    switch "$OTTY_HISTORY_UP_ARROW"
+        case prefix-search
+            bind \e\[A history-prefix-search-backward
+            bind \eOA history-prefix-search-backward
+            bind \e\[B history-prefix-search-forward
+            bind \eOB history-prefix-search-forward
+    end
+end
+
+# 

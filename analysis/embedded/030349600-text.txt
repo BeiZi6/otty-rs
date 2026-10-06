@@ -1,0 +1,15 @@
+INSERT INTO tab (id, title, cwd, pane_tree, focused_pane, created_at, updated_at, window_id, program_type, resume_key, manual_project_group, title_mode, title_prefix, badge)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+    title = excluded.title,
+    cwd = excluded.cwd,
+    pane_tree = excluded.pane_tree,
+    focused_pane = excluded.focused_pane,
+    updated_at = excluded.updated_at,
+    window_id = excluded.window_id,
+    program_type = excluded.program_type,
+    resume_key = excluded.resume_key,
+    manual_project_group = excluded.manual_project_group,
+    title_mode = excluded.title_mode,
+    title_prefix = excluded.title_prefix,
+    badge = excluded.badge

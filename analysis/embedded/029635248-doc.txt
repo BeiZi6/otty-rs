@@ -1,0 +1,5 @@
+─
+# The chrome column wears Acrylic here, the way the Windows 11 shell wears it:
+# scoped to `[windows.sidebar]` rather than `[windows]`, so the material is the
+# navigation column alone. The content column keeps the opaque paper white and
+# runs the full height of the window 

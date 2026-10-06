@@ -1,0 +1,5 @@
+… )`, a pipeline segment or a background job never
+# moves the interactive shell, so there is no new directory to report. That
+# case can still have a tty on stdout, so -t alone would let it through.
+#
+# -t 1 

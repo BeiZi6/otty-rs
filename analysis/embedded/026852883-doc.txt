@@ -1,0 +1,5 @@
+─
+# Install `edit`/`view`/`watch`/`jump`/`learn` wrappers ONCE; each one stat()s the
+# omit_prefix sentinel under $OTTY_FLAGS_DIR at call time so the Settings
+# toggle takes effect immediately, without waiting for the next
+# PROMPT_COMMAND cycle. Sentinel absent 

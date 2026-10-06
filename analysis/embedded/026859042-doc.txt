@@ -1,0 +1,28 @@
+— that one
+            # falls through to a system `jump` whenever omit_prefix is off.
+            case "$cmd" in
+                jump)
+                    eval "$name() { __otty_jump \"\$@\"; }"
+                    ;;
+                *)
+                    eval "$name() { command otty $cmd \"\$@\"; }"
+                    ;;
+            esac
+        done
+    }
+    __otty_install_aliases
+    unset -f __otty_install_aliases
+fi
+
+unset -f __otty_should_wrap
+
+# Install hooks. The re-arm eval runs first so the rest of the prompt
+# cycle (and the next command) sees our DEBUG trap even right after a
+# framework stole it.
+if [[ -z "$PROMPT_COMMAND" ]]; then
+    PROMPT_COMMAND='__otty_prompt_exit=$?; eval "$__otty_rearm"; __otty_prompt_command "$__otty_prompt_exit"; __otty_install_ps1; __otty_report_cwd; __otty_dump_path'
+else
+    PROMPT_COMMAND='__otty_prompt_exit=$?; eval "$__otty_rearm"; __otty_prompt_command "$__otty_prompt_exit"; __otty_install_ps1; __otty_report_cwd; __otty_dump_path; '"$PROMPT_COMMAND"
+fi
+# Initial arm, chain-aware: a framework loaded before us (bash-preexec et
+# al.) keeps its DEBUG trap, ours is appended to it. Top level 

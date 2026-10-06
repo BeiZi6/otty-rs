@@ -1,0 +1,13 @@
+— the key
+                # Otty's saved passwords are filed under. `hostname` above is
+                # the resolved address and would not match.
+                host) _otty_alias="$_v" ;;
+                # `none` is OpenSSH's way of saying "no multiplexing", and some
+                # versions omit the line entirely when it is unset (macOS's
+                # OpenSSH 10.2 does), so absent and `none` mean the same thing.
+                controlpath) [[ "$_v" != "none" ]] && _otty_ctl_path="$_v" ;;
+                controlmaster) _otty_ctl_master="$_v" ;;
+            esac
+        done < <(command ssh -G "$@" 2>/dev/null)
+
+        # 

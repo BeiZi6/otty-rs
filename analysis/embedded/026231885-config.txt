@@ -1,0 +1,54 @@
+— the global config is
+# $XDG_CONFIG_HOME/mise/config.toml, with conf.d for drop-ins;
+# ~/.tool-versions is the asdf-compatible global fallback.
+paths = [
+  "~/.config/mise/config.toml",
+  "~/.config/mise/conf.d/",
+  "~/.tool-versions",
+]
+
+# Installed toolchains and the tool cache: gigabytes of build output.
+exclude = [
+  "~/.local/share/mise/",
+  "~/.cache/mise/",
+  "~/.local/state/mise/",
+]
+
+secret = []
+
+# No machine_lines: the machine-specific part of a mise config is the values
+# inside [env] (absolute paths to SDKs), and key_path selects keys, not
+# values. Naming individual [env] keys here would be one contributor's
+# variable names, not a fact about mise. Left to the consumer's heuristics.
+ghid       = "gh"
+name     = "GitHub CLI"
+homepage = "https://cli.github.com"
+description = "GitHub on the command line: pull requests, issues and releases without leaving the terminal."
+icon     = "theSVG:github"
+detect   = ["gh"]
+
+# `gh help environment`: $GH_CONFIG_DIR, defaulting to
+# $XDG_CONFIG_HOME/gh on Unix and %APPDATA%\GitHub CLI on Windows.
+paths = [
+  "~/.config/gh/config.yml",
+  "~/.config/gh/hosts.yml",
+  "%APPDATA%/GitHub CLI/config.yml",
+  "%APPDATA%/GitHub CLI/hosts.yml",
+]
+
+exclude = []
+
+# hosts.yml is not a whole-file secret: the user name, git protocol and host
+# list are worth syncing. Only the token is lifted out.
+secret = []
+
+side_effect = false
+
+# Both spellings of hosts.yml, or the token is only lifted out on Unix and
+# syncs in the clear from a Windows machine. The two key paths are the two
+# shapes gh has written: a bare oauth_token per host, and the per-user one it
+# moved to when it grew multi-account support.
+[[secret_paths]]
+file  = ["~/.config/gh/hosts.yml", "%APPDATA%/GitHub CLI/hosts.yml"]
+match = { key_path = ["*.oauth_token", "*.users.*.oauth_token"] }
+catalog app id does not match its file name/opt/homebrew/bin/usr/local/bin/opt/local/bin/home/linuxbrew/.linuxbrew/bin/run/current-system/sw/bin.local/binbin.cargo/bingo/bin.local/share/mise/shims.asdf/shimsinstallreinstallcargogemgopipuvglobaladdnpmbun-g://~/.config~/Library/Application Supportstruct Deviceenum Ingeststruct PerAppstruct Statusenum Matchstruct Accountstruct AppRootenum Resolvestruct LocalLine with 4 elementsstruct Bundlestruct Bundle with 1 elementenum AppStatestruct Decisionstruct Envelopestruct Envelope with 12 elementsstruct HeldLineenum ItemKindstruct ItemRulestruct variant Adjustment::Backupstruct variant Adjustment::Excludestruct variant Adjustment::Wholestruct variant Adjustment::Secretstruct variant Adjustment::AddPathstruct variant Adjustment::MachinePrefixstruct variant Adjustment::Localstruct variant Adjustment::Whole with 2 elementsstruct variant Adjustment::AddPath with 2 elementsstruct variant Adjustment::Secret with 2 elementsstruct variant Adjustment::MachinePrefix with 3 elementsstruct variant Adjustment::Local with 2 elementsstruct variant Adjustment::Exclude with 2 elementsstruct variant Adjustment::Backup with 2 elementsstruct UserEffectstruct UserEffect with 2 elementsstruct LocalValuestruct LocalValue with 4 elementsstruct RulesBody with 2 elementsvariant identifierenum ItemStatusstruct LastChangestruct RemoteMetastruct WireUserRulestruct WireUserRule with 4 elementsstruct LocalOverlayenum LineScopestruct RuleEntry with 3 elementsstruct LocalChangestruct RootPatternstruct UploadPayloadstruct RuleEntrySpecstruct RuleEntrySpec with 3 elementsstruct CatalogAppSpecstruct CatalogAppSpec with 15 elementsa formatting trait implementation returned an error when the underlying stream did not()a Display implementation returned an error unexpectedlydescription() is deprecated; use Displaymid > lencalled `Result::unwrap_err()` on an `Ok` valuecalled `Result::unwrap()` on an `Err` valueError

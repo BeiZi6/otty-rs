@@ -1,0 +1,18 @@
+─
+# Define `name() { command otty <cmd> "$@" }` for each pair the bridge passed
+# in. The `allow_overwrite` sentinel still gates whether we replace names the
+# user has already defined.
+if [[ -n "$OTTY_CLI_ALIASES" ]]; then
+    () {
+        emulate -L zsh
+        setopt sh_word_split
+        local IFS='|'
+        local pair name cmd
+        for pair in $OTTY_CLI_ALIASES; do
+            [[ -z "$pair" ]] && continue
+            name="${pair%%=*}"
+            cmd="${pair#*=}"
+            [[ -z "$name" || -z "$cmd" || "$name" == "$pair" ]] && continue
+            # Validate identifier and command. `=~` uses POSIX ERE in both
+            # bash and zsh and is unaffected by KSH_GLOB / EXTENDED_GLOB,
+            # both of which `emulate -L zsh` turns off 

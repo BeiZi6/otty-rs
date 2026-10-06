@@ -1,0 +1,12 @@
+— PATH is
+# captured after .bashrc has finished setting it up.
+__otty_path_dumped=""
+__otty_dump_path() {
+    [[ -n "$__otty_path_dumped" ]] && return
+    __otty_path_dumped=1
+    # >| (explicit clobber) so the fixed-path cache write still succeeds under
+    # `set -o noclobber`; a plain > errors with "cannot overwrite" each shell.
+    printf '%s' "$PATH" >| "${TMPDIR:-/tmp}/otty-path-${EUID}" 2>/dev/null
+}
+
+# 

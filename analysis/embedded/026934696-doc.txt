@@ -1,0 +1,7 @@
+— both conditions are unchanged across the call, so the pair is
+        # always emitted together or not at all.
+        __otty_osc7 "file://"(hostname)"$PWD"
+        return $_ret
+    end
+end
+binomit_prefixallow_overwritepsreadline_predictionOTTY_FLAGS_DIROTTY_SHELL_INTEGRATIONZDOTDIRzshOTTY_STRIP_CJK_WRAP_PADXDG_DATA_DIRSOTTY_FISH_XDG_ORIGOTTY_FISH_XDG_RESTORE/.bash_profile/.bash_login/.profile/usr/local/bin/bash/opt/homebrew/bin/bash

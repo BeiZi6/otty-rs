@@ -1,0 +1,37 @@
+…) when
+# launched from Finder, so command-name completion relies on this dump to
+# discover Homebrew/cargo/mise/etc. binaries on the user's real PATH.
+__otty_dump_aliases() {
+    # Use >| (explicit clobber) so these internal cache writes succeed even
+    # when the user has `setopt noclobber`; the per-uid filenames are fixed,
+    # so a plain > redirection errors with "file exists" on every new shell.
+    builtin alias >| "${TMPDIR:-/tmp}/otty-aliases-${EUID}" 2>/dev/null
+    print -rn -- "$PATH" >| "${TMPDIR:-/tmp}/otty-path-${EUID}" 2>/dev/null
+    precmd_functions=("${(@)precmd_functions:#__otty_dump_aliases}")
+}
+precmd_functions+=(__otty_dump_aliases)
+
+# Emit B mark (command-input-start) after each prompt via zle.
+if [[ -o interactive ]] 2>/dev/null; then
+    # Capture the existing widget's backing function (if any),
+    # but skip if it's already ours (avoid infinite recursion).
+    __otty_orig_line_init_fn=""
+    if [[ "${widgets[zle-line-init]}" == user:* ]]; then
+        local orig_fn="${widgets[zle-line-init]#user:}"
+        if [[ "$orig_fn" != __otty_zle_line_init ]]; then
+            __otty_orig_line_init_fn="$orig_fn"
+        fi
+    fi
+
+    __otty_zle_line_init() {
+        builtin printf '\e]133;B\a'
+        # Call the original function directly (not via zle) to
+        # avoid re-entering our own widget.
+        if [[ -n "$__otty_orig_line_init_fn" ]] && (( ${+functions[$__otty_orig_line_init_fn]} )); then
+            "$__otty_orig_line_init_fn"
+        fi
+    }
+    builtin zle -N zle-line-init __otty_zle_line_init
+fi
+
+# 

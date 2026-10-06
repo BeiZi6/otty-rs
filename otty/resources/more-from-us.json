@@ -1,0 +1,28 @@
+{
+  "apps": [
+    {
+      "id": "otty",
+      "title": "Otty",
+      "description": "A terminal app.",
+      "icon": "https://appmakes.io/static/otty/icon_128x128@2x.png",
+      "link": "https://otty.sh",
+      "platform": "macOS"
+    },
+    {
+      "id": "typora",
+      "title": "Typora",
+      "description": "A Markdown app.",
+      "icon": "https://appmakes.io/static/typora/icon_128x128@2x.png",
+      "link": "https://typora.io/?ref=appmakes",
+      "platform": "macOS, Windows, Linux"
+    },
+    {
+      "id": "paletro",
+      "title": "Paletro",
+      "description": "Enable command palette (⇧⌘P) in any app.",
+      "icon": "https://appmakes.io/static/paletro/icon_128x128@2x.png",
+      "link": "https://appmakes.io/paletro",
+      "platform": "macOS"
+    }
+  ]
+}
