@@ -317,6 +317,8 @@ pub fn run(config: Config) -> Result<(), ShellError> {
     ui.window().set_size(window_size);
 
     let dispatch = Rc::new(std::cell::RefCell::new(Dispatcher::new()));
+    dispatch.borrow_mut().quit_after_last_window_closed =
+        config.get_bool("quit-after-last-window-closed").unwrap_or(false);
     {
         let args: Vec<String> = std::env::args().skip(1).collect();
         if let Some(target) = view_target_from_args(&args) {

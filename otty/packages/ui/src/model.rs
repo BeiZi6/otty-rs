@@ -354,6 +354,18 @@ impl Window {
         !self.tabs.is_empty()
     }
 
+    /// Pull `id` out of this window. The window may be left with no tabs.
+    pub fn take_tab(&mut self, id: TabId) -> Option<Tab> {
+        let i = self.tabs.iter().position(|t| t.id == id)?;
+        let tab = self.tabs.remove(i);
+        if self.active >= self.tabs.len() && !self.tabs.is_empty() {
+            self.active = self.tabs.len() - 1;
+        } else if self.active > i && self.active > 0 {
+            self.active -= 1;
+        }
+        Some(tab)
+    }
+
     /// Move a tab to `position`, clamped into range.
     pub fn move_tab(&mut self, id: TabId, position: usize) -> bool {
         let Some(i) = self.tabs.iter().position(|t| t.id == id) else { return false };
@@ -469,6 +481,74 @@ impl App {
             badge: None,
         });
         true
+    }
+
+    /// Tear `tab` into a new window that keeps its split tree.
+    pub fn move_tab_to_new_window(&mut self, tab: TabId, new_window: WindowId) -> bool {
+        let Some(src) = self.window_of_tab(tab) else { return false };
+        if self.windows.len() == 1 {
+            let w = &self.windows[0];
+            if w.tabs.len() == 1 {
+                return false;
+            }
+        }
+        let Some(src_w) = self.windows.iter_mut().find(|w| w.id == src) else { return false };
+        let Some(t) = src_w.take_tab(tab) else { return false };
+        self.windows.retain(|w| !w.tabs.is_empty());
+        self.windows.push(Window {
+            id: new_window,
+            tabs: vec![t],
+            active: 0,
+        });
+        self.active = self.windows.len() - 1;
+        true
+    }
+
+    /// Pull every tab into the active window and drop the empty ones.
+    pub fn merge_all_windows(&mut self) -> bool {
+        if self.windows.len() < 2 {
+            return false;
+        }
+        let dest = self.active.min(self.windows.len() - 1);
+        let dest_id = self.windows[dest].id;
+        let mut extras: Vec<Tab> = Vec::new();
+        for w in self.windows.iter_mut() {
+            if w.id == dest_id {
+                continue;
+            }
+            extras.append(&mut w.tabs);
+        }
+        if let Some(d) = self.windows.iter_mut().find(|w| w.id == dest_id) {
+            d.tabs.append(&mut extras);
+        }
+        self.windows.retain(|w| w.id == dest_id);
+        self.active = 0;
+        true
+    }
+
+    /// Close a window. Returns whether any windows remain.
+    pub fn close_window(&mut self, id: WindowId) -> bool {
+        let Some(i) = self.windows.iter().position(|w| w.id == id) else { return !self.windows.is_empty() };
+        let panes: Vec<_> = self.windows[i]
+            .tabs
+            .iter()
+            .flat_map(|t| t.tree.panes())
+            .collect();
+        for p in panes {
+            self.panes.remove(&p);
+        }
+        self.windows.remove(i);
+        if self.active >= self.windows.len() && !self.windows.is_empty() {
+            self.active = self.windows.len() - 1;
+        }
+        !self.windows.is_empty()
+    }
+
+    fn window_of_tab(&self, tab: TabId) -> Option<WindowId> {
+        self.windows
+            .iter()
+            .find(|w| w.tabs.iter().any(|t| t.id == tab))
+            .map(|w| w.id)
     }
 
     /// Split a pane. The new pane becomes focused, which is what every terminal

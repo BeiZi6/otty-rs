@@ -39,6 +39,7 @@ pub struct Dispatcher {
     pub opened: Vec<String>,
     pub details_open: bool,
     pub details_tab: DetailsTab,
+    pub quit_after_last_window_closed: bool,
 }
 
 impl Dispatcher {
@@ -62,6 +63,7 @@ impl Dispatcher {
             opened: Vec::new(),
             details_open: false,
             details_tab: DetailsTab::Info,
+            quit_after_last_window_closed: false,
         }
     }
 
@@ -129,6 +131,28 @@ impl Dispatcher {
                 self.next_tab += 1;
                 self.next_pane += 1;
                 self.app.add_window(w, t, p);
+            }
+            "move_tab_to_new_window" => {
+                if let Some(tid) = self
+                    .app
+                    .active_window()
+                    .and_then(|w| w.active_tab().map(|t| t.id))
+                {
+                    let w = WindowId::new(self.next_window);
+                    self.next_window += 1;
+                    let _ = self.app.move_tab_to_new_window(tid, w);
+                }
+            }
+            "merge_all_windows" => {
+                let _ = self.app.merge_all_windows();
+            }
+            "close_window" => {
+                if let Some(id) = self.app.active_window().map(|w| w.id) {
+                    let remaining = self.app.close_window(id);
+                    if !remaining && self.quit_after_last_window_closed {
+                        self.quit = true;
+                    }
+                }
             }
             "close_tab" => {
                 let multi = self
@@ -387,5 +411,27 @@ mod tests {
         assert!(d.activate("zoom_split"));
         let tab = d.app.active_window().unwrap().active_tab().unwrap();
         assert_eq!(tab.zoomed, None, "zoom toggles back");
+    }
+
+    #[test]
+    fn tear_tab_merge_and_last_window_respects_quit_flag() {
+        let mut d = Dispatcher::new();
+        assert!(d.activate("new_tab"));
+        assert_eq!(d.app.counts().0, 1);
+        assert!(d.activate("move_tab_to_new_window"));
+        assert_eq!(d.app.counts().0, 2, "tab moved into a new window");
+        assert!(d.activate("merge_all_windows"));
+        assert_eq!(d.app.counts().0, 1, "merge pulls tabs back");
+        assert_eq!(d.app.active_window().unwrap().tabs().len(), 2);
+
+        d.quit_after_last_window_closed = false;
+        assert!(d.activate("close_window"));
+        assert!(!d.quit, "flag off: last window does not quit");
+        assert_eq!(d.app.counts().0, 0);
+
+        let mut d = Dispatcher::new();
+        d.quit_after_last_window_closed = true;
+        assert!(d.activate("close_window"));
+        assert!(d.quit, "flag on: last window quits");
     }
 }
