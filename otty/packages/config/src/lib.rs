@@ -29,6 +29,7 @@
 //! comes from, in place, through [`toml_lite::Document`].
 
 pub mod actions;
+pub mod catalog;
 pub mod export;
 pub mod import;
 pub mod keys;
@@ -45,6 +46,7 @@ use std::path::{Path, PathBuf};
 
 use otty_core::{expand_path, Color, Platform};
 
+pub use catalog::{Catalog, CatalogError, ResolvedLanguage, UiLanguage};
 pub use palette::{BoldColor, Palette, ResolvedColors};
 pub use rules::{DetailsView, QuickAccess, TabRule};
 pub use spec::{Default as KeyDefault, KeySpec, ListStyle};
@@ -173,6 +175,21 @@ impl Config {
     /// The Details-Panel view working directories.
     pub fn views_dir() -> PathBuf {
         Self::config_dir().join("views")
+    }
+
+    /// `language` key: `system` / `english` / `chinese`.
+    pub fn ui_language(&self) -> crate::catalog::UiLanguage {
+        crate::catalog::UiLanguage::from_config_value(
+            self.get_str("language").as_deref().unwrap_or("system"),
+        )
+    }
+
+    /// Load `en.json` / `zh.json` from `resources` using the `language` key.
+    pub fn load_catalog(
+        &self,
+        resources: &Path,
+    ) -> Result<crate::catalog::Catalog, crate::catalog::CatalogError> {
+        crate::catalog::Catalog::load_for(self.ui_language(), resources)
     }
 
     /// A config with no files behind it, rooted at `dir`. Used by tests and by

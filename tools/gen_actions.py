@@ -9,7 +9,7 @@ Usage: python tools/gen_actions.py
 import json
 import pathlib
 
-EN = pathlib.Path(r"E:\study_serve\otty-re\dmg\arm64\Otty\Otty.app\Contents\Resources\en.json")
+EN = pathlib.Path(r"E:\study_serve\otty-re\otty\resources\en.json")
 OUT = pathlib.Path(r"E:\study_serve\otty-re\otty\packages\config\src\actions.rs")
 
 data = json.loads(EN.read_text(encoding="utf-8"))

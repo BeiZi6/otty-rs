@@ -19,6 +19,7 @@ installers**, not written for this rebuild. Each file was extracted from
 | `dotfiles-catalog.json` | The dotfile-location catalogue the Settings UI uses | `Resources/` |
 | `more-from-us.json` | The "more from us" list in the About panel | `Resources/` |
 | `Otty.sdef` | The AppleScript dictionary | `Resources/` |
+| `en.json`, `zh.json` | UI catalog (menus, Settings, palette, 152 action labels) | `Resources/` |
 
 ## The one deliberate deviation
 

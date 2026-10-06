@@ -45,7 +45,7 @@
 | id | 域 | 能力 | status | prio |
 |---|---|---|---|---|
 | GAP-K01 | 知识 | 官网语料补全 | done | P2 |
-| GAP-K02 | 知识 | `en.json` / `zh.json` | blocked | P0 |
+| GAP-K02 | 知识 | `en.json` / `zh.json` | done | P0 |
 | GAP-K03 | 知识 | Settings 单页 `settings-ui.html` | blocked | P0 |
 | GAP-K04 | 知识 | 补全库 `completions-client.db` | blocked | P1 |
 | GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | blocked | P2 |
@@ -120,12 +120,12 @@
 
 ### GAP-K02 本地化目录
 
-- **status:** blocked
+- **status:** done
 - **prio:** P0
 - **官网:** 产品中英；配置 `language` = `system` / `english` / `chinese`。
 - **DMG:** `Contents/Resources/en.json`（165 213 B）、`zh.json`（166 634 B）。`actions.rs` 就是从 `en.json` → `settings.key_bindings.actions` 生成的。
 - **原实现:** Swift 壳读这两份 JSON。Settings、菜单、Palette、空状态文案全在这里。152 个 action 的 id 与 label 以 en.json 为准，禁止自造 id。
-- **当前:** 仓库没有这两文件。`packages/config/src/actions.rs` 是生成结果。运行时无 i18n。
+- **当前:** `resources/en.json`、`resources/zh.json`；`packages/config/src/catalog.rs` 按 `language` 加载；`tools/gen_actions.py` 读仓库里的 en.json。
 - **落点:** 从 DMG 拷到 `resources/`（或只抽 action/菜单键）。UI 字符串走同一份目录。
 - **完成:** 能加载 en/zh；Settings 语言键切换；`ACTIONS` 与 en.json 再生成仍一致。
 
