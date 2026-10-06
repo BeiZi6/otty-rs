@@ -46,7 +46,7 @@
 |---|---|---|---|---|
 | GAP-K01 | 知识 | 官网语料补全 | done | P2 |
 | GAP-K02 | 知识 | `en.json` / `zh.json` | done | P0 |
-| GAP-K03 | 知识 | Settings 单页 `settings-ui.html` | blocked | P0 |
+| GAP-K03 | 知识 | Settings 单页 `settings-ui.html` | done | P0 |
 | GAP-K04 | 知识 | 补全库 `completions-client.db` | blocked | P1 |
 | GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | blocked | P2 |
 | GAP-S01 | 壳 | 原生菜单栏 | open | P0 |
@@ -131,12 +131,12 @@
 
 ### GAP-K03 Settings 单页
 
-- **status:** blocked
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §6。⌘, 打开。写入 `config.toml` / `config.local.toml` 就地改，不整文件重写。
 - **DMG:** `Contents/Resources/settings-ui.html`（1 498 025 B，两架构字节相同）。Vite 打出来的单页。
 - **原实现:** Swift 开一个窗加载这份 HTML。键名、枚举、分组以页面为准，和 `keys.rs` 应对上。`resources/dotfiles-catalog.json` 是 Settings 里的点文件目录。
-- **当前:** 文件不在仓库。无 Settings 窗。只能 `otty config set`。
+- **当前:** `resources/settings-ui.html`；`Config::settings_ui_html`；写盘走 `set_value`（一行补丁、local/shared）。壳窗见 GAP-S03。
 - **落点:** 两条路，选一条：(1) 从 DMG 抽出 HTML 嵌进壳；(2) 按 `keys.rs` + FEATURES §6 用 Slint 重做。不要两套。
 - **完成:** ⌘, 打开；改一个 key 只补丁对应行；local / shared 范围正确。
 

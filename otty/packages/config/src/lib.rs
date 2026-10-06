@@ -177,6 +177,11 @@ impl Config {
         Self::config_dir().join("views")
     }
 
+    /// Bundled Settings page (`settings-ui.html`) copied from the shipped app.
+    pub fn settings_ui_html(resources: &Path) -> PathBuf {
+        resources.join("settings-ui.html")
+    }
+
     /// `language` key: `system` / `english` / `chinese`.
     pub fn ui_language(&self) -> crate::catalog::UiLanguage {
         crate::catalog::UiLanguage::from_config_value(
@@ -1013,6 +1018,35 @@ mod tests {
         assert!(text.contains("font-size = 16"));
         assert!(text.contains("theme = Dracula"));
         assert_eq!(cfg.get_float("font-size"), Some(16.0));
+    }
+
+    #[test]
+    fn settings_one_key_diff_keeps_the_header_comment() {
+        let dir = tempfile::tempdir().unwrap();
+        let before = "# Otty config — do not rewrite me\nfont-size = 13\ntheme = Dracula\n";
+        std::fs::write(dir.path().join("config.toml"), before).unwrap();
+        let mut cfg = Config::load_from(dir.path());
+        cfg.set_value("font-size", "16", SaveScope::Auto).unwrap();
+        let after = std::fs::read_to_string(dir.path().join("config.toml")).unwrap();
+        assert!(after.starts_with("# Otty config — do not rewrite me\n"));
+        let changed: Vec<_> = before
+            .lines()
+            .zip(after.lines())
+            .filter(|(a, b)| a != b)
+            .collect();
+        assert_eq!(changed, vec![("font-size = 13", "font-size = 16.0")]);
+        assert_eq!(after.lines().count(), before.lines().count());
+    }
+
+    #[test]
+    fn bundled_settings_ui_html_is_the_shipped_page() {
+        let html = Config::settings_ui_html(&catalog::bundled_resources());
+        let meta = std::fs::metadata(&html).unwrap();
+        assert!(meta.len() > 1_000_000, "settings-ui.html {} bytes", meta.len());
+        let text = std::fs::read_to_string(&html).unwrap();
+        assert!(text.contains("<!DOCTYPE html>"));
+        assert!(text.contains("font-size"));
+        assert!(text.contains("key_bindings") || text.contains("keybindings"));
     }
 
     #[test]

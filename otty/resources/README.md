@@ -20,6 +20,7 @@ installers**, not written for this rebuild. Each file was extracted from
 | `more-from-us.json` | The "more from us" list in the About panel | `Resources/` |
 | `Otty.sdef` | The AppleScript dictionary | `Resources/` |
 | `en.json`, `zh.json` | UI catalog (menus, Settings, palette, 152 action labels) | `Resources/` |
+| `settings-ui.html` | Vite-built Settings page the shell loads | `Resources/` |
 
 ## The one deliberate deviation
 
