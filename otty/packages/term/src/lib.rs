@@ -50,6 +50,7 @@
 pub mod attrs;
 pub mod events;
 pub mod features;
+pub mod find;
 pub mod grid;
 pub mod hit;
 pub mod input;
@@ -61,6 +62,7 @@ pub use events::{
     AgentEvent, ColorStackOp, Event, ImageEvent, Notification, Progress, PromptMark, ResumeEvent,
     SpecialColor, WindowOp, WindowReport,
 };
+pub use find::{find_next, grid_lines, FindHit};
 pub use grid::{Grid, Row, ScrollRegion};
 pub use hit::{path_at, selected_text};
 pub use input::{encode_key, encode_paste, KeyEncodeOptions};

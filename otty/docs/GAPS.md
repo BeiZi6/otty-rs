@@ -60,7 +60,7 @@
 | GAP-S09 | 壳 | 多窗口 / 撕 tab / 合并 | done | P1 |
 | GAP-S10 | 壳 | 徽章与 tab 规则 | done | P1 |
 | GAP-S11 | 壳 | 原版 tab 分组与 divider | done | P1 |
-| GAP-S12 | 壳 | Find / 全局搜索 / Search in Files | open | P1 |
+| GAP-S12 | 壳 | Find / 全局搜索 / Search in Files | done | P1 |
 | GAP-S13 | 壳 | Hint / Vi / Mark | open | P1 |
 | GAP-S14 | 壳 | 拖放落点 | open | P2 |
 | GAP-S15 | 壳 | Composer / 队列 / Send to Chat | open | P1 |
@@ -291,12 +291,12 @@
 
 ### GAP-S12 Find / 全局搜索 / Search in Files
 
-- **status:** open
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §1。⌘F 当前 pane（终端或文件）。⇧⌘F 全局：Open Tabs / All Sessions / Files。终端搜索覆盖 scrollback。文件搜索走捆绑 rg，cwd 为根。正则、大小写、整词。
 - **DMG:** `Contents/MacOS/rg`（arm64 4.0 MB / x64 4.4 MB）。action `find`、`find_in_all_sessions`、`search_in_files`、`use_selection_for_find`。
 - **原实现:** Find 条叠在 pane 上。全局搜索结果点一下跳到对应 tab/pane 并选中。rg 不走 PATH，用捆绑二进制。
-- **当前:** 无 Find 条。rg 未打包。
+- **当前:** `otty-term::find_next` 扫 grid/scrollback；`find`/`find_next` 跳下一处；`use_selection_for_find` 用选区填查询。全局/rg 未做。
 - **落点:** 终端搜索在 `otty-term` grid 上扫（可测）；Files 等 GAP-P03 有 rg。UI 条在 shell。
 - **完成:** ⌘F 能在当前 scrollback 里跳下一处；选区 ⌘E 填进查询。
 

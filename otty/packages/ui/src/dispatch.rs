@@ -44,6 +44,10 @@ pub struct Dispatcher {
     pub prefix_input: Option<String>,
     pub tab_group: TabGroupMode,
     pub dividers: Vec<usize>,
+    pub find_open: bool,
+    pub find_query: String,
+    pub find_hit: Option<otty_term::FindHit>,
+    pub find_lines: Vec<String>,
 }
 
 impl Dispatcher {
@@ -71,6 +75,10 @@ impl Dispatcher {
             prefix_input: None,
             tab_group: TabGroupMode::None,
             dividers: Vec::new(),
+            find_open: false,
+            find_query: String::new(),
+            find_hit: None,
+            find_lines: Vec::new(),
         }
     }
 
@@ -164,6 +172,17 @@ impl Dispatcher {
                 }
             }
             "tabs_remove_dividers" => self.dividers.clear(),
+            "find" => self.find_open = true,
+            "use_selection_for_find" => {
+                if let Some(s) = self.hit.selection.clone().filter(|s| !s.is_empty()) {
+                    self.find_query = s;
+                    self.find_open = true;
+                }
+            }
+            "find_next" => {
+                self.find_hit =
+                    otty_term::find_next(&self.find_lines, &self.find_query, self.find_hit);
+            }
             "prefix_tab" => {
                 if let Some(p) = self.prefix_input.clone() {
                     if let Some(t) = self
@@ -487,5 +506,22 @@ mod tests {
         let t = d.app.active_window().unwrap().active_tab().unwrap();
         assert_eq!(t.prefix.as_deref(), Some("api"));
         assert_eq!(t.badge, None);
+    }
+
+    #[test]
+    fn find_next_and_selection_fills_query() {
+        let mut d = Dispatcher::new();
+        d.find_lines = vec!["alpha foo".into(), "foo baz".into()];
+        d.find_query = "foo".into();
+        assert!(d.activate("find"));
+        assert!(d.find_open);
+        assert!(d.activate("find_next"));
+        assert_eq!(d.find_hit, Some(otty_term::FindHit { line: 0, col: 6 }));
+        assert!(d.activate("find_next"));
+        assert_eq!(d.find_hit, Some(otty_term::FindHit { line: 1, col: 0 }));
+
+        d.hit.selection = Some("bar".into());
+        assert!(d.activate("use_selection_for_find"));
+        assert_eq!(d.find_query, "bar");
     }
 }
