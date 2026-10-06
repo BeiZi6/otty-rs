@@ -182,6 +182,13 @@ export component OttyWindow inherits Window {
     in property <[PaletteRow]> palette-rows;
     callback palette-query-changed(string);
     callback palette-run(string, bool);
+    in-out property <bool> quickly-open: false;
+    in-out property <string> quickly-query: "";
+    in-out property <string> quickly-filter: "all";
+    in property <[PaletteRow]> quickly-rows;
+    callback quickly-query-changed(string);
+    callback quickly-run(string);
+    callback quickly-set-filter(string);
 
     // The pointer's position over the grid, in the grid image's coordinates, so
     // Rust can turn it into a cell without knowing about Slint.
@@ -424,6 +431,60 @@ export component OttyWindow inherits Window {
         }
     }
 
+    if root.quickly-open : Rectangle {
+        x: (parent.width - 480px) / 2;
+        y: Theme.titlebar-height + 24px;
+        width: 480px;
+        height: 320px;
+        background: Theme.panel-background;
+        border-width: 1px;
+        border-color: Theme.panel-border;
+        border-radius: Theme.panel-radius;
+
+        VerticalLayout {
+            padding: 10px;
+            spacing: 6px;
+
+            Text {
+                text: "Open Quickly";
+                color: Theme.panel-foreground;
+                font-size: 13px;
+            }
+
+            quickly-box := TextInput {
+                text <=> root.quickly-query;
+                color: Theme.panel-foreground;
+                height: 24px;
+                edited => { root.quickly-query-changed(self.text); }
+                accepted => {
+                    if (root.quickly-rows.length > 0) {
+                        root.quickly-run(root.quickly-rows[0].action);
+                    }
+                }
+            }
+
+            for row in root.quickly-rows : TouchArea {
+                height: 22px;
+                clicked => { root.quickly-run(row.action); }
+                HorizontalLayout {
+                    spacing: 8px;
+                    Text {
+                        text: row.title;
+                        color: Theme.panel-foreground;
+                        font-size: 12px;
+                        overflow: elide;
+                    }
+                    Text {
+                        text: row.scope;
+                        color: Theme.panel-foreground;
+                        font-size: 11px;
+                        opacity: 0.6;
+                    }
+                }
+            }
+        }
+    }
+
     if root.palette-open : Rectangle {
         x: (parent.width - 480px) / 2;
         y: Theme.titlebar-height + 24px;
@@ -497,11 +558,27 @@ export component OttyWindow inherits Window {
                 }
                 reject
             }
+            if (root.quickly-open) {
+                if (event.modifiers.control || event.modifiers.meta) {
+                    root.quickly-set-filter(event.text);
+                    accept
+                }
+                reject
+            }
             if ((event.modifiers.control || event.modifiers.meta) && event.modifiers.shift
                 && (event.text == "p" || event.text == "P")) {
                 root.palette-open = true;
                 root.palette-query = "";
                 root.palette-query-changed("");
+                accept
+            }
+            if ((event.modifiers.control || event.modifiers.meta) && event.modifiers.shift
+                && (event.text == "o" || event.text == "O")) {
+                root.quickly-open = true;
+                root.quickly-query = "";
+                root.quickly-filter = "all";
+                root.quickly-set-filter("all");
+                root.quickly-query-changed("");
                 accept
             }
             root.input-key(event.text);

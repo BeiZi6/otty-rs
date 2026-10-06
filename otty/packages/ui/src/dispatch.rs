@@ -12,6 +12,8 @@ use otty_core::{PaneId, TabId, WindowId};
 
 use crate::context::ContextHit;
 use crate::model::App;
+use crate::quickly::{open_directory, OpenFilter};
+use otty_state::Store;
 
 /// The thing the shell, keymap and palette call.
 #[derive(Debug)]
@@ -29,6 +31,10 @@ pub struct Dispatcher {
     pub clipboard: Option<String>,
     pub settings_open: bool,
     pub palette_open: bool,
+    pub quickly_open: bool,
+    pub quickly_filter: Option<OpenFilter>,
+    pub last_opened: Option<String>,
+    pub opened: Vec<String>,
 }
 
 impl Dispatcher {
@@ -46,6 +52,10 @@ impl Dispatcher {
             clipboard: None,
             settings_open: false,
             palette_open: false,
+            quickly_open: false,
+            quickly_filter: Some(OpenFilter::All),
+            last_opened: None,
+            opened: Vec::new(),
         }
     }
 
@@ -68,6 +78,26 @@ impl Dispatcher {
             }
             "open_settings" => self.settings_open = true,
             "command_palette" => self.palette_open = true,
+            "open_quickly" => {
+                self.quickly_open = true;
+                self.quickly_filter = Some(OpenFilter::All);
+            }
+            "open_files_quickly" => {
+                self.quickly_open = true;
+                self.quickly_filter = Some(OpenFilter::Files);
+            }
+            "open_recent" => {
+                self.quickly_open = true;
+                self.quickly_filter = Some(OpenFilter::Recent);
+            }
+            "open_agent" => {
+                self.quickly_open = true;
+                self.quickly_filter = Some(OpenFilter::Agents);
+            }
+            "open_folder" => {
+                self.quickly_open = true;
+                self.quickly_filter = Some(OpenFilter::Folders);
+            }
             "quit" => self.quit = true,
             "new_tab" => {
                 if let Some(wid) = self.app.active_window().map(|w| w.id) {
@@ -115,6 +145,34 @@ impl Dispatcher {
         let ok = self.activate(action);
         self.palette_open = keep_open;
         ok
+    }
+
+    /// Switch Open Quickly's filter. Unknown keys leave `quickly_filter` as
+    /// `None` so [`crate::query_quickly`] returns an empty list.
+    pub fn set_quickly_filter(&mut self, key: &str) {
+        self.quickly_filter = OpenFilter::from_key(key);
+    }
+
+    /// Open an existing directory from Open Quickly. Records frecency when a
+    /// store is given and closes the overlay.
+    pub fn run_quickly(&mut self, path: &str, store: Option<&Store>, now: i64) -> bool {
+        match open_directory(path, store, now) {
+            Ok(p) => {
+                self.last_opened = Some(p.clone());
+                if !self.opened.iter().any(|o| o == &p) {
+                    self.opened.push(p);
+                }
+                self.quickly_open = false;
+                true
+            }
+            Err(_) => false,
+        }
+    }
+
+    /// Open a path using the default frecency store.
+    pub fn run_quickly_path(&mut self, path: &str) -> bool {
+        let store = Store::open_default().ok();
+        self.run_quickly(path, store.as_ref(), crate::quickly::now_secs())
     }
 
     /// Close the tab at `index` in the active window. Used by the tab context menu.

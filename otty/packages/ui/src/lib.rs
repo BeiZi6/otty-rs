@@ -16,6 +16,7 @@
 pub mod context;
 pub mod dispatch;
 pub mod palette;
+pub mod quickly;
 pub mod settings;
 pub mod layout;
 pub mod session;
@@ -26,6 +27,9 @@ pub mod model;
 pub use context::{context_items, context_rows, pane_hit, tab_hit, ContextHit, ContextItem};
 pub use dispatch::{shell_menu, shell_menu_models, Dispatcher};
 pub use palette::{filter_palette, palette_entries, palette_rows, PaletteEntry};
+pub use quickly::{
+    open_directory, query_quickly, quickly_rows, OpenFilter, QuicklyEntry, QuicklySources,
+};
 pub use settings::{set_setting, show_origin};
 pub use view::cell_size_for_font;
 pub use layout::{cell_at, grid_dimensions, layout, layout_single, Divider, Layout, LayoutOptions};

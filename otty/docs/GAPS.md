@@ -53,7 +53,7 @@
 | GAP-S02 | 壳 | 右键菜单 | done | P0 |
 | GAP-S03 | 壳 | Settings 窗 | done | P0 |
 | GAP-S04 | 壳 | Command Palette | done | P0 |
-| GAP-S05 | 壳 | Open Quickly | open | P0 |
+| GAP-S05 | 壳 | Open Quickly | done | P0 |
 | GAP-S06 | 壳 | Details 面板 | open | P0 |
 | GAP-S07 | 壳 | 分屏树 UI | partial | P0 |
 | GAP-S08 | 壳 | 文件 / 文件夹 / URL pane | open | P1 |
@@ -214,12 +214,12 @@
 
 ### GAP-S05 Open Quickly
 
-- **status:** open
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §1。⌘⇧O，Xcode 风格。九个 filter：All ⌘0、Opened ⌘W、Recent ⌘R、Folders ⌘Z（frecency）、SSH ⌘S（`~/.ssh/config`）、Agents ⌘G、Current ⌘J、Recipes ⌘E、Files ⌘P。↩ 默认动作，⌘K 打开 Actions。以 `/` 或 `~` 开头且路径存在时，顶上钉一行 Path。
 - **DMG:** action `open_quickly`、`open_files_quickly`、`open_recent`、`open_agent`、`open_folder`。frecency 在 `otty_state`。SSH 主机解析在 `otty_ssh_config`（23 符号）。Agent 历史在 `otty_agent_history`（50 符号）。
 - **原实现:** 一个模糊框，filter 只收窄数据源。Folders 走 frecency 表（半衰期、顶 100）。Agents 搜各 adapter 的 transcript 路径。Current 只看 focused pane：shell 历史、输出里的路径/URL、outline、agent prompt。
-- **当前:** `otty-state` 有 frecency 表；`otty jump` / `learn` CLI 在。无选择器。SSH 解析库在，未接到 UI。
+- **当前:** `otty-ui::quickly` 九 filter；⌘Z 列 frecency；`/`/`~`/现存目录钉 Path；未知 filter 键空列表。壳浮层 + ⌘⇧O。SSH Host 已接；Agents/Current/Recipes/Files 数据源仍空。
 - **落点:** 查询在 `otty-state` + `otty-ssh` + `otty-agent`；UI 在 shell。先做 Folders + Opened，再补 Agents / SSH。
 - **完成:** ⌘⇧O 能按路径打开目录；⌘Z 列出 frecency；不存在的 filter 键不崩。
 

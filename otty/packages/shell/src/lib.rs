@@ -28,8 +28,8 @@ use otty_render::theme::Chrome;
 use otty_ui::view::TerminalView;
 use otty_config::SaveScope;
 use otty_ui::{
-    context_rows, filter_palette, palette_entries, palette_rows, pane_hit, set_setting,
-    shell_menu_models, Dispatcher,
+    context_rows, filter_palette, palette_entries, palette_rows, pane_hit, query_quickly,
+    quickly_rows, set_setting, shell_menu_models, Dispatcher, QuicklySources,
 };
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
 
@@ -178,6 +178,11 @@ fn bind_menu(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<D
                 ui.set_palette_open(true);
             }
         }
+        if d.quickly_open {
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_quickly_open(true);
+            }
+        }
         if d.quit {
             let _ = slint::quit_event_loop();
         }
@@ -227,6 +232,50 @@ fn bind_palette(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCel
     }
 }
 
+fn bind_quickly(ui: &OttyWindow, dispatch: Rc<std::cell::RefCell<Dispatcher>>) {
+    {
+        let dispatch = dispatch.clone();
+        let ui_weak = ui.as_weak();
+        ui.on_quickly_query_changed(move |query| {
+            let d = dispatch.borrow();
+            let sources = QuicklySources::live(d.opened.clone());
+            let hits = query_quickly(d.quickly_filter, query.as_str(), &sources);
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_quickly_rows(palette_model(&quickly_rows(&hits)));
+            }
+        });
+    }
+    {
+        let dispatch = dispatch.clone();
+        let ui_weak = ui.as_weak();
+        ui.on_quickly_run(move |path| {
+            let mut d = dispatch.borrow_mut();
+            let _ = d.run_quickly_path(path.as_str());
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_quickly_open(d.quickly_open);
+            }
+        });
+    }
+    {
+        let dispatch = dispatch.clone();
+        let ui_weak = ui.as_weak();
+        ui.on_quickly_set_filter(move |key| {
+            let mut d = dispatch.borrow_mut();
+            d.set_quickly_filter(key.as_str());
+            let filter_name = d
+                .quickly_filter
+                .map(|f| f.as_str().to_string())
+                .unwrap_or_default();
+            let sources = QuicklySources::live(d.opened.clone());
+            let hits = query_quickly(d.quickly_filter, "", &sources);
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_quickly_filter(filter_name.into());
+                ui.set_quickly_rows(palette_model(&quickly_rows(&hits)));
+            }
+        });
+    }
+}
+
 fn bind_context(ui: &OttyWindow, view: Rc<std::cell::RefCell<otty_ui::view::TerminalView>>, dispatch: Rc<std::cell::RefCell<Dispatcher>>) {
     let ui_weak = ui.as_weak();
     ui.on_context_prepare(move |x, y| {
@@ -264,6 +313,7 @@ pub fn run(config: Config) -> Result<(), ShellError> {
     let dispatch = Rc::new(std::cell::RefCell::new(Dispatcher::new()));
     bind_menu(&ui, &config, dispatch.clone());
     bind_palette(&ui, &config, dispatch.clone());
+    bind_quickly(&ui, dispatch.clone());
     {
         let dispatch = dispatch.clone();
         ui.on_close_tab_at(move |index| {
