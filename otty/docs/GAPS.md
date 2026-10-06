@@ -114,7 +114,7 @@
 - **官网:** FEATURES 卷首。sitemap 142 页；原 59 页语料缺 Skills、`vt/*`、import-export 中段。
 - **DMG:** 无（这是文档站，不在包里）。
 - **原实现:** VitePress 站 `docs.otty.sh`。VT 对照页是序列表的权威 Otty 列（✓ / ◐ / ☐）。
-- **当前:** `spec/corpus/skills.md`、`spec/corpus/import-export.md`、`spec/corpus/vt/`（73 页）+ `spec/corpus/manifest.json`。FEATURES 已并入 Skills / import-export / OSC 88；卷首不再把这三项当 corpus hole。
+- **当前:** `spec/corpus/skills.md`、`spec/corpus/import-export.md`、`spec/corpus/vt/`（73 页）+ `spec/corpus/manifest.json`；`spec/_crawl_docs.py --check`；`packages/core` `gap_k01_corpus` 测。FEATURES 已并入 Skills / import-export / OSC 88；卷首不再把这三项当 corpus hole。
 - **落点:** 重新抓 `docs.otty.sh`，补进 `spec/`，不要改代码。
 - **完成:** Skills、import-export、`vt/*` 有正文；FEATURES 卷首不再列这三项为 corpus hole。
 

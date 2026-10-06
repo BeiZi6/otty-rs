@@ -169,3 +169,71 @@ pub const GIT_HASH: &str = match option_env!("OTTY_GIT_HASH") {
     Some(h) => h,
     None => "unknown",
 };
+
+#[cfg(test)]
+mod gap_k01_corpus {
+    use std::fs;
+    use std::path::{Path, PathBuf};
+
+    fn spec_dir() -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../spec")
+    }
+
+    fn body(path: &Path) -> String {
+        let text = fs::read_to_string(path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+        text.lines()
+            .filter(|l| !l.starts_with("<!--"))
+            .collect::<Vec<_>>()
+            .join("\n")
+            .trim()
+            .to_string()
+    }
+
+    #[test]
+    fn skills_import_export_vt_have_bodies_and_features_preface_is_clear() {
+        let spec = spec_dir();
+        let skills = body(&spec.join("corpus/skills.md"));
+        assert!(skills.len() > 400, "Skills body {} chars", skills.len());
+        assert!(skills.contains("/wait"), "Skills page missing /wait");
+
+        let ie = body(&spec.join("corpus/import-export.md"));
+        assert!(ie.len() > 400, "import-export body {} chars", ie.len());
+        assert!(ie.contains("Ghostty"), "import-export missing Ghostty");
+
+        let vt_dir = spec.join("corpus/vt");
+        let vt: Vec<_> = fs::read_dir(&vt_dir)
+            .unwrap_or_else(|e| panic!("{}: {e}", vt_dir.display()))
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .filter(|p| p.extension().is_some_and(|x| x == "md"))
+            .collect();
+        assert!(vt.len() >= 40, "vt/* only {} pages", vt.len());
+        for path in &vt {
+            let b = body(path);
+            assert!(
+                b.len() >= 80,
+                "empty vt page {}",
+                path.file_name().unwrap().to_string_lossy()
+            );
+        }
+
+        let features = fs::read_to_string(spec.join("FEATURES.md")).unwrap();
+        let preface = features.split("## 1.").next().expect("FEATURES 卷首");
+        for hole in [
+            "customization__import-export",
+            "sidebar's \"Skills\" page",
+            "vt__*",
+            "fall outside the input set",
+            "truncated by the crawler",
+        ] {
+            assert!(
+                !preface.contains(hole),
+                "FEATURES 卷首 still lists corpus hole {hole:?}"
+            );
+        }
+        assert!(
+            preface.contains("spec/corpus/"),
+            "FEATURES 卷首 should point at spec/corpus/"
+        );
+    }
+}

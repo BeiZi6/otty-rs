@@ -228,7 +228,62 @@ def tidy(md: str) -> str:
     return md.strip() + "\n"
 
 
+def _body(path: Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    lines = [ln for ln in text.splitlines() if not ln.startswith("<!--")]
+    return "\n".join(lines).strip()
+
+
+def check_corpus() -> list[str]:
+    """GAP-K01 完成 bar: Skills / import-export / vt/* bodies; FEATURES 卷首 not listing them as holes."""
+    errors: list[str] = []
+    skills = OUT / "skills.md"
+    ie = OUT / "import-export.md"
+    vt_dir = OUT / "vt"
+    for label, path, min_len, needle in (
+        ("Skills", skills, 400, "/wait"),
+        ("import-export", ie, 400, "Ghostty"),
+    ):
+        if not path.is_file():
+            errors.append(f"missing {path}")
+            continue
+        body = _body(path)
+        if len(body) < min_len:
+            errors.append(f"{label} body too short: {len(body)} chars")
+        if needle not in body:
+            errors.append(f"{label} missing {needle!r}")
+    vt = sorted(vt_dir.glob("*.md")) if vt_dir.is_dir() else []
+    if len(vt) < 40:
+        errors.append(f"vt/* only {len(vt)} pages")
+    for path in vt:
+        if len(_body(path)) < 80:
+            errors.append(f"empty vt page {path.name}")
+    features = ROOT / "FEATURES.md"
+    preface = features.read_text(encoding="utf-8").split("## 1.")[0]
+    for hole in (
+        "customization__import-export",
+        'sidebar\'s "Skills" page',
+        "vt__*",
+        "fall outside the input set",
+        "truncated by the crawler",
+    ):
+        if hole in preface:
+            errors.append(f"FEATURES 卷首 still lists corpus hole: {hole}")
+    if "spec/corpus/" not in preface:
+        errors.append("FEATURES 卷首 does not point at spec/corpus/")
+    return errors
+
+
 def main() -> int:
+    if "--check" in sys.argv:
+        errors = check_corpus()
+        if errors:
+            print("GAP-K01 check FAILED:")
+            print("\n".join(f"  {e}" for e in errors))
+            return 1
+        vt_n = len(list((OUT / "vt").glob("*.md")))
+        print(f"GAP-K01 check ok skills={ (OUT / 'skills.md').stat().st_size }B import-export={ (OUT / 'import-export.md').stat().st_size }B vt_pages={vt_n}")
+        return 0
     urls = sitemap_urls()
     wanted = [
         u

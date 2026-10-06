@@ -1,0 +1,381 @@
+{
+  "sitemap_total": 142,
+  "fetched": [
+    {
+      "url": "https://docs.otty.sh/agents/skills",
+      "file": "corpus/skills.md",
+      "bytes": 6808
+    },
+    {
+      "url": "https://docs.otty.sh/customization/import-export",
+      "file": "corpus/import-export.md",
+      "bytes": 28397
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/bel",
+      "file": "corpus/vt/c0__bel.md",
+      "bytes": 919
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/bs",
+      "file": "corpus/vt/c0__bs.md",
+      "bytes": 925
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/can",
+      "file": "corpus/vt/c0__can.md",
+      "bytes": 807
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/cr",
+      "file": "corpus/vt/c0__cr.md",
+      "bytes": 965
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/del",
+      "file": "corpus/vt/c0__del.md",
+      "bytes": 1026
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/esc",
+      "file": "corpus/vt/c0__esc.md",
+      "bytes": 1011
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/ff",
+      "file": "corpus/vt/c0__ff.md",
+      "bytes": 774
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/ht",
+      "file": "corpus/vt/c0__ht.md",
+      "bytes": 757
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0",
+      "file": "corpus/vt/c0.md",
+      "bytes": 1936
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/lf",
+      "file": "corpus/vt/c0__lf.md",
+      "bytes": 1070
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/si",
+      "file": "corpus/vt/c0__si.md",
+      "bytes": 474
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/so",
+      "file": "corpus/vt/c0__so.md",
+      "bytes": 976
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/sub",
+      "file": "corpus/vt/c0__sub.md",
+      "bytes": 479
+    },
+    {
+      "url": "https://docs.otty.sh/vt/c0/vt",
+      "file": "corpus/vt/c0__vt.md",
+      "bytes": 716
+    },
+    {
+      "url": "https://docs.otty.sh/vt/concepts/colors",
+      "file": "corpus/vt/concepts__colors.md",
+      "bytes": 2412
+    },
+    {
+      "url": "https://docs.otty.sh/vt/concepts/control-sequences",
+      "file": "corpus/vt/concepts__control-sequences.md",
+      "bytes": 1605
+    },
+    {
+      "url": "https://docs.otty.sh/vt/concepts/cursor",
+      "file": "corpus/vt/concepts__cursor.md",
+      "bytes": 2323
+    },
+    {
+      "url": "https://docs.otty.sh/vt/concepts/screen",
+      "file": "corpus/vt/concepts__screen.md",
+      "bytes": 2270
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/cub",
+      "file": "corpus/vt/csi__cub.md",
+      "bytes": 683
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/cud",
+      "file": "corpus/vt/csi__cud.md",
+      "bytes": 630
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/cuf",
+      "file": "corpus/vt/csi__cuf.md",
+      "bytes": 620
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/cup",
+      "file": "corpus/vt/csi__cup.md",
+      "bytes": 1471
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/cuu",
+      "file": "corpus/vt/csi__cuu.md",
+      "bytes": 668
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/dch",
+      "file": "corpus/vt/csi__dch.md",
+      "bytes": 801
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/decrst",
+      "file": "corpus/vt/csi__decrst.md",
+      "bytes": 769
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/decsca",
+      "file": "corpus/vt/csi__decsca.md",
+      "bytes": 2029
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/decscusr",
+      "file": "corpus/vt/csi__decscusr.md",
+      "bytes": 1548
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/decset",
+      "file": "corpus/vt/csi__decset.md",
+      "bytes": 2176
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/decstr",
+      "file": "corpus/vt/csi__decstr.md",
+      "bytes": 1024
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/dl",
+      "file": "corpus/vt/csi__dl.md",
+      "bytes": 648
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/dsr",
+      "file": "corpus/vt/csi__dsr.md",
+      "bytes": 2532
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/ed",
+      "file": "corpus/vt/csi__ed.md",
+      "bytes": 2895
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/el",
+      "file": "corpus/vt/csi__el.md",
+      "bytes": 1417
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/ich",
+      "file": "corpus/vt/csi__ich.md",
+      "bytes": 705
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/il",
+      "file": "corpus/vt/csi__il.md",
+      "bytes": 701
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi",
+      "file": "corpus/vt/csi.md",
+      "bytes": 1145
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/sgr",
+      "file": "corpus/vt/csi__sgr.md",
+      "bytes": 3723
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/xt-colors",
+      "file": "corpus/vt/csi__xt-colors.md",
+      "bytes": 3069
+    },
+    {
+      "url": "https://docs.otty.sh/vt/csi/xtwinops",
+      "file": "corpus/vt/csi__xtwinops.md",
+      "bytes": 3998
+    },
+    {
+      "url": "https://docs.otty.sh/vt/dcs/decrqss",
+      "file": "corpus/vt/dcs__decrqss.md",
+      "bytes": 2102
+    },
+    {
+      "url": "https://docs.otty.sh/vt/dcs",
+      "file": "corpus/vt/dcs.md",
+      "bytes": 1183
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/decaln",
+      "file": "corpus/vt/esc__decaln.md",
+      "bytes": 1623
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/deckpam",
+      "file": "corpus/vt/esc__deckpam.md",
+      "bytes": 850
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/deckpnm",
+      "file": "corpus/vt/esc__deckpnm.md",
+      "bytes": 501
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/decrc",
+      "file": "corpus/vt/esc__decrc.md",
+      "bytes": 684
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/decsc",
+      "file": "corpus/vt/esc__decsc.md",
+      "bytes": 1010
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/hts",
+      "file": "corpus/vt/esc__hts.md",
+      "bytes": 679
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/ind",
+      "file": "corpus/vt/esc__ind.md",
+      "bytes": 638
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc",
+      "file": "corpus/vt/esc.md",
+      "bytes": 951
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/nel",
+      "file": "corpus/vt/esc__nel.md",
+      "bytes": 462
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/ri",
+      "file": "corpus/vt/esc__ri.md",
+      "bytes": 460
+    },
+    {
+      "url": "https://docs.otty.sh/vt/esc/ris",
+      "file": "corpus/vt/esc__ris.md",
+      "bytes": 862
+    },
+    {
+      "url": "https://docs.otty.sh/vt/external-protocols",
+      "file": "corpus/vt/external-protocols.md",
+      "bytes": 2764
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc",
+      "file": "corpus/vt/osc.md",
+      "bytes": 2097
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-0-2",
+      "file": "corpus/vt/osc__osc-0-2.md",
+      "bytes": 1108
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-10-19",
+      "file": "corpus/vt/osc__osc-10-19.md",
+      "bytes": 3243
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-104-119",
+      "file": "corpus/vt/osc__osc-104-119.md",
+      "bytes": 2803
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-133",
+      "file": "corpus/vt/osc__osc-133.md",
+      "bytes": 1809
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-1337",
+      "file": "corpus/vt/osc__osc-1337.md",
+      "bytes": 5951
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-22",
+      "file": "corpus/vt/osc__osc-22.md",
+      "bytes": 3197
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-4",
+      "file": "corpus/vt/osc__osc-4.md",
+      "bytes": 1598
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-5",
+      "file": "corpus/vt/osc__osc-5.md",
+      "bytes": 2062
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-52",
+      "file": "corpus/vt/osc__osc-52.md",
+      "bytes": 1688
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-7",
+      "file": "corpus/vt/osc__osc-7.md",
+      "bytes": 1348
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-777",
+      "file": "corpus/vt/osc__osc-777.md",
+      "bytes": 1209
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-8",
+      "file": "corpus/vt/osc__osc-8.md",
+      "bytes": 2215
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-88",
+      "file": "corpus/vt/osc__osc-88.md",
+      "bytes": 8971
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-9-4",
+      "file": "corpus/vt/osc__osc-9-4.md",
+      "bytes": 2059
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-9",
+      "file": "corpus/vt/osc__osc-9.md",
+      "bytes": 1370
+    },
+    {
+      "url": "https://docs.otty.sh/vt/osc/osc-99",
+      "file": "corpus/vt/osc__osc-99.md",
+      "bytes": 3414
+    },
+    {
+      "url": "https://docs.otty.sh/vt/overview",
+      "file": "corpus/vt/overview.md",
+      "bytes": 2657
+    },
+    {
+      "url": "https://docs.otty.sh/vt/sequence-reference",
+      "file": "corpus/vt/sequence-reference.md",
+      "bytes": 6745
+    },
+    {
+      "url": "https://docs.otty.sh/vt/terminal-comparison",
+      "file": "corpus/vt/terminal-comparison.md",
+      "bytes": 10204
+    }
+  ],
+  "failed": []
+}
