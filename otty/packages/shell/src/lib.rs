@@ -27,7 +27,10 @@ use otty_core::PaneId;
 use otty_render::theme::Chrome;
 use otty_ui::view::TerminalView;
 use otty_config::SaveScope;
-use otty_ui::{context_rows, pane_hit, set_setting, shell_menu_models, Dispatcher};
+use otty_ui::{
+    context_rows, filter_palette, palette_entries, palette_rows, pane_hit, set_setting,
+    shell_menu_models, Dispatcher,
+};
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
 
 slint::include_modules!();
@@ -170,10 +173,58 @@ fn bind_menu(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<D
                 ui.set_settings_font_size(font);
             }
         }
+        if d.palette_open {
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_palette_open(true);
+            }
+        }
         if d.quit {
             let _ = slint::quit_event_loop();
         }
     });
+}
+
+fn palette_model(rows: &[(String, String, String)]) -> ModelRc<PaletteRow> {
+    let items: Vec<PaletteRow> = rows
+        .iter()
+        .map(|(title, action, scope)| PaletteRow {
+            title: title.as_str().into(),
+            action: action.as_str().into(),
+            scope: scope.as_str().into(),
+        })
+        .collect();
+    ModelRc::new(VecModel::from(items))
+}
+
+fn bind_palette(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<Dispatcher>>) {
+    let map = config.keymap();
+    let all = palette_entries(None, &map);
+    ui.set_palette_rows(palette_model(&palette_rows(&all)));
+    {
+        let map = map.clone();
+        let ui_weak = ui.as_weak();
+        ui.on_palette_query_changed(move |query| {
+            let entries = palette_entries(None, &map);
+            let hits: Vec<_> = filter_palette(&entries, query.as_str())
+                .into_iter()
+                .cloned()
+                .collect();
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_palette_rows(palette_model(&palette_rows(&hits)));
+            }
+        });
+    }
+    {
+        let dispatch = dispatch.clone();
+        let ui_weak = ui.as_weak();
+        ui.on_palette_run(move |action, keep_open| {
+            let mut d = dispatch.borrow_mut();
+            let _ = d.run_palette(action.as_str(), keep_open);
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_palette_open(d.palette_open);
+            }
+        });
+    }
 }
 
 fn bind_context(ui: &OttyWindow, view: Rc<std::cell::RefCell<otty_ui::view::TerminalView>>, dispatch: Rc<std::cell::RefCell<Dispatcher>>) {
@@ -212,6 +263,7 @@ pub fn run(config: Config) -> Result<(), ShellError> {
 
     let dispatch = Rc::new(std::cell::RefCell::new(Dispatcher::new()));
     bind_menu(&ui, &config, dispatch.clone());
+    bind_palette(&ui, &config, dispatch.clone());
     {
         let dispatch = dispatch.clone();
         ui.on_close_tab_at(move |index| {
@@ -415,5 +467,7 @@ mod tests {
         assert!(src.contains("ctx-pane"));
         assert!(src.contains("settings-open"), "Settings window");
         assert!(src.contains("settings-apply-font"));
+        assert!(src.contains("palette-open"), "Command Palette overlay");
+        assert!(src.contains("palette-run"));
     }
 }

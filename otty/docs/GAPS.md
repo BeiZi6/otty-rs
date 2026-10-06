@@ -52,7 +52,7 @@
 | GAP-S01 | 壳 | 原生菜单栏 | done | P0 |
 | GAP-S02 | 壳 | 右键菜单 | done | P0 |
 | GAP-S03 | 壳 | Settings 窗 | done | P0 |
-| GAP-S04 | 壳 | Command Palette | open | P0 |
+| GAP-S04 | 壳 | Command Palette | done | P0 |
 | GAP-S05 | 壳 | Open Quickly | open | P0 |
 | GAP-S06 | 壳 | Details 面板 | open | P0 |
 | GAP-S07 | 壳 | 分屏树 UI | partial | P0 |
@@ -203,12 +203,12 @@
 
 ### GAP-S04 Command Palette
 
-- **status:** open
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §1。⌘⇧P，VSCode 风格。每条带 scope（pane / window / app）。无快捷键的 action 也要能搜到。现场生成「ports」「line info」列表。`Split View...` 与 `Fork...` / `Branch...` 打开四向 + New Tab + New Window 选择器。⌘↩ 执行并保持打开。
 - **DMG:** action `command_palette`。数据源就是 `ACTIONS` 152 项，不要自造 id。文案在 `en.json`。
 - **原实现:** Swift 浮层。过滤是对 action 名和当前 chord 做模糊匹配（Settings 键位页同样：输入 `cmd+t` 能找到绑定）。动态行（端口、当前行）在打开时从 focused pane 算，不是静态表。
-- **当前:** 无浮层，无分发器。
+- **当前:** `otty-ui::palette` 列出 152 `ACTIONS`（含无 shortcut）；`filter_palette` 按 id/label/chord 搜；`run_palette(..., keep_open)` 是 ⌘↩。壳浮层 + ⌘⇧P。动态 ports/line-info 选择器未做。
 - **落点:** `packages/ui` 提供可搜索的 action 列表；`packages/shell` 画浮层。分发与菜单、快捷键共用 GAP-C03。
 - **完成:** ⌘⇧P 打开；能搜到 `ACTIONS` 每一项；⌘↩ 保持打开；无 shortcut 的项也在。
 

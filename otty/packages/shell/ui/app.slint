@@ -26,6 +26,12 @@ export struct MenuRow {
     action: string,
 }
 
+export struct PaletteRow {
+    title: string,
+    action: string,
+    scope: string,
+}
+
 // What Otty 1.5.4 opens on, from the shipped themes, so the window is usable for
 // the first frame before the Rust side has loaded anything.
 export global Theme {
@@ -171,6 +177,11 @@ export component OttyWindow inherits Window {
     in-out property <bool> settings-open: false;
     in-out property <int> settings-font-size: 13;
     callback settings-apply-font(int);
+    in-out property <bool> palette-open: false;
+    in-out property <string> palette-query: "";
+    in property <[PaletteRow]> palette-rows;
+    callback palette-query-changed(string);
+    callback palette-run(string, bool);
 
     // The pointer's position over the grid, in the grid image's coordinates, so
     // Rust can turn it into a cell without knowing about Slint.
@@ -413,6 +424,60 @@ export component OttyWindow inherits Window {
         }
     }
 
+    if root.palette-open : Rectangle {
+        x: (parent.width - 480px) / 2;
+        y: Theme.titlebar-height + 24px;
+        width: 480px;
+        height: 320px;
+        background: Theme.panel-background;
+        border-width: 1px;
+        border-color: Theme.panel-border;
+        border-radius: Theme.panel-radius;
+
+        VerticalLayout {
+            padding: 10px;
+            spacing: 6px;
+
+            Text {
+                text: "Command Palette";
+                color: Theme.panel-foreground;
+                font-size: 13px;
+            }
+
+            palette-box := TextInput {
+                text <=> root.palette-query;
+                color: Theme.panel-foreground;
+                height: 24px;
+                edited => { root.palette-query-changed(self.text); }
+                accepted => {
+                    if (root.palette-rows.length > 0) {
+                        root.palette-run(root.palette-rows[0].action, false);
+                    }
+                }
+            }
+
+            for row in root.palette-rows : TouchArea {
+                height: 22px;
+                clicked => { root.palette-run(row.action, false); }
+                HorizontalLayout {
+                    spacing: 8px;
+                    Text {
+                        text: row.title;
+                        color: Theme.panel-foreground;
+                        font-size: 12px;
+                        overflow: elide;
+                    }
+                    Text {
+                        text: row.scope;
+                        color: Theme.panel-foreground;
+                        font-size: 11px;
+                        opacity: 0.6;
+                    }
+                }
+            }
+        }
+    }
+
     // Keys land on a FocusScope that covers the window, because the Image is
     // not a focusable item and Window's own key-pressed would collide with a
     // callback of the same name.
@@ -422,6 +487,23 @@ export component OttyWindow inherits Window {
         width: 0px;
         height: 0px;
         key-pressed(event) => {
+            if (root.palette-open) {
+                // ⌘↩ / Ctrl+Enter: run the first row and keep the palette open.
+                if (event.text == "\n" && (event.modifiers.control || event.modifiers.meta)) {
+                    if (root.palette-rows.length > 0) {
+                        root.palette-run(root.palette-rows[0].action, true);
+                    }
+                    accept
+                }
+                reject
+            }
+            if ((event.modifiers.control || event.modifiers.meta) && event.modifiers.shift
+                && (event.text == "p" || event.text == "P")) {
+                root.palette-open = true;
+                root.palette-query = "";
+                root.palette-query-changed("");
+                accept
+            }
             root.input-key(event.text);
             accept
         }

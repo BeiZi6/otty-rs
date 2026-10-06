@@ -28,6 +28,7 @@ pub struct Dispatcher {
     /// Last Copy / Copy Path payload.
     pub clipboard: Option<String>,
     pub settings_open: bool,
+    pub palette_open: bool,
 }
 
 impl Dispatcher {
@@ -44,6 +45,7 @@ impl Dispatcher {
             hit: ContextHit::default(),
             clipboard: None,
             settings_open: false,
+            palette_open: false,
         }
     }
 
@@ -65,6 +67,7 @@ impl Dispatcher {
                 }
             }
             "open_settings" => self.settings_open = true,
+            "command_palette" => self.palette_open = true,
             "quit" => self.quit = true,
             "new_tab" => {
                 if let Some(wid) = self.app.active_window().map(|w| w.id) {
@@ -105,6 +108,13 @@ impl Dispatcher {
             _ => {}
         }
         true
+    }
+
+    /// Run a palette row. `keep_open` is ⌘↩: execute and leave the palette up.
+    pub fn run_palette(&mut self, action: &str, keep_open: bool) -> bool {
+        let ok = self.activate(action);
+        self.palette_open = keep_open;
+        ok
     }
 
     /// Close the tab at `index` in the active window. Used by the tab context menu.
