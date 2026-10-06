@@ -50,7 +50,7 @@
 | GAP-K04 | 知识 | 补全库 `completions-client.db` | done | P1 |
 | GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | done | P2 |
 | GAP-S01 | 壳 | 原生菜单栏 | done | P0 |
-| GAP-S02 | 壳 | 右键菜单 | open | P0 |
+| GAP-S02 | 壳 | 右键菜单 | done | P0 |
 | GAP-S03 | 壳 | Settings 窗 | open | P0 |
 | GAP-S04 | 壳 | Command Palette | open | P0 |
 | GAP-S05 | 壳 | Open Quickly | open | P0 |
@@ -181,12 +181,12 @@
 
 ### GAP-S02 右键菜单
 
-- **status:** open
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §1 Files and links；§3 Shell Menu。终端行：Open Link/File/Folder、Copy Path、Change Directory Here。tab：Rename、Prefix、Clear Badge、分组。
 - **DMG:** 无独立资源。Swift 上下文菜单，条目仍是 action id。
 - **原实现:** 命中物（OSC 8、路径检测、选区）决定启用哪些项。⌘-click 打开，⌘⇧-click reveal。
-- **当前:** Electron 终端 `contextmenu` 直接 preventDefault，没有任何菜单。
+- **当前:** `otty-term::path_at` / `selected_text`；`otty-ui::context_items`；`Dispatcher` Copy/Copy Path/Close Tab。壳 `ContextMenuArea` 绑 pane 与 tab。
 - **落点:** 终端命中测试在 `otty-term` 事件 + UI；菜单在 shell。
 - **完成:** 有选区时能 Copy；有路径时能 Copy Path；tab 能关。
 

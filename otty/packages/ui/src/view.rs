@@ -205,6 +205,21 @@ impl TerminalView {
         layout::cell_at(rect, self.cell, x, y)
     }
 
+    /// Screen-row text for context-menu path hits.
+    pub fn line_text(&self, screen_row: u16) -> String {
+        self.session
+            .terminal()
+            .grid()
+            .row(screen_row)
+            .map(|r| r.text())
+            .unwrap_or_default()
+    }
+
+    /// Selected cells as text, for Copy.
+    pub fn selected_text(&self, a: (u16, u16), b: (u16, u16)) -> String {
+        otty_term::selected_text(self.session.terminal().grid(), a, b)
+    }
+
     // --------------------------------------------------------------- session
 
     /// Move the shell's output into the engine, and collect what it produced.

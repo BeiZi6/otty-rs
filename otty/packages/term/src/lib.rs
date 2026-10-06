@@ -51,6 +51,7 @@ pub mod attrs;
 pub mod events;
 pub mod features;
 pub mod grid;
+pub mod hit;
 pub mod input;
 pub mod perform;
 pub mod screen;
@@ -61,6 +62,7 @@ pub use events::{
     SpecialColor, WindowOp, WindowReport,
 };
 pub use grid::{Grid, Row, ScrollRegion};
+pub use hit::{path_at, selected_text};
 pub use input::{encode_key, encode_paste, KeyEncodeOptions};
 pub use perform::Parser;
 pub use screen::{

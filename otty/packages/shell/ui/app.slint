@@ -155,7 +155,7 @@ export component OttyWindow inherits Window {
     in property <image> grid;
     in property <string> title-text: "Otty";
     in property <[string]> tabs;
-    in property <int> active-tab: 0;
+    in-out property <int> active-tab: 0;
     in property <[string]> folders;
     in property <bool> sidebar-visible: true;
     in property <[MenuRow]> menu-file;
@@ -164,7 +164,10 @@ export component OttyWindow inherits Window {
     in property <[MenuRow]> menu-shell;
     in property <[MenuRow]> menu-window;
     in property <[MenuRow]> menu-commands;
+    in property <[MenuRow]> ctx-pane;
     callback menu-activated(string);
+    callback context-prepare(length, length);
+    callback close-tab-at(int);
 
     // The pointer's position over the grid, in the grid image's coordinates, so
     // Rust can turn it into a cell without knowing about Slint.
@@ -261,10 +264,20 @@ export component OttyWindow inherits Window {
 
                     // Slint's index binding is `for item[index] in model`; the
                     // `, index in` form is not a syntax it has.
-                    for title[index] in root.tabs : Tab {
-                        title: title;
-                        active: index == root.active-tab;
-                        indicator: Theme.tab-indicator;
+                    for title[index] in root.tabs : ContextMenuArea {
+                        Menu {
+                            MenuItem {
+                                title: "Close Tab";
+                                activated => {
+                                    root.close-tab-at(index);
+                                }
+                            }
+                        }
+                        Tab {
+                            title: title;
+                            active: index == root.active-tab;
+                            indicator: Theme.tab-indicator;
+                        }
                     }
                 }
             }
@@ -282,35 +295,46 @@ export component OttyWindow inherits Window {
 
                 // The terminal. A `TouchArea` covers it so pointer motion and
                 // clicks reach Rust; the image itself is not interactive.
-                pane := Rectangle {
-                    background: Theme.window-background;
+                pane := ContextMenuArea {
                     height: 100%;
-                    // Report this rectangle, not the window: the grid is laid
-                    // out in the leftover space after the titlebar and sidebar.
-                    changed width => { root.resized(self.width, self.height); }
-                    changed height => { root.resized(self.width, self.height); }
-
-                    // `grid` is the whole composited screen for now: one pane per
-                    // window. Splitting arrives with the multi-pane view, and the
-                    // divider component above is already here for it.
-                    Image {
-                        source: root.grid;
-                        width: parent.width;
-                        height: parent.height;
-                        image-fit: fill;
-                    }
-
-                    pointer := TouchArea {
-                        mouse-cursor: text;
-                        moved => {
-                            root.pointer-x = self.mouse-x;
-                            root.pointer-y = self.mouse-y;
-                            root.pointer-moved(self.mouse-x, self.mouse-y);
+                    Menu {
+                        for row in root.ctx-pane: MenuItem {
+                            title: row.title;
+                            activated => { root.menu-activated(row.action); }
                         }
-                        pointer-event(event) => {
-                            if (event.button == PointerEventButton.left
-                                && event.kind == PointerEventKind.down) {
+                    }
+                    Rectangle {
+                        background: Theme.window-background;
+                        height: 100%;
+                        // Report this rectangle, not the window: the grid is laid
+                        // out in the leftover space after the titlebar and sidebar.
+                        changed width => { root.resized(self.width, self.height); }
+                        changed height => { root.resized(self.width, self.height); }
+
+                        // `grid` is the whole composited screen for now: one pane per
+                        // window. Splitting arrives with the multi-pane view, and the
+                        // divider component above is already here for it.
+                        Image {
+                            source: root.grid;
+                            width: parent.width;
+                            height: parent.height;
+                            image-fit: fill;
+                        }
+
+                        pointer := TouchArea {
+                            mouse-cursor: text;
+                            moved => {
+                                root.pointer-x = self.mouse-x;
+                                root.pointer-y = self.mouse-y;
                                 root.pointer-moved(self.mouse-x, self.mouse-y);
+                            }
+                            pointer-event(event) => {
+                                if (event.kind == PointerEventKind.down) {
+                                    root.pointer-moved(self.mouse-x, self.mouse-y);
+                                    if (event.button == PointerEventButton.right) {
+                                        root.context-prepare(self.mouse-x, self.mouse-y);
+                                    }
+                                }
                             }
                         }
                     }

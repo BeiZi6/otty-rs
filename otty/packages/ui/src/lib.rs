@@ -13,6 +13,7 @@
 //! the model, and asserting it against a windowing system would be a worse test
 //! in every way.
 
+pub mod context;
 pub mod dispatch;
 pub mod layout;
 pub mod session;
@@ -20,6 +21,7 @@ pub mod syntax;
 pub mod view;
 pub mod model;
 
+pub use context::{context_items, context_rows, pane_hit, tab_hit, ContextHit, ContextItem};
 pub use dispatch::{shell_menu, shell_menu_models, Dispatcher};
 pub use layout::{cell_at, grid_dimensions, layout, layout_single, Divider, Layout, LayoutOptions};
 pub use session::Session;

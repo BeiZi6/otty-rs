@@ -10,6 +10,7 @@ use otty_config::menu::{menu_bar, Menu};
 use otty_config::Catalog;
 use otty_core::{PaneId, TabId, WindowId};
 
+use crate::context::ContextHit;
 use crate::model::App;
 
 /// The thing the shell, keymap and palette call.
@@ -22,6 +23,10 @@ pub struct Dispatcher {
     /// Last action id that was activated, including ones with no handler yet.
     pub last: Option<String>,
     pub quit: bool,
+    /// What the last right-click (or test) landed on.
+    pub hit: ContextHit,
+    /// Last Copy / Copy Path payload.
+    pub clipboard: Option<String>,
 }
 
 impl Dispatcher {
@@ -35,6 +40,8 @@ impl Dispatcher {
             next_pane: 2,
             last: None,
             quit: false,
+            hit: ContextHit::default(),
+            clipboard: None,
         }
     }
 
@@ -45,6 +52,16 @@ impl Dispatcher {
         }
         self.last = Some(action.to_string());
         match action {
+            "copy" => {
+                if let Some(s) = self.hit.selection.as_ref().filter(|s| !s.is_empty()) {
+                    self.clipboard = Some(s.clone());
+                }
+            }
+            "copy_path" => {
+                if let Some(p) = self.hit.path.as_ref().filter(|s| !s.is_empty()) {
+                    self.clipboard = Some(p.clone());
+                }
+            }
             "quit" => self.quit = true,
             "new_tab" => {
                 if let Some(wid) = self.app.active_window().map(|w| w.id) {
@@ -85,6 +102,14 @@ impl Dispatcher {
             _ => {}
         }
         true
+    }
+
+    /// Close the tab at `index` in the active window. Used by the tab context menu.
+    pub fn close_tab_at(&mut self, index: usize) -> bool {
+        self.last = Some("close_tab".into());
+        let Some(w) = self.app.active_window_mut() else { return false };
+        let Some(id) = w.tabs().get(index).map(|t| t.id) else { return false };
+        w.close_tab(id)
     }
 
     fn focused_pane(&self) -> Option<PaneId> {

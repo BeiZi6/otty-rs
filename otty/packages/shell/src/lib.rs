@@ -26,7 +26,7 @@ use otty_config::Config;
 use otty_core::PaneId;
 use otty_render::theme::Chrome;
 use otty_ui::view::TerminalView;
-use otty_ui::{shell_menu_models, Dispatcher};
+use otty_ui::{context_rows, pane_hit, shell_menu_models, Dispatcher};
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
 
 slint::include_modules!();
@@ -167,6 +167,26 @@ fn bind_menu(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<D
     });
 }
 
+fn bind_context(ui: &OttyWindow, view: Rc<std::cell::RefCell<otty_ui::view::TerminalView>>, dispatch: Rc<std::cell::RefCell<Dispatcher>>) {
+    let ui_weak = ui.as_weak();
+    ui.on_context_prepare(move |x, y| {
+        let v = view.borrow();
+        let hit = if let Some((col, row)) = v.cell_at(x as f32, y as f32) {
+            let line = v.line_text(row);
+            let sel = dispatch.borrow().hit.selection.clone();
+            pane_hit(&line, col as usize, sel.as_deref())
+        } else {
+            pane_hit("", 0, dispatch.borrow().hit.selection.as_deref())
+        };
+        drop(v);
+        let rows = context_rows(&hit);
+        dispatch.borrow_mut().hit = hit;
+        if let Some(ui) = ui_weak.upgrade() {
+            ui.set_ctx_pane(menu_model(&rows));
+        }
+    });
+}
+
 /// Build the window around a view, and run until the window closes.
 pub fn run(config: Config) -> Result<(), ShellError> {
     let ui = OttyWindow::new()?;
@@ -183,6 +203,12 @@ pub fn run(config: Config) -> Result<(), ShellError> {
 
     let dispatch = Rc::new(std::cell::RefCell::new(Dispatcher::new()));
     bind_menu(&ui, &config, dispatch.clone());
+    {
+        let dispatch = dispatch.clone();
+        ui.on_close_tab_at(move |index| {
+            let _ = dispatch.borrow_mut().close_tab_at(index as usize);
+        });
+    }
 
     let pane = PaneId::new(1);
     let chrome_preview = {
@@ -207,6 +233,7 @@ pub fn run(config: Config) -> Result<(), ShellError> {
     ui.set_tabs(ModelRc::from(tabs.clone()));
 
     let view = Rc::new(std::cell::RefCell::new(view));
+    bind_context(&ui, view.clone(), dispatch.clone());
 
     // Pointer motion and clicks both arrive as a position; the view turns them
     // into a cell, which is the only thing that needs the layout.
@@ -362,5 +389,8 @@ mod tests {
         }
         assert!(src.contains("menu-activated"));
         assert!(src.contains("for row in root.menu-file"));
+        assert!(src.contains("ContextMenuArea"), "pane/tab need a context menu");
+        assert!(src.contains("Close Tab"));
+        assert!(src.contains("ctx-pane"));
     }
 }
