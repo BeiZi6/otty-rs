@@ -21,6 +21,7 @@ installers**, not written for this rebuild. Each file was extracted from
 | `Otty.sdef` | The AppleScript dictionary | `Resources/` |
 | `en.json`, `zh.json` | UI catalog (menus, Settings, palette, 152 action labels) | `Resources/` |
 | `settings-ui.html` | Vite-built Settings page the shell loads | `Resources/` |
+| `completions-client.db` | Fig spec SQLite (**gitignored**, 11 MB). Copy from the DMG or set `OTTY_COMPLETIONS_DB`. | `Resources/` |
 
 ## The one deliberate deviation
 

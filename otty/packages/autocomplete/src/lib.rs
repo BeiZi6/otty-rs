@@ -145,17 +145,33 @@ impl SpecStore {
     }
 }
 
-/// Where the bundled database lives, relative to the executable.
+/// Where the bundled database lives.
+///
+/// Search order: `OTTY_COMPLETIONS_DB`, next to the executable, macOS
+/// `Resources/`, then walk parents looking for `resources/completions-client.db`
+/// (dev tree). The file is gitignored; copy it from the DMG.
 pub fn bundled_path() -> Option<PathBuf> {
+    if let Ok(p) = std::env::var("OTTY_COMPLETIONS_DB") {
+        let p = PathBuf::from(p);
+        if p.is_file() {
+            return Some(p);
+        }
+    }
     let exe = std::env::current_exe().ok()?;
-    let dir = exe.parent()?;
-    for candidate in [
-        dir.join("completions-client.db"),
-        // macOS `.app` layout.
-        dir.join("../Resources/completions-client.db"),
-    ] {
-        if candidate.is_file() {
-            return Some(candidate);
+    let mut dir = exe.parent()?.to_path_buf();
+    for _ in 0..8 {
+        for name in [
+            "completions-client.db",
+            "resources/completions-client.db",
+            "Resources/completions-client.db",
+        ] {
+            let candidate = dir.join(name);
+            if candidate.is_file() {
+                return Some(candidate);
+            }
+        }
+        if !dir.pop() {
+            break;
         }
     }
     None
@@ -1084,5 +1100,22 @@ mod tests {
             SpecStore::open(&path),
             Err(SpecError::SchemaVersion { found: 99, .. })
         ));
+    }
+
+    #[test]
+    fn bundled_path_finds_db_and_git_spec_parses() {
+        let path = bundled_path().expect(
+            "copy dmg/.../Resources/completions-client.db to otty/resources/ (gitignored)",
+        );
+        let store = SpecStore::open(&path).unwrap();
+        let git = store
+            .spec("git", None)
+            .unwrap()
+            .expect("git spec in bundled db");
+        assert_eq!(git.name, "git");
+        assert!(
+            !git.subcommands.is_empty(),
+            "git spec should list subcommands"
+        );
     }
 }

@@ -45,23 +45,47 @@ pub struct FigSubcommand {
     pub extra: BTreeMap<String, serde_json::Value>,
 }
 
+fn fig_bool<'de, D: serde::Deserializer<'de>>(d: D) -> Result<bool, D::Error> {
+    let v = serde_json::Value::deserialize(d).map_err(serde::de::Error::custom)?;
+    Ok(match v {
+        serde_json::Value::Bool(b) => b,
+        serde_json::Value::Number(n) => n.as_i64().unwrap_or(0) != 0,
+        serde_json::Value::String(s) => matches!(s.as_str(), "true" | "1" | "yes"),
+        _ => false,
+    })
+}
+
+fn name_or_names<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Error> {
+    let v = serde_json::Value::deserialize(d).map_err(serde::de::Error::custom)?;
+    match v {
+        serde_json::Value::String(s) => Ok(s),
+        serde_json::Value::Array(a) => Ok(a
+            .iter()
+            .find_map(|x| x.as_str())
+            .unwrap_or("")
+            .to_string()),
+        _ => Ok(String::new()),
+    }
+}
+
 /// An option.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct FigOption {
+    #[serde(default, alias = "names", deserialize_with = "name_or_names")]
     pub name: String,
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "fig_bool")]
     pub hidden: bool,
     /// Short forms. Otty offers each as its own candidate, because they are
     /// separate things to type.
     #[serde(default)]
     pub aliases: Vec<String>,
     /// Whether the option may be given more than once.
-    #[serde(default, rename = "isRepeatable")]
+    #[serde(default, rename = "isRepeatable", deserialize_with = "fig_bool")]
     pub is_repeatable: bool,
     /// Whether a value must be attached with `=` rather than a space.
-    #[serde(default, rename = "requiresSeparator")]
+    #[serde(default, rename = "requiresSeparator", deserialize_with = "fig_bool")]
     pub requires_separator: bool,
     #[serde(default)]
     pub args: Vec<FigArg>,
@@ -76,10 +100,10 @@ pub struct FigArg {
     pub name: Option<String>,
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(default, rename = "isOptional")]
+    #[serde(default, rename = "isOptional", deserialize_with = "fig_bool")]
     pub is_optional: bool,
     /// Whether more than one value may appear.
-    #[serde(default, rename = "isVariadic")]
+    #[serde(default, rename = "isVariadic", deserialize_with = "fig_bool")]
     pub is_variadic: bool,
     /// Static suggestions. A spec may instead declare generators, which need to
     /// run something; those are kept in `extra` and are not evaluated here.

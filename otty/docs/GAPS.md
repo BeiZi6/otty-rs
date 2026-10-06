@@ -47,7 +47,7 @@
 | GAP-K01 | 知识 | 官网语料补全 | done | P2 |
 | GAP-K02 | 知识 | `en.json` / `zh.json` | done | P0 |
 | GAP-K03 | 知识 | Settings 单页 `settings-ui.html` | done | P0 |
-| GAP-K04 | 知识 | 补全库 `completions-client.db` | blocked | P1 |
+| GAP-K04 | 知识 | 补全库 `completions-client.db` | done | P1 |
 | GAP-K05 | 知识 | `syntaxes.bin` / mermaid / 图标 | blocked | P2 |
 | GAP-S01 | 壳 | 原生菜单栏 | open | P0 |
 | GAP-S02 | 壳 | 右键菜单 | open | P0 |
@@ -142,12 +142,12 @@
 
 ### GAP-K04 补全数据库
 
-- **status:** blocked
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §3 Autocomplete。约 715 条 Fig spec。Settings → Controls → Autocomplete → Update Now 才刷新，不后台下。
 - **DMG:** `Contents/Resources/completions-client.db`（11 821 056 B）。表：`specs` / `spec_i18n` / `db_meta`。
 - **原实现:** `otty_autocomplete`（122 符号）只读打开这份 SQLite。ghost 与候选面板是 Swift 画的。学习结果进 `otty_state`，不写回这份库。
-- **当前:** `packages/autocomplete` 能读这种 schema。bundled 文件不在仓库，所以运行时没有 spec。
+- **当前:** `resources/completions-client.db` gitignore；`OTTY_COMPLETIONS_DB`；`bundled_path()` 会往上找到 `resources/`。`git` spec 能解析。
 - **落点:** 本地开发从 DMG 拷到 `resources/`（gitignore 大文件，或文档写明 OTTY 路径）。UI 见 GAP 里补全面。
 - **完成:** `otty_autocomplete::bundled_path()` 找得到库；至少 `git` spec 能解析。
 
