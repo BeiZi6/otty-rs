@@ -279,6 +279,8 @@ pub struct Tab {
     pub zoomed: Option<PaneId>,
     /// The badge the tab is showing, if any.
     pub badge: Option<Badge>,
+    /// Prefix shown in front of the dynamic title.
+    pub prefix: Option<String>,
 }
 
 /// A tab's progress badge.
@@ -462,6 +464,7 @@ impl App {
                 focused: pane,
                 zoomed: None,
                 badge: None,
+                prefix: None,
             }],
             active: 0,
         });
@@ -479,6 +482,7 @@ impl App {
             focused: pane,
             zoomed: None,
             badge: None,
+            prefix: None,
         });
         true
     }

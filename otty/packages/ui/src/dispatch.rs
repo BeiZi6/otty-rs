@@ -40,6 +40,7 @@ pub struct Dispatcher {
     pub details_open: bool,
     pub details_tab: DetailsTab,
     pub quit_after_last_window_closed: bool,
+    pub prefix_input: Option<String>,
 }
 
 impl Dispatcher {
@@ -64,6 +65,7 @@ impl Dispatcher {
             details_open: false,
             details_tab: DetailsTab::Info,
             quit_after_last_window_closed: false,
+            prefix_input: None,
         }
     }
 
@@ -145,6 +147,17 @@ impl Dispatcher {
             }
             "merge_all_windows" => {
                 let _ = self.app.merge_all_windows();
+            }
+            "prefix_tab" => {
+                if let Some(p) = self.prefix_input.clone() {
+                    if let Some(t) = self
+                        .app
+                        .active_window_mut()
+                        .and_then(|w| w.active_tab_mut())
+                    {
+                        t.prefix = Some(p);
+                    }
+                }
             }
             "close_window" => {
                 if let Some(id) = self.app.active_window().map(|w| w.id) {
@@ -257,6 +270,17 @@ impl Dispatcher {
 
     pub fn focused_pane_id(&self) -> Option<PaneId> {
         self.focused_pane()
+    }
+
+    /// Clear Badge — the titlebar dropdown action (not an ACTIONS id).
+    pub fn clear_badge(&mut self) {
+        if let Some(t) = self
+            .app
+            .active_window_mut()
+            .and_then(|w| w.active_tab_mut())
+        {
+            t.badge = None;
+        }
     }
 
     fn cycle_tab(&mut self, delta: isize) {
@@ -433,5 +457,19 @@ mod tests {
         d.quit_after_last_window_closed = true;
         assert!(d.activate("close_window"));
         assert!(d.quit, "flag on: last window quits");
+    }
+
+    #[test]
+    fn prefix_and_clear_badge() {
+        let mut d = Dispatcher::new();
+        if let Some(t) = d.app.active_window_mut().and_then(|w| w.active_tab_mut()) {
+            t.badge = Some(crate::model::Badge::Error);
+        }
+        d.prefix_input = Some("api".into());
+        assert!(d.activate("prefix_tab"));
+        d.clear_badge();
+        let t = d.app.active_window().unwrap().active_tab().unwrap();
+        assert_eq!(t.prefix.as_deref(), Some("api"));
+        assert_eq!(t.badge, None);
     }
 }

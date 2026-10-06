@@ -235,6 +235,18 @@ impl TabRule {
         render_field_pairs(&pairs)
     }
 
+    /// First matching rule's alias. Earlier rules win.
+    pub fn first_alias(rules: &[Self], cwd: &str) -> Option<String> {
+        let ctx = MatchContext::in_dir(cwd);
+        rules.iter().find_map(|r| {
+            if r.matches(&ctx) {
+                r.alias.clone()
+            } else {
+                None
+            }
+        })
+    }
+
     /// Every condition the rule states must hold. An omitted condition is
     /// "don't care".
     pub fn matches(&self, ctx: &MatchContext) -> bool {
@@ -710,6 +722,19 @@ mod tests {
         let inside = format!("{}/Work/otty", home.to_string_lossy());
         assert!(glob_matches("~/Work/otty", &inside));
         assert!(!glob_matches("~/Work/otty", "/somewhere/else/Work/otty"));
+    }
+
+    #[test]
+    fn alias_applies_when_cwd_is_under_the_git_root() {
+        let rules = vec![
+            TabRule::parse(r#"path="/work/otty" alias="Otty""#).unwrap(),
+            TabRule::parse(r#"path="/work" alias="Work""#).unwrap(),
+        ];
+        assert_eq!(
+            TabRule::first_alias(&rules, "/work/otty/src"),
+            Some("Otty".into())
+        );
+        assert_eq!(TabRule::first_alias(&rules, "/tmp"), None);
     }
 
     #[test]

@@ -50,7 +50,7 @@ use otty_core::{expand_path, Color, Platform};
 pub use catalog::{Catalog, CatalogError, ResolvedLanguage, UiLanguage};
 pub use menu::{clickable_actions, menu_bar, Menu, MenuItem};
 pub use palette::{BoldColor, Palette, ResolvedColors};
-pub use rules::{DetailsView, QuickAccess, TabRule};
+pub use rules::{DetailsView, MatchContext, QuickAccess, TabRule};
 pub use spec::{Default as KeyDefault, KeySpec, ListStyle};
 pub use theme::{Mode as ThemeMode, Selection, Theme};
 pub use toml_lite::{write_atomic, Document, Line};

@@ -58,7 +58,7 @@
 | GAP-S07 | 壳 | 分屏树 UI | done | P0 |
 | GAP-S08 | 壳 | 文件 / 文件夹 / URL pane | done | P1 |
 | GAP-S09 | 壳 | 多窗口 / 撕 tab / 合并 | done | P1 |
-| GAP-S10 | 壳 | 徽章与 tab 规则 | partial | P1 |
+| GAP-S10 | 壳 | 徽章与 tab 规则 | done | P1 |
 | GAP-S11 | 壳 | 原版 tab 分组与 divider | partial | P1 |
 | GAP-S12 | 壳 | Find / 全局搜索 / Search in Files | open | P1 |
 | GAP-S13 | 壳 | Hint / Vi / Mark | open | P1 |
@@ -269,12 +269,12 @@
 
 ### GAP-S10 徽章与 tab 规则
 
-- **status:** partial
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §2。徽章：Spinner / 勾 / 点 / 三角 / 手 / 咖啡 / 盾 / 设备。颜色：绿完成、红失败、橙等输入、蓝进行中、紫已读。标题栏下拉可钉徽章。Clear Badge 手清。规则三行独立：Project Alias、Icon、Title。When：cwd / 前台命令 / agent / SSH host / 文件名。上优先。手改名压过规则。`title-from-osc` 默认 true。Prefix 加在动态标题前。
 - **DMG:** action `clear_badge`、`prefix_tab`、`rename_tab`。`resources/tab-icons/` 已拷。config `tab-rule`。IPC `TabRequest::Badge`。
 - **原实现:** 规则引擎在配置层；画在 Swift。agent 徽章由 `otty state:<agent>` 和 OSC 26 驱动。设备徽章跟 SSH 包装。
-- **当前:** `otty-config` 解析 tab-rule。`otty-ui::Badge` 枚举有。Electron 只画标题字符串。无下拉、无 prefix、无规则应用。
+- **当前:** `TabRule::first_alias` cwd 在 git 根下命中；`prefix_tab` 写 `Tab.prefix`；`Dispatcher::clear_badge` 手清。下拉钉徽章未画。
 - **落点:** 规则求值放 `otty-config`/`otty-ui`（可测）；图标用已有 SVG。agent 接线见 GAP-A02。
 - **完成:** cwd 落在某 git 根时 alias 生效；能设 prefix；能手清徽章。
 
