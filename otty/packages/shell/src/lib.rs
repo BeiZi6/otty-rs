@@ -28,8 +28,8 @@ use otty_render::theme::Chrome;
 use otty_ui::view::TerminalView;
 use otty_config::SaveScope;
 use otty_ui::{
-    context_rows, filter_palette, palette_entries, palette_rows, pane_hit, query_quickly,
-    quickly_rows, set_setting, shell_menu_models, Dispatcher, QuicklySources,
+    context_rows, details_info, filter_palette, palette_entries, palette_rows, pane_hit,
+    query_quickly, quickly_rows, set_setting, shell_menu_models, Dispatcher, QuicklySources,
 };
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
 
@@ -183,6 +183,11 @@ fn bind_menu(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<D
                 ui.set_quickly_open(true);
             }
         }
+        if let Some(ui) = ui_weak.upgrade() {
+            ui.set_details_open(d.details_open);
+            ui.set_details_tab(d.details_tab.as_str().into());
+            ui.set_details_cwd(details_info(&d.app).cwd.into());
+        }
         if d.quit {
             let _ = slint::quit_event_loop();
         }
@@ -318,6 +323,35 @@ pub fn run(config: Config) -> Result<(), ShellError> {
         let dispatch = dispatch.clone();
         ui.on_close_tab_at(move |index| {
             let _ = dispatch.borrow_mut().close_tab_at(index as usize);
+        });
+    }
+    {
+        let dispatch = dispatch.clone();
+        let ui_weak = ui.as_weak();
+        ui.on_select_tab_at(move |index| {
+            let mut d = dispatch.borrow_mut();
+            let _ = d.select_tab_at(index as usize);
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_details_cwd(details_info(&d.app).cwd.into());
+            }
+        });
+    }
+    {
+        let dispatch = dispatch.clone();
+        let ui_weak = ui.as_weak();
+        ui.on_details_select_tab(move |tab| {
+            let action = match tab.as_str() {
+                "outline" => "details_tab_outline",
+                "git" => "details_tab_git",
+                "files" => "details_tab_files",
+                _ => "details_tab_info",
+            };
+            let mut d = dispatch.borrow_mut();
+            let _ = d.activate(action);
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_details_tab(d.details_tab.as_str().into());
+                ui.set_details_cwd(details_info(&d.app).cwd.into());
+            }
         });
     }
 

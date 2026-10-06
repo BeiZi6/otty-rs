@@ -233,6 +233,8 @@ pub struct Pane {
     pub shell_title: Option<String>,
     /// Whether the pane was created zoomed to fill its tab.
     pub zoomed: bool,
+    /// Last OSC 7 working directory, which Details → Info shows.
+    pub cwd: Option<String>,
 }
 
 impl Pane {
@@ -244,6 +246,7 @@ impl Pane {
             custom_title: None,
             shell_title: None,
             zoomed: false,
+            cwd: None,
         }
     }
 

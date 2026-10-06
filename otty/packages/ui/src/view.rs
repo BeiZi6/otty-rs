@@ -250,6 +250,9 @@ impl TerminalView {
             }
             otty_term::Event::WorkingDirectory(path) => {
                 self.cwd = Some(PathBuf::from(path));
+                if let Some(pane) = self.app.pane_mut(self.pane) {
+                    pane.cwd = Some(path.clone());
+                }
             }
             otty_term::Event::Progress(p) => {
                 // `OSC 9;4` carries five states, and the tab bar shows one badge.

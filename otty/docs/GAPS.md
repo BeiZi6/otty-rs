@@ -54,7 +54,7 @@
 | GAP-S03 | 壳 | Settings 窗 | done | P0 |
 | GAP-S04 | 壳 | Command Palette | done | P0 |
 | GAP-S05 | 壳 | Open Quickly | done | P0 |
-| GAP-S06 | 壳 | Details 面板 | open | P0 |
+| GAP-S06 | 壳 | Details 面板 | done | P0 |
 | GAP-S07 | 壳 | 分屏树 UI | partial | P0 |
 | GAP-S08 | 壳 | 文件 / 文件夹 / URL pane | open | P1 |
 | GAP-S09 | 壳 | 多窗口 / 撕 tab / 合并 | open | P1 |
@@ -225,12 +225,12 @@
 
 ### GAP-S06 Details 面板
 
-- **status:** open
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §1。⌘⇧R，右侧，始终跟 focused pane。内置四页：Info（cwd、进程、监听端口、open-in）、Outline（OSC 133 命令 / agent prompt / 文件 TOC）、Git、Files（以 pane cwd 为根）。`details-view` 可重排。自定义两种：`kind=tui`（面板里跑 lazydocker 等）、`kind=web`。
 - **DMG:** action `toggle_details_panel`、`details_tab_info/outline/git/files`。图标 `resources/view-icons/`（62 SVG，已拷）。TUI 视图用 `resources/view-sandbox/` 的 `open`/`xdg-open` 垫片，禁止从面板里弹出 GUI。
 - **原实现:** 右栏镜像左栏 tab 面板。TUI 视图是嵌在面板里的又一个终端，cwd/env 来自 focused pane。Web 视图非持久 data store。Linux 无 Ports。
-- **当前:** Electron/Slint 都没有右栏。`details-view` 解析在 `otty-config` `rules.rs`。
+- **当前:** `otty-ui::details` Info 读 focused pane cwd；`toggle_details_panel` 显隐；切 tab 后 `details_info` 跟过去。壳右栏 + ⌘⇧R。Outline/Git/Files 页仍空。
 - **落点:** 壳布局加右栏；Info 先接 cwd + 进程（`otty-pty` 已有 unix `processes`）。Outline 依赖 GAP 的 OSC 133 索引。
 - **完成:** ⌘⇧R 显隐；切 tab 后面板跟过去；Info 至少显示 cwd。
 

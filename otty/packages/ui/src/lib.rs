@@ -14,6 +14,7 @@
 //! in every way.
 
 pub mod context;
+pub mod details;
 pub mod dispatch;
 pub mod palette;
 pub mod quickly;
@@ -25,6 +26,7 @@ pub mod view;
 pub mod model;
 
 pub use context::{context_items, context_rows, pane_hit, tab_hit, ContextHit, ContextItem};
+pub use details::{details_info, DetailsInfo, DetailsTab};
 pub use dispatch::{shell_menu, shell_menu_models, Dispatcher};
 pub use palette::{filter_palette, palette_entries, palette_rows, PaletteEntry};
 pub use quickly::{

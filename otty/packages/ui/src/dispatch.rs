@@ -11,6 +11,7 @@ use otty_config::Catalog;
 use otty_core::{PaneId, TabId, WindowId};
 
 use crate::context::ContextHit;
+use crate::details::DetailsTab;
 use crate::model::App;
 use crate::quickly::{open_directory, OpenFilter};
 use otty_state::Store;
@@ -35,6 +36,8 @@ pub struct Dispatcher {
     pub quickly_filter: Option<OpenFilter>,
     pub last_opened: Option<String>,
     pub opened: Vec<String>,
+    pub details_open: bool,
+    pub details_tab: DetailsTab,
 }
 
 impl Dispatcher {
@@ -56,6 +59,8 @@ impl Dispatcher {
             quickly_filter: Some(OpenFilter::All),
             last_opened: None,
             opened: Vec::new(),
+            details_open: false,
+            details_tab: DetailsTab::Info,
         }
     }
 
@@ -98,6 +103,13 @@ impl Dispatcher {
                 self.quickly_open = true;
                 self.quickly_filter = Some(OpenFilter::Folders);
             }
+            "toggle_details_panel" => self.details_open = !self.details_open,
+            "details_tab_info" => self.details_tab = DetailsTab::Info,
+            "details_tab_outline" => self.details_tab = DetailsTab::Outline,
+            "details_tab_git" => self.details_tab = DetailsTab::Git,
+            "details_tab_files" => self.details_tab = DetailsTab::Files,
+            "next_tab" => self.cycle_tab(1),
+            "previous_tab" => self.cycle_tab(-1),
             "quit" => self.quit = true,
             "new_tab" => {
                 if let Some(wid) = self.app.active_window().map(|w| w.id) {
@@ -175,12 +187,31 @@ impl Dispatcher {
         self.run_quickly(path, store.as_ref(), crate::quickly::now_secs())
     }
 
+    /// Focus the tab at `index` in the active window.
+    pub fn select_tab_at(&mut self, index: usize) -> bool {
+        self.last = Some("select_tab".into());
+        let Some(w) = self.app.active_window_mut() else { return false };
+        let Some(id) = w.tabs().get(index).map(|t| t.id) else { return false };
+        w.focus_tab(id)
+    }
+
     /// Close the tab at `index` in the active window. Used by the tab context menu.
     pub fn close_tab_at(&mut self, index: usize) -> bool {
         self.last = Some("close_tab".into());
         let Some(w) = self.app.active_window_mut() else { return false };
         let Some(id) = w.tabs().get(index).map(|t| t.id) else { return false };
         w.close_tab(id)
+    }
+
+    fn cycle_tab(&mut self, delta: isize) {
+        let Some(w) = self.app.active_window_mut() else { return };
+        let n = w.tabs().len() as isize;
+        if n == 0 {
+            return;
+        }
+        let i = (w.active_index() as isize + delta).rem_euclid(n) as usize;
+        let id = w.tabs()[i].id;
+        w.focus_tab(id);
     }
 
     fn focused_pane(&self) -> Option<PaneId> {

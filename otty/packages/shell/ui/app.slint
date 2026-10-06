@@ -174,6 +174,11 @@ export component OttyWindow inherits Window {
     callback menu-activated(string);
     callback context-prepare(length, length);
     callback close-tab-at(int);
+    callback select-tab-at(int);
+    in-out property <bool> details-open: false;
+    in-out property <string> details-tab: "info";
+    in property <string> details-cwd: "";
+    callback details-select-tab(string);
     in-out property <bool> settings-open: false;
     in-out property <int> settings-font-size: 13;
     callback settings-apply-font(int);
@@ -294,10 +299,16 @@ export component OttyWindow inherits Window {
                                 }
                             }
                         }
-                        Tab {
-                            title: title;
-                            active: index == root.active-tab;
-                            indicator: Theme.tab-indicator;
+                        TouchArea {
+                            clicked => {
+                                root.active-tab = index;
+                                root.select-tab-at(index);
+                            }
+                            Tab {
+                                title: title;
+                                active: index == root.active-tab;
+                                indicator: Theme.tab-indicator;
+                            }
                         }
                     }
                 }
@@ -357,6 +368,77 @@ export component OttyWindow inherits Window {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+
+                if root.details-open : Rectangle {
+                    width: 260px;
+                    height: 100%;
+                    background: Theme.panel-background;
+
+                    Rectangle {
+                        x: 0px;
+                        width: 1px;
+                        height: parent.height;
+                        background: Theme.panel-border;
+                    }
+
+                    VerticalLayout {
+                        padding: 10px;
+                        spacing: 8px;
+
+                        Text {
+                            text: "Details";
+                            color: Theme.panel-foreground;
+                            font-size: 13px;
+                        }
+
+                        HorizontalLayout {
+                            spacing: 8px;
+                            TouchArea {
+                                clicked => { root.details-select-tab("info"); }
+                                Text {
+                                    text: "Info";
+                                    color: Theme.panel-foreground;
+                                    font-size: 12px;
+                                    opacity: root.details-tab == "info" ? 1.0 : 0.6;
+                                }
+                            }
+                            TouchArea {
+                                clicked => { root.details-select-tab("outline"); }
+                                Text {
+                                    text: "Outline";
+                                    color: Theme.panel-foreground;
+                                    font-size: 12px;
+                                    opacity: root.details-tab == "outline" ? 1.0 : 0.6;
+                                }
+                            }
+                            TouchArea {
+                                clicked => { root.details-select-tab("git"); }
+                                Text {
+                                    text: "Git";
+                                    color: Theme.panel-foreground;
+                                    font-size: 12px;
+                                    opacity: root.details-tab == "git" ? 1.0 : 0.6;
+                                }
+                            }
+                            TouchArea {
+                                clicked => { root.details-select-tab("files"); }
+                                Text {
+                                    text: "Files";
+                                    color: Theme.panel-foreground;
+                                    font-size: 12px;
+                                    opacity: root.details-tab == "files" ? 1.0 : 0.6;
+                                }
+                            }
+                        }
+
+                        Text {
+                            text: "cwd: " + root.details-cwd;
+                            color: Theme.panel-foreground;
+                            font-size: 12px;
+                            wrap: word-wrap;
                         }
                     }
                 }
@@ -579,6 +661,11 @@ export component OttyWindow inherits Window {
                 root.quickly-filter = "all";
                 root.quickly-set-filter("all");
                 root.quickly-query-changed("");
+                accept
+            }
+            if ((event.modifiers.control || event.modifiers.meta) && event.modifiers.shift
+                && (event.text == "r" || event.text == "R")) {
+                root.details-open = !root.details-open;
                 accept
             }
             root.input-key(event.text);
