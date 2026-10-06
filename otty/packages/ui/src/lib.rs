@@ -23,6 +23,7 @@ pub mod settings;
 pub mod layout;
 pub mod session;
 pub mod syntax;
+pub mod tabs;
 pub mod view;
 pub mod model;
 

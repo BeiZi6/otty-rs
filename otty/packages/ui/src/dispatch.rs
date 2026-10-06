@@ -13,6 +13,7 @@ use otty_core::{PaneId, TabId, WindowId};
 use crate::context::ContextHit;
 use crate::details::DetailsTab;
 use crate::model::App;
+use crate::tabs::TabGroupMode;
 use crate::pane_view::load_view;
 use crate::quickly::{open_directory, OpenFilter};
 use otty_state::Store;
@@ -41,6 +42,8 @@ pub struct Dispatcher {
     pub details_tab: DetailsTab,
     pub quit_after_last_window_closed: bool,
     pub prefix_input: Option<String>,
+    pub tab_group: TabGroupMode,
+    pub dividers: Vec<usize>,
 }
 
 impl Dispatcher {
@@ -66,6 +69,8 @@ impl Dispatcher {
             details_tab: DetailsTab::Info,
             quit_after_last_window_closed: false,
             prefix_input: None,
+            tab_group: TabGroupMode::None,
+            dividers: Vec::new(),
         }
     }
 
@@ -148,6 +153,17 @@ impl Dispatcher {
             "merge_all_windows" => {
                 let _ = self.app.merge_all_windows();
             }
+            "tabs_group_none" => self.tab_group = TabGroupMode::None,
+            "tabs_group_project" => self.tab_group = TabGroupMode::Project,
+            "tabs_group_date" => self.tab_group = TabGroupMode::Date,
+            "tabs_insert_divider" => {
+                if let Some(i) = self.app.active_window().map(|w| w.active_index()) {
+                    if !self.dividers.contains(&i) {
+                        self.dividers.push(i);
+                    }
+                }
+            }
+            "tabs_remove_dividers" => self.dividers.clear(),
             "prefix_tab" => {
                 if let Some(p) = self.prefix_input.clone() {
                     if let Some(t) = self

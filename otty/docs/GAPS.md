@@ -59,7 +59,7 @@
 | GAP-S08 | 壳 | 文件 / 文件夹 / URL pane | done | P1 |
 | GAP-S09 | 壳 | 多窗口 / 撕 tab / 合并 | done | P1 |
 | GAP-S10 | 壳 | 徽章与 tab 规则 | done | P1 |
-| GAP-S11 | 壳 | 原版 tab 分组与 divider | partial | P1 |
+| GAP-S11 | 壳 | 原版 tab 分组与 divider | done | P1 |
 | GAP-S12 | 壳 | Find / 全局搜索 / Search in Files | open | P1 |
 | GAP-S13 | 壳 | Hint / Vi / Mark | open | P1 |
 | GAP-S14 | 壳 | 拖放落点 | open | P2 |
@@ -280,12 +280,12 @@
 
 ### GAP-S11 原版 tab 分组与 divider
 
-- **status:** partial
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §2。只在垂直侧栏。无分组 / 按项目（git 根）/ 按日期。组头可折叠，记忆到 session 恢复。拖 tab 跨组 = 该组用手动顺序。Tab Divider 是手插分隔。排序：创建 / 更新 / 手动。
 - **DMG:** action `tabs_group_none/project/date`、`tabs_order_created/updated`、`tabs_insert_divider`、`tabs_remove_dividers`。
 - **原实现:** 侧栏仍是 tab 列表，分组只是把列表收成段落。不是「侧栏=项目、顶栏=session」。
-- **当前:** Electron 做了新设计（项目侧栏 + 顶栏 session）。`project-groups.js` 按 git 根/`cwd` 分组。无 By Date、无 divider、无折叠记忆。
+- **当前:** `otty-ui::tabs` `tabs_group_none/project`；By Project 走 `git_root`；`tabs_insert_divider` / `tabs_remove_dividers`。By Date 仅切模式。
 - **落点:** 新设计可留。要对齐原版，在侧栏 tab 列表上再加组头/折叠。不要拆掉现有项目切换，除非明确改回。
 - **完成:** 能切 No / By Project；By Project 用 git 根；divider 能插能清。
 
