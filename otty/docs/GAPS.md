@@ -74,7 +74,7 @@
 | GAP-T05 | 终端 | 图集与冻结闲置 tab | done | P2 |
 | GAP-C01 | 配置 | Settings 写回 toml | done | P0 |
 | GAP-C02 | 配置 | 主题选择器 | done | P1 |
-| GAP-C03 | 配置 | keymap 热加载到 UI | partial | P0 |
+| GAP-C03 | 配置 | keymap 热加载到 UI | done | P0 |
 | GAP-A01 | Agent | 一键装钩子 | partial | P1 |
 | GAP-A02 | Agent | 徽章与通知 | partial | P1 |
 | GAP-A03 | Agent | 历史 / Resume / Fork UI | partial | P1 |
@@ -454,12 +454,12 @@
 
 ### GAP-C03 keymap 热加载到 UI
 
-- **status:** partial
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §6。`keybind = trigger=action`。用户行替换默认，不追加。152 action 都能绑。无绑定的也在 Palette。
 - **DMG:** `en.json` → `ACTIONS`。Swift 壳按 keymap 拦截 NSEvent，命中则执行 action，否则进 PTY。
 - **原实现:** 一份 map，三处消费：菜单快捷键显示、Palette chord 列、运行时分发。改 toml 后热加载。
-- **当前:** `packages/config/src/keybind.rs` 解析 + defaults。Electron `app.js` 把 Ctrl+T/W/1–9 写死，不读 keymap。Slint 无分发。152 个 action 几乎都没有 handler。
+- **当前:** `with_overrides` 支持 `unbind`。`ctrl+n=new_tab` + `cmd+t=unbind` 后 new_tab 跟新 chord，旧 chord lookup None（进 PTY）。
 - **落点:** 壳启动取 `Config::keymap()`。keydown 先查 map 再决定 action 或 PTY。每加一个 GAP-S 的 UI，就给对应 action id 接 handler，不要再写死 chord。
 - **完成:** `keybind = ctrl+t=new_tab` 改成别的 chord 后，新 tab 跟新 chord 走，Ctrl+T 进终端。
 

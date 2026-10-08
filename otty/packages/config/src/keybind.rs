@@ -34,7 +34,7 @@ impl Binding {
         if action.is_empty() {
             return Err(BindingError::NoAction(line.to_owned()));
         }
-        if !crate::actions::ACTIONS.iter().any(|(id, _)| *id == action) {
+        if action != "unbind" && !crate::actions::ACTIONS.iter().any(|(id, _)| *id == action) {
             return Err(BindingError::UnknownAction(action.to_owned()));
         }
         Ok(Self { trigger, action: action.to_owned() })
@@ -232,6 +232,9 @@ impl Keymap {
                 continue;
             };
             self.bindings.retain(|x| x.trigger != b.trigger);
+            if b.action == "unbind" {
+                continue;
+            }
             self.bindings.push(b);
         }
         self.bindings.sort_by(|a, b| a.trigger.to_string().cmp(&b.trigger.to_string()));
@@ -432,6 +435,20 @@ mod tests {
         let m = Keymap::defaults().with_overrides(&["cmd+d=duplicate_tab".into()]);
         assert_eq!(m.lookup("cmd+d".parse().unwrap()), Some("duplicate_tab"));
         assert_eq!(m.lookup("cmd+opt+d".parse().unwrap()), Some("split_left"));
+    }
+
+    #[test]
+    fn rebinding_new_tab_frees_the_old_chord_for_the_pty() {
+        let m = Keymap::defaults().with_overrides(&[
+            "ctrl+n=new_tab".into(),
+            "cmd+t=unbind".into(),
+        ]);
+        assert_eq!(m.lookup("ctrl+n".parse().unwrap()), Some("new_tab"));
+        assert_eq!(
+            m.lookup("cmd+t".parse().unwrap()),
+            None,
+            "old chord must fall through to the terminal"
+        );
     }
 
     #[test]
