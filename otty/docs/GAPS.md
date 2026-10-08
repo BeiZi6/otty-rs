@@ -67,7 +67,7 @@
 | GAP-S16 | 壳 | Pin / PiP | done | P2 |
 | GAP-S17 | 壳 | 全局热键 | done | P2 |
 | GAP-S18 | 壳 | 本地化 | done | P2 |
-| GAP-T01 | 终端 | OSC 88 落盘重放 | partial | P1 |
+| GAP-T01 | 终端 | OSC 88 落盘重放 | done | P1 |
 | GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | partial | P2 |
 | GAP-T03 | 终端 | BiDi | partial | P2 |
 | GAP-T04 | 终端 | 每 pane 一层 GPU | partial | P0 |
@@ -374,12 +374,12 @@
 
 ### GAP-T01 OSC 88 落盘重放
 
-- **status:** partial
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §4。Terminal Resume Protocol。agent 没有专用适配器时，靠 OSC 88 宣布身份，Otty 下次按这份身份 resume。默认开。
 - **DMG:** 解析在核心 VT。`otty_agent_history` 管有适配器的 transcript；OSC 88 是无适配器那条路。
 - **原实现:** 程序发出 OSC 88 带 identity。Otty 把 identity + 该 pane 的 cwd/command 记进 session 库。恢复窗口时若 identity 仍有效就重开同一条会话，而不是新开空壳。
-- **当前:** `packages/term/src/events.rs` 有 `Osc88` 事件，注释写 experimental。只解析，不落盘，不重放。
+- **当前:** schema v5 `session.identity`；`record_osc88` / `resume_osc88`。未知 identity 返回 None（无法 resume）。`session-log-mode=redacted` 仍走 `otty-pty::redact`。
 - **落点:** 解析已在 `otty-term`。持久化进 `otty-state` session 表。恢复走 GAP-W02。不要在 term 里写文件。
 - **完成:** 收到 OSC 88 后重启 Otty，对应 pane 按 identity 再连上（或明确显示无法 resume）；`session-log-mode=redacted` 时日志仍打码。
 

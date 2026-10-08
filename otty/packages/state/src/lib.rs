@@ -22,7 +22,7 @@ use otty_core::{AgentId, AgentState, PaneId};
 use rusqlite::{params, Connection, OptionalExtension};
 
 /// The schema version this build writes.
-pub const SCHEMA_VERSION: i32 = 4;
+pub const SCHEMA_VERSION: i32 = 5;
 
 /// A failure coming out of the store.
 #[derive(Debug, thiserror::Error)]
@@ -110,6 +110,9 @@ impl Store {
         if found < 4 {
             tx.execute_batch(DDL_V4)?;
         }
+        if found < 5 {
+            tx.execute_batch(DDL_V5)?;
+        }
         tx.pragma_update(None, "user_version", SCHEMA_VERSION)?;
         tx.commit()?;
         Ok(())
@@ -135,8 +138,8 @@ impl Store {
     pub fn upsert_session(&self, s: &SessionRecord) -> Result<(), StateError> {
         self.conn.execute(
             "INSERT INTO session
-                 (id, tab_id, cwd, command, title, cols, rows, pid, multiplexer, closed_at, restored_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+                 (id, tab_id, cwd, command, title, cols, rows, pid, multiplexer, closed_at, restored_at, identity)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
              ON CONFLICT(id) DO UPDATE SET
                  tab_id = excluded.tab_id,
                  cwd = excluded.cwd,
@@ -147,7 +150,8 @@ impl Store {
                  pid = excluded.pid,
                  multiplexer = excluded.multiplexer,
                  closed_at = excluded.closed_at,
-                 restored_at = excluded.restored_at",
+                 restored_at = excluded.restored_at,
+                 identity = excluded.identity",
             params![
                 s.id.get() as i64,
                 s.tab_id as i64,
@@ -160,6 +164,7 @@ impl Store {
                 s.multiplexer,
                 s.closed_at,
                 s.restored_at,
+                s.identity,
             ],
         )?;
         Ok(())
@@ -168,7 +173,7 @@ impl Store {
     /// The sessions to offer on restore: everything that was open, newest first.
     pub fn sessions_for_restore(&self, limit: usize) -> Result<Vec<SessionRecord>, StateError> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, tab_id, cwd, command, title, cols, rows, pid, multiplexer, closed_at, restored_at
+            "SELECT id, tab_id, cwd, command, title, cols, rows, pid, multiplexer, closed_at, restored_at, identity
              FROM session
              ORDER BY COALESCE(closed_at, 0) DESC
              LIMIT ?1",
@@ -189,6 +194,31 @@ impl Store {
     pub fn forget_session(&self, id: PaneId) -> Result<(), StateError> {
         self.conn.execute("DELETE FROM session WHERE id = ?1", params![id.get() as i64])?;
         Ok(())
+    }
+
+    /// Persist an OSC 88 announce so a later launch can resume the same pane.
+    pub fn record_osc88(
+        &self,
+        pane: PaneId,
+        identity: &str,
+        command: Option<&str>,
+    ) -> Result<(), StateError> {
+        let mut rec = SessionRecord::new(pane, 80, 24);
+        rec.identity = Some(identity.to_owned());
+        rec.command = command.map(str::to_owned);
+        self.upsert_session(&rec)
+    }
+
+    /// Reconnect by identity. `None` means the identity is gone — show "cannot resume".
+    pub fn resume_osc88(&self, identity: &str) -> Result<Option<SessionRecord>, StateError> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, tab_id, cwd, command, title, cols, rows, pid, multiplexer, closed_at, restored_at, identity
+             FROM session WHERE identity = ?1 ORDER BY COALESCE(closed_at, 0) DESC LIMIT 1",
+        )?;
+        let row = stmt
+            .query_row(params![identity], SessionRecord::from_row)
+            .optional()?;
+        Ok(row)
     }
 
     // ------------------------------------------------------------ frecency
@@ -465,6 +495,8 @@ pub struct SessionRecord {
     pub multiplexer: Option<String>,
     pub closed_at: Option<i64>,
     pub restored_at: Option<i64>,
+    /// OSC 88 identity, when the pane announced it can be resumed.
+    pub identity: Option<String>,
 }
 
 impl SessionRecord {
@@ -481,6 +513,7 @@ impl SessionRecord {
             multiplexer: None,
             closed_at: None,
             restored_at: None,
+            identity: None,
         }
     }
 
@@ -497,6 +530,7 @@ impl SessionRecord {
             multiplexer: r.get(8)?,
             closed_at: r.get(9)?,
             restored_at: r.get(10)?,
+            identity: r.get(11)?,
         })
     }
 }
@@ -624,6 +658,10 @@ CREATE TABLE IF NOT EXISTS prompt_queue (
 );
 "#;
 
+const DDL_V5: &str = r#"
+ALTER TABLE session ADD COLUMN identity TEXT;
+"#;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -705,6 +743,20 @@ mod tests {
         s.upsert_session(&SessionRecord::new(PaneId::new(7), 80, 24)).unwrap();
         s.forget_session(PaneId::new(7)).unwrap();
         assert!(s.sessions_for_restore(10).unwrap().is_empty());
+    }
+
+    #[test]
+    fn osc88_announce_survives_and_unknown_identity_cannot_resume() {
+        let s = store();
+        s.record_osc88(PaneId::new(3), "agent:xyz", Some("my-agent --resume xyz"))
+            .unwrap();
+        let got = s.resume_osc88("agent:xyz").unwrap().expect("identity stored");
+        assert_eq!(got.identity.as_deref(), Some("agent:xyz"));
+        assert_eq!(got.command.as_deref(), Some("my-agent --resume xyz"));
+        assert!(
+            s.resume_osc88("missing").unwrap().is_none(),
+            "unknown identity must surface cannot-resume"
+        );
     }
 
     #[test]
