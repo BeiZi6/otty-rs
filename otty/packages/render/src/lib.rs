@@ -24,6 +24,7 @@
 
 pub mod atlas;
 pub mod backend;
+pub mod inline;
 pub mod frame;
 pub mod grid;
 pub mod raster;
@@ -31,6 +32,7 @@ pub mod swash_source;
 pub mod theme;
 
 pub use atlas::{Atlas, AtlasPacker, CellInstance, GlyphKey, GlyphSlot};
+pub use inline::{InlineImage, InlineStore};
 pub use backend::{Backend, DeviceError, Gpu, GpuInfo};
 pub use raster::{GlyphBitmap, GlyphSource, GridRasterizer, RasterOutput, SyntheticGlyphs};
 pub use swash_source::{bundled_database, bundled_fonts_dir, Face, SwashGlyphs};

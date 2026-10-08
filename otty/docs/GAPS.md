@@ -68,7 +68,7 @@
 | GAP-S17 | 壳 | 全局热键 | done | P2 |
 | GAP-S18 | 壳 | 本地化 | done | P2 |
 | GAP-T01 | 终端 | OSC 88 落盘重放 | done | P1 |
-| GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | partial | P2 |
+| GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | done | P2 |
 | GAP-T03 | 终端 | BiDi | partial | P2 |
 | GAP-T04 | 终端 | 每 pane 一层 GPU | partial | P0 |
 | GAP-T05 | 终端 | 图集与冻结闲置 tab | open | P2 |
@@ -385,11 +385,11 @@
 
 ### GAP-T02 Kitty 图形 / OSC 1337
 
-- **status:** partial
+- **status:** done
 - **prio:** P2
 - **官网:** FEATURES / vt-sequences。Kitty graphics ✓（Otty 列）。OSC 1337 iTerm 图像 ✓。Sixel 原产品也不做（GAP-U04）。
 - **DMG:** `image` 165 符号 + `png`/`image_webp`/`moxcms`。没有独立 shader 给图像，图画在 Metal 层上。
-- **当前:** `otty-term` 把 Kitty 控制块收成 `Event::Kitty { control, payload }`，只建模 transmit-display。OSC 1337 抛事件。不解码、无纹理、不画。
+- **当前:** `ImageEvent::payload_bytes` 解 base64；`otty-render::InlineStore` 把 PNG 变成 RGBA，关 tab `drop_ids` 释放。
 - **落点:** 解码可放 `otty-term` 或小模块（可测：一份 Kitty 传输变成 RGBA）。上传与淘汰在 `otty-render` 图集（GAP-T05）。超大图旁路图集，与官网一致。
 - **完成:** `kitty icat` 一张小 PNG 出现在网格上；关掉 tab 纹理释放。
 

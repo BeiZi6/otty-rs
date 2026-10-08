@@ -214,6 +214,21 @@ pub enum ImageEvent {
     Sixel(Vec<u8>),
 }
 
+impl ImageEvent {
+    /// Decode the base64 payload (Kitty / OSC 1337). Raw sixel is returned as-is.
+    pub fn payload_bytes(&self) -> Option<Vec<u8>> {
+        use base64::Engine as _;
+        match self {
+            Self::Sixel(raw) => Some(raw.clone()),
+            Self::Iterm { payload, .. } | Self::Kitty { payload, .. } => {
+                base64::engine::general_purpose::STANDARD
+                    .decode(payload.as_bytes())
+                    .ok()
+            }
+        }
+    }
+}
+
 /// `OSC 88` — the terminal-resume protocol.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResumeEvent {
