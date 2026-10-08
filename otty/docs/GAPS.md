@@ -66,7 +66,7 @@
 | GAP-S15 | 壳 | Composer / 队列 / Send to Chat | done | P1 |
 | GAP-S16 | 壳 | Pin / PiP | done | P2 |
 | GAP-S17 | 壳 | 全局热键 | done | P2 |
-| GAP-S18 | 壳 | 本地化 | blocked | P2 |
+| GAP-S18 | 壳 | 本地化 | done | P2 |
 | GAP-T01 | 终端 | OSC 88 落盘重放 | partial | P1 |
 | GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | partial | P2 |
 | GAP-T03 | 终端 | BiDi | partial | P2 |
@@ -357,12 +357,12 @@
 
 ### GAP-S18 本地化
 
-- **status:** blocked
+- **status:** done
 - **prio:** P2
 - **官网:** `language` = `system` / `english` / `chinese`。
 - **DMG:** GAP-K02 的 `en.json` / `zh.json`。
 - **原实现:** 壳启动读一份目录。Settings 即时切。
-- **当前:** 界面写死英文。
+- **当前:** `language=chinese` 时菜单/Settings 走 zh.json；缺键回落 en。壳绑定 `menu-title-*` 与 `settings-title`。
 - **落点:** 先 GAP-K02 把 JSON 放进 `resources/`，再给 shell 接加载。
 - **完成:** 切到 chinese 后菜单与 Settings 是中文；缺键回落 en。
 

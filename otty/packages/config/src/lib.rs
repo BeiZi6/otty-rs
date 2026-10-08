@@ -47,7 +47,7 @@ use std::path::{Path, PathBuf};
 
 use otty_core::{expand_path, Color, Platform};
 
-pub use catalog::{Catalog, CatalogError, ResolvedLanguage, UiLanguage};
+pub use catalog::{bundled_resources, Catalog, CatalogError, ResolvedLanguage, UiLanguage};
 pub use menu::{clickable_actions, menu_bar, Menu, MenuItem};
 pub use palette::{BoldColor, Palette, ResolvedColors};
 pub use rules::{DetailsView, MatchContext, QuickAccess, TabRule};

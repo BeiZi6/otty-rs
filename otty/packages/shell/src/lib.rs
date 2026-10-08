@@ -150,7 +150,18 @@ fn menu_model(rows: &[(String, String)]) -> ModelRc<MenuRow> {
 
 /// Fill the native MenuBar from `menu_bar()` and send clicks to `dispatch`.
 fn bind_menu(ui: &OttyWindow, config: &Config, dispatch: Rc<std::cell::RefCell<Dispatcher>>) {
-    let models = shell_menu_models(None, &config.keymap());
+    let catalog = config.load_catalog(&otty_config::bundled_resources()).ok();
+    let cat = catalog.as_ref();
+    if let Some(c) = cat {
+        ui.set_menu_title_file(c.menu_title("file").unwrap_or("File").into());
+        ui.set_menu_title_edit(c.menu_title("edit").unwrap_or("Edit").into());
+        ui.set_menu_title_view(c.menu_title("view").unwrap_or("View").into());
+        ui.set_menu_title_shell(c.menu_title("shell").unwrap_or("Shell").into());
+        ui.set_menu_title_window(c.menu_title("window").unwrap_or("Window").into());
+        ui.set_menu_title_commands(c.get("menu.commands").unwrap_or("Commands").into());
+        ui.set_settings_title(c.settings_title().unwrap_or("Settings").into());
+    }
+    let models = shell_menu_models(cat, &config.keymap());
     for (title, rows) in &models {
         let model = menu_model(rows);
         match *title {
@@ -547,9 +558,9 @@ mod tests {
     fn slint_binds_native_menubar_from_menu_bar() {
         let src = include_str!("../ui/app.slint");
         assert!(src.contains("MenuBar"), "OttyWindow needs a native MenuBar");
-        for title in ["File", "Edit", "View", "Shell", "Window", "Commands"] {
+        for title in ["file", "edit", "view", "shell", "window", "commands"] {
             assert!(
-                src.contains(&format!("title: \"{title}\"")),
+                src.contains(&format!("menu-title-{title}")),
                 "MenuBar missing {title}"
             );
         }

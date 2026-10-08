@@ -75,6 +75,8 @@ fn system_language() -> ResolvedLanguage {
 pub struct Catalog {
     lang: ResolvedLanguage,
     root: Value,
+    /// English tree when `lang` is Chinese, so missing keys fall back.
+    fallback: Option<Value>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -112,12 +114,23 @@ impl Catalog {
         } else {
             ResolvedLanguage::English
         };
-        Ok(Self { lang, root })
+        Ok(Self {
+            lang,
+            root,
+            fallback: None,
+        })
     }
 
     pub fn load_for(lang: UiLanguage, resources: &Path) -> Result<Self, CatalogError> {
         let resolved = lang.resolve();
-        Self::load_file(&resources.join(resolved.file_name()))
+        let mut cat = Self::load_file(&resources.join(resolved.file_name()))?;
+        if resolved == ResolvedLanguage::Chinese {
+            if let Ok(en) = Self::load_file(&resources.join(ResolvedLanguage::English.file_name()))
+            {
+                cat.fallback = Some(en.root);
+            }
+        }
+        Ok(cat)
     }
 
     pub fn language(&self) -> ResolvedLanguage {
@@ -125,16 +138,21 @@ impl Catalog {
     }
 
     /// Dotted path into the JSON object, e.g. `settings.key_bindings.actions.copy`.
+    /// Missing keys on the Chinese catalog fall back to English.
     pub fn get(&self, path: &str) -> Option<&str> {
-        let mut cur = &self.root;
-        for part in path.split('.') {
-            cur = cur.get(part)?;
-        }
-        cur.as_str()
+        lookup(&self.root, path).or_else(|| self.fallback.as_ref().and_then(|f| lookup(f, path)))
     }
 
     pub fn action_label(&self, id: &str) -> Option<&str> {
         self.get(&format!("settings.key_bindings.actions.{id}"))
+    }
+
+    pub fn menu_title(&self, section: &str) -> Option<&str> {
+        self.get(&format!("menu.{section}"))
+    }
+
+    pub fn settings_title(&self) -> Option<&str> {
+        self.get("settings.title")
     }
 
     /// `(id, label)` pairs from `settings.key_bindings.actions`, sorted by id.
@@ -155,7 +173,14 @@ impl Catalog {
     }
 }
 
-#[cfg(test)]
+fn lookup<'a>(root: &'a Value, path: &str) -> Option<&'a str> {
+    let mut cur = root;
+    for part in path.split('.') {
+        cur = cur.get(part)?;
+    }
+    cur.as_str()
+}
+
 pub fn bundled_resources() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../resources")
 }
@@ -222,5 +247,22 @@ mod tests {
             Some(v) => std::env::set_var("LANG", v),
             None => std::env::remove_var("LANG"),
         }
+    }
+
+    #[test]
+    fn chinese_menus_and_settings_are_zh_missing_keys_fall_back_to_en() {
+        let zh = Catalog::load_for(UiLanguage::Chinese, &bundled_resources()).unwrap();
+        assert_eq!(zh.menu_title("file"), Some("文件"));
+        assert_eq!(zh.settings_title(), Some("设置"));
+        assert_eq!(zh.action_label("open_settings"), Some("设置"));
+
+        let mut thin = Catalog::load_for(UiLanguage::Chinese, &bundled_resources()).unwrap();
+        thin.root = serde_json::json!({"menu": {"file": "文件"}});
+        assert_eq!(thin.menu_title("file"), Some("文件"));
+        assert_eq!(
+            thin.action_label("command_palette"),
+            Some("Command Palette"),
+            "missing zh key must fall back to en"
+        );
     }
 }

@@ -164,6 +164,13 @@ export component OttyWindow inherits Window {
     in-out property <int> active-tab: 0;
     in property <[string]> folders;
     in property <bool> sidebar-visible: true;
+    in property <string> menu-title-file: "File";
+    in property <string> menu-title-edit: "Edit";
+    in property <string> menu-title-view: "View";
+    in property <string> menu-title-shell: "Shell";
+    in property <string> menu-title-window: "Window";
+    in property <string> menu-title-commands: "Commands";
+    in property <string> settings-title: "Settings";
     in property <[MenuRow]> menu-file;
     in property <[MenuRow]> menu-edit;
     in property <[MenuRow]> menu-view;
@@ -218,42 +225,42 @@ export component OttyWindow inherits Window {
 
     MenuBar {
         Menu {
-            title: "File";
+            title: root.menu-title-file;
             for row in root.menu-file: MenuItem {
                 title: row.title;
                 activated => { root.menu-activated(row.action); }
             }
         }
         Menu {
-            title: "Edit";
+            title: root.menu-title-edit;
             for row in root.menu-edit: MenuItem {
                 title: row.title;
                 activated => { root.menu-activated(row.action); }
             }
         }
         Menu {
-            title: "View";
+            title: root.menu-title-view;
             for row in root.menu-view: MenuItem {
                 title: row.title;
                 activated => { root.menu-activated(row.action); }
             }
         }
         Menu {
-            title: "Shell";
+            title: root.menu-title-shell;
             for row in root.menu-shell: MenuItem {
                 title: row.title;
                 activated => { root.menu-activated(row.action); }
             }
         }
         Menu {
-            title: "Window";
+            title: root.menu-title-window;
             for row in root.menu-window: MenuItem {
                 title: row.title;
                 activated => { root.menu-activated(row.action); }
             }
         }
         Menu {
-            title: "Commands";
+            title: root.menu-title-commands;
             for row in root.menu-commands: MenuItem {
                 title: row.title;
                 activated => { root.menu-activated(row.action); }
@@ -462,7 +469,7 @@ export component OttyWindow inherits Window {
 
             HorizontalLayout {
                 Text {
-                    text: "Settings";
+                    text: root.settings-title;
                     color: Theme.panel-foreground;
                     font-size: 14px;
                     vertical-alignment: center;
