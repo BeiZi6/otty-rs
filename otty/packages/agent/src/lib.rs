@@ -578,6 +578,49 @@ pub fn install_plan(id: &AgentId, home: &Path) -> Option<InstallPlan> {
     })
 }
 
+const OTTY_HOOK: &str = "otty";
+
+/// Merge Otty's hook into a Claude-style `settings.json`. Existing keys stay.
+pub fn apply_json_hooks(path: &Path) -> Result<(), String> {
+    let mut root = if path.exists() {
+        let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+        serde_json::from_str::<serde_json::Value>(&text).map_err(|e| e.to_string())?
+    } else {
+        serde_json::json!({})
+    };
+    let obj = root
+        .as_object_mut()
+        .ok_or_else(|| "settings.json is not an object".to_owned())?;
+    let hooks = obj.entry("hooks").or_insert_with(|| serde_json::json!({}));
+    let hooks = hooks
+        .as_object_mut()
+        .ok_or_else(|| "hooks is not an object".to_owned())?;
+    hooks.insert(
+        OTTY_HOOK.to_owned(),
+        serde_json::json!({ "command": "otty-hook" }),
+    );
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    std::fs::write(path, serde_json::to_string_pretty(&root).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())
+}
+
+/// Remove only the Otty hook entry.
+pub fn remove_json_hooks(path: &Path) -> Result<(), String> {
+    if !path.exists() {
+        return Ok(());
+    }
+    let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let mut root: serde_json::Value =
+        serde_json::from_str(&text).map_err(|e| e.to_string())?;
+    if let Some(hooks) = root.get_mut("hooks").and_then(|h| h.as_object_mut()) {
+        hooks.remove(OTTY_HOOK);
+    }
+    std::fs::write(path, serde_json::to_string_pretty(&root).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())
+}
+
 /// Build the command that resumes `session` for `id`.
 ///
 /// `overrides` is `agent-command = agent=COMMAND` from the config: it supplies
@@ -1003,6 +1046,25 @@ mod tests {
         assert!(plan.action.contains("compatibility layer"), "{}", plan.action);
         assert!(plan.action.contains("stands down"), "{}", plan.action);
         assert!(plan.follow_ups.iter().any(|f| f.contains("/hooks-trust")));
+    }
+
+    #[test]
+    fn claude_hooks_merge_and_uninstall_leaves_the_rest() {
+        let dir = std::env::temp_dir().join(format!("otty-a01-{}", std::process::id()));
+        let _ = std::fs::create_dir_all(&dir);
+        let path = dir.join("settings.json");
+        std::fs::write(&path, r#"{"keep":true,"hooks":{"other":{"command":"x"}}}"#).unwrap();
+        apply_json_hooks(&path).unwrap();
+        let after = std::fs::read_to_string(&path).unwrap();
+        assert!(after.contains("\"keep\""));
+        assert!(after.contains("\"other\""));
+        assert!(after.contains("\"otty\""));
+        remove_json_hooks(&path).unwrap();
+        let gone = std::fs::read_to_string(&path).unwrap();
+        assert!(gone.contains("\"keep\""));
+        assert!(gone.contains("\"other\""));
+        assert!(!gone.contains("\"otty\""));
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]

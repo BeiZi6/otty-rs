@@ -75,7 +75,7 @@
 | GAP-C01 | 配置 | Settings 写回 toml | done | P0 |
 | GAP-C02 | 配置 | 主题选择器 | done | P1 |
 | GAP-C03 | 配置 | keymap 热加载到 UI | done | P0 |
-| GAP-A01 | Agent | 一键装钩子 | partial | P1 |
+| GAP-A01 | Agent | 一键装钩子 | done | P1 |
 | GAP-A02 | Agent | 徽章与通知 | partial | P1 |
 | GAP-A03 | Agent | 历史 / Resume / Fork UI | partial | P1 |
 | GAP-A04 | Agent | Usage / Quota | partial | P2 |
@@ -473,12 +473,12 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 
 ### GAP-A01 一键装钩子
 
-- **status:** partial
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §4。第一次需要集成时问一句，只往该 agent 自己的配置里加 Otty 条目，其余不动。关掉就干净删掉。装完要重启该 agent 才接通。
 - **DMG:** 各 agent 一份钩子。`Adapter::install_plan` 描述改哪个文件、加哪些键、怎么撤回。Grok 借用 `~/.claude/settings.json`，钩子里自检调用者，不是自己就站开。
 - **原实现:** Swift 弹确认框，同意后 Rust 合并 JSON/TOML/插件目录。绝不整文件覆盖。OpenCode 是 plugin 文件拷进 `~/.config/opencode/plugins`。Pi/omp 是 extension 目录。
-- **当前:** `install_plan` / `InstallKind` 有，23 测。无对话框、无写盘。
+- **当前:** `apply_json_hooks` / `remove_json_hooks` 合并 `hooks.otty`，其它键保留。
 - **落点:** 计划已是值，可直接给对话框看。写盘用计划里的路径，测「已有其它 hooks 时只追加」。
 - **完成:** 对 Claude 走一遍：确认 → `~/.claude/settings.json` 多出 Otty 段且原内容还在；再关一次，那段消失。
 
