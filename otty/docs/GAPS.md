@@ -70,7 +70,7 @@
 | GAP-T01 | 终端 | OSC 88 落盘重放 | done | P1 |
 | GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | done | P2 |
 | GAP-T03 | 终端 | BiDi | done | P2 |
-| GAP-T04 | 终端 | 每 pane 一层 GPU | partial | P0 |
+| GAP-T04 | 终端 | 每 pane 一层 GPU | done | P0 |
 | GAP-T05 | 终端 | 图集与冻结闲置 tab | open | P2 |
 | GAP-C01 | 配置 | Settings 写回 toml | partial | P0 |
 | GAP-C02 | 配置 | 主题选择器 | partial | P1 |
@@ -405,12 +405,12 @@
 
 ### GAP-T04 每 pane 一层 GPU
 
-- **status:** partial
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §7 Performance。macOS 原生 Metal，每 pane 一层。Windows DX12（Performance 页标 planned，Unicode 页没标，`[conflict]`）。字形缓存一次、复用。
 - **DMG:** `Contents/Resources/Grid.metallib` 68 810 B，两架构字节相同。Metal IR，wgpu 不能加载。`core_graphics` 145、`core_text` 87。
 - **原实现:** 每个 pane 一个 CAMetalLayer。PiP / 撕 tab / freeze 都靠「一层 = 一个 pane」。字形 subpixel 缓存。
-- **当前:** `otty-render` wgpu 后端 + CPU raster 都有测试。Slint `otty-app` 把整帧 RGBA 上传成一块图。Electron 终端是 xterm.js，不走 `otty-render`。没有 per-pane surface。
+- **当前:** `PaneSurfaces` 每 pane 一块 RGBA 目标；`freeze` / `extract` 单独冻或提出。Slint 仍可合成。
 - **落点:** 目标是 `otty-render` 给每个 pane 一块 surface，shell 只组合。不要把 metallib 塞进 wgpu。Electron 若继续当铬条，终端画面应嵌 `otty-app` 的 pane，而不是 xterm.js。
 - **完成:** 一个 tab 两个 split，各有自己的渲染目标；其中一个能单独冻或提出（为 PiP 铺路）。
 

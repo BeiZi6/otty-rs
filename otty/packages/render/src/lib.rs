@@ -28,6 +28,7 @@ pub mod inline;
 pub mod frame;
 pub mod grid;
 pub mod raster;
+pub mod surfaces;
 pub mod swash_source;
 pub mod theme;
 
@@ -35,6 +36,7 @@ pub use atlas::{Atlas, AtlasPacker, CellInstance, GlyphKey, GlyphSlot};
 pub use inline::{InlineImage, InlineStore};
 pub use backend::{Backend, DeviceError, Gpu, GpuInfo};
 pub use raster::{GlyphBitmap, GlyphSource, GridRasterizer, RasterOutput, SyntheticGlyphs};
+pub use surfaces::{PaneSurface, PaneSurfaces};
 pub use swash_source::{bundled_database, bundled_fonts_dir, Face, SwashGlyphs};
 pub use theme::{rgba_from_hex, rgba_or, Chrome};
 pub use grid::{encode_line, CellStyle, Cursor, FrameDiff, GridDiffer, GridFrame, Line, Palette, Run};
