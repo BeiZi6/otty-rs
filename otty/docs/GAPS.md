@@ -71,7 +71,7 @@
 | GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | done | P2 |
 | GAP-T03 | 终端 | BiDi | done | P2 |
 | GAP-T04 | 终端 | 每 pane 一层 GPU | done | P0 |
-| GAP-T05 | 终端 | 图集与冻结闲置 tab | open | P2 |
+| GAP-T05 | 终端 | 图集与冻结闲置 tab | done | P2 |
 | GAP-C01 | 配置 | Settings 写回 toml | partial | P0 |
 | GAP-C02 | 配置 | 主题选择器 | partial | P1 |
 | GAP-C03 | 配置 | keymap 热加载到 UI | partial | P0 |
@@ -416,11 +416,11 @@
 
 ### GAP-T05 图集与冻结闲置 tab
 
-- **status:** open
+- **status:** done
 - **prio:** P2
 - **官网:** 内联图用小图集，淘汰；很大或很少见的图旁路。`freeze-inactive-tab` 默认 false：关则闲置 tab 释放 GPU，切回来再建。
 - **DMG:** 图集在 Metal 层一侧。无独立资源文件。
-- **当前:** `packages/render/src/atlas.rs` 有骨架。freeze 未接到 tab 切换。
+- **当前:** `PaneSurfaces::freeze_inactive` 清闲置 pixels；`thaw` 重建第一帧缓冲。InlineStore 服务 T02。
 - **落点:** 图集服务 GAP-T02。freeze 在 `otty-ui` 切 tab 时调 render 的 release/recreate。
 - **完成:** 闲置 tab 在 `freeze-inactive-tab=true` 时不占 GPU 表面；切回第一帧能画出来。
 

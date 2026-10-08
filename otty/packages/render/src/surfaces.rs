@@ -50,6 +50,27 @@ impl PaneSurfaces {
     pub fn len(&self) -> usize {
         self.surfaces.len()
     }
+
+    /// `freeze-inactive-tab=true`: drop GPU pixels for every pane except `active`.
+    pub fn freeze_inactive(&mut self, active: PaneId) {
+        for s in self.surfaces.values_mut() {
+            if s.id != active {
+                s.frozen = true;
+                s.pixels.clear();
+            }
+        }
+    }
+
+    /// Recreate the surface so the first frame after a tab switch can draw.
+    pub fn thaw(&mut self, id: PaneId) {
+        if let Some(s) = self.surfaces.get_mut(&id.get()) {
+            s.frozen = false;
+            let n = (s.width * s.height * 4) as usize;
+            if s.pixels.len() != n {
+                s.pixels = vec![0; n];
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -72,5 +93,21 @@ mod tests {
         assert!(pip.frozen);
         assert_eq!(s.len(), 1);
         assert!(s.get(b).is_some());
+    }
+
+    #[test]
+    fn freeze_inactive_releases_gpu_and_thaw_draws_the_first_frame() {
+        let mut s = PaneSurfaces::default();
+        let a = PaneId::new(1);
+        let b = PaneId::new(2);
+        s.ensure(a, 8, 8);
+        s.ensure(b, 8, 8);
+        s.freeze_inactive(a);
+        assert!(s.get(b).unwrap().frozen);
+        assert!(s.get(b).unwrap().pixels.is_empty(), "idle tab must not hold a GPU surface");
+        assert!(!s.get(a).unwrap().pixels.is_empty());
+        s.thaw(b);
+        assert!(!s.get(b).unwrap().frozen);
+        assert_eq!(s.get(b).unwrap().pixels.len(), 8 * 8 * 4, "first frame can draw");
     }
 }
