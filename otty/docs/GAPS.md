@@ -72,7 +72,7 @@
 | GAP-T03 | 终端 | BiDi | done | P2 |
 | GAP-T04 | 终端 | 每 pane 一层 GPU | done | P0 |
 | GAP-T05 | 终端 | 图集与冻结闲置 tab | done | P2 |
-| GAP-C01 | 配置 | Settings 写回 toml | partial | P0 |
+| GAP-C01 | 配置 | Settings 写回 toml | done | P0 |
 | GAP-C02 | 配置 | 主题选择器 | partial | P1 |
 | GAP-C03 | 配置 | keymap 热加载到 UI | partial | P0 |
 | GAP-A01 | Agent | 一键装钩子 | partial | P1 |
@@ -432,12 +432,12 @@
 
 ### GAP-C01 Settings 写回 toml
 
-- **status:** partial
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §6。不整文件重生。改值只补丁来源行。Reset 写成注释 `(reset to default)`。list 整表替换。alias（`shell`）写入时改成真名 `command`。`config.local.toml` 覆盖 shared。
 - **DMG:** `otty_config` 247 符号，`toml_edit` 167。Settings HTML（GAP-K03）只发「改这个 key」，Rust 改文件。
 - **原实现:** UI 从不 `serde` 一轮再 dump。`toml_edit` 保注释与顺序。这是原产品明确写过的契约。
-- **当前:** `otty-config` 能 load/set、119 测。CLI `otty config set/get --show-origin` 在。无 UI。写入路径要核对是否真用 toml_edit 补丁而不是重写。
+- **当前:** `Config::set_value` 单行补丁；`settings_one_key_diff_keeps_the_header_comment` 断言头注释与仅 `font-size` 一行变。Settings UI 走同一函数。
 - **落点:** 所有 UI（Settings、主题选择、keymap）只调 `otty-config`。发现重写整文件就改库，不要在壳里修。
 - **完成:** 改一个 key 前后 diff 只有那一行（外加必要的空白）；文件头注释还在。
 
