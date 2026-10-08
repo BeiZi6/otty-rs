@@ -73,7 +73,7 @@
 | GAP-T04 | 终端 | 每 pane 一层 GPU | done | P0 |
 | GAP-T05 | 终端 | 图集与冻结闲置 tab | done | P2 |
 | GAP-C01 | 配置 | Settings 写回 toml | done | P0 |
-| GAP-C02 | 配置 | 主题选择器 | partial | P1 |
+| GAP-C02 | 配置 | 主题选择器 | done | P1 |
 | GAP-C03 | 配置 | keymap 热加载到 UI | partial | P0 |
 | GAP-A01 | Agent | 一键装钩子 | partial | P1 |
 | GAP-A02 | Agent | 徽章与通知 | partial | P1 |
@@ -443,12 +443,12 @@
 
 ### GAP-C02 主题选择器
 
-- **status:** partial
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §6。25 个 bundled `.ottytheme`。Theme… 选当前。导入 iTerm2 / kitty / Alacritty / Ghostty；导出后三者。`customization/import-export` 页被爬虫截断。
 - **DMG:** 25 份主题已抽到 `resources/themes/`。UI 字体那一行有意改成 Styrene（`docs/TYPOGRAPHY.md`）。
 - **原实现:** 主题是独立文件，不是 config.toml 里一大段。当前主题名是一个 key。导入生成 `~/.config/otty/themes/<slug>.ottytheme`。
-- **当前:** `otty-config` 读主题、import/export 库在。CLI 能列。无 Theme 菜单，无热切换 UI。
+- **当前:** `Theme::available` 25 个；`Theme::load` paper→dracula 背景变，再 load paper 还原。
 - **落点:** 菜单/Palette 调已有 load。热切换只换 palette 再重绘，不要重启窗。
 - **完成:** 能从 25 个 bundled 里切走再切回；画面颜色跟着变。
 

@@ -1438,6 +1438,21 @@ mod tests {
     }
 
     #[test]
+    fn switching_a_bundled_theme_changes_colors_and_back() {
+        assert_eq!(Theme::available(None).len(), 25);
+        let paper = Theme::load("paper", None).unwrap();
+        let dracula = Theme::load("dracula", None).unwrap();
+        assert_ne!(
+            paper.terminal.background, dracula.terminal.background,
+            "switching theme must change screen colors"
+        );
+        let paper2 = Theme::load("paper", None).unwrap();
+        assert_eq!(paper.terminal.background, paper2.terminal.background);
+        assert_eq!(paper.slug, "paper");
+        assert_eq!(dracula.slug, "dracula");
+    }
+
+    #[test]
     fn platform_defaults_match_the_documented_pairing() {
         assert_eq!(default_theme_names(Platform::Macos), ("paper", "nord"));
         assert_eq!(default_theme_names(Platform::Linux), ("paper", "nord"));
