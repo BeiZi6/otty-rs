@@ -13,6 +13,7 @@ use otty_core::{AgentState, PaneId, TabId, WindowId};
 use crate::context::ContextHit;
 use crate::details::DetailsTab;
 use crate::drop::DropZone;
+use crate::hotkey::{apply_global_hotkey, GlobalHotkey, HotkeyEffect};
 use crate::mode::{hint_labels, open_hint, InputMode, ViState};
 use crate::model::{App, PaneKind};
 use crate::tabs::TabGroupMode;
@@ -58,6 +59,8 @@ pub struct Dispatcher {
     pub last_sent: Option<String>,
     pub pinned: bool,
     pub pip: Option<PaneId>,
+    pub raised: bool,
+    pub hidden: bool,
 }
 
 impl Dispatcher {
@@ -97,6 +100,8 @@ impl Dispatcher {
             last_sent: None,
             pinned: false,
             pip: None,
+            raised: false,
+            hidden: false,
         }
     }
 
@@ -385,6 +390,29 @@ impl Dispatcher {
         let text = store.dequeue_prompt(pane.get() as i64).ok().flatten()?;
         self.last_sent = Some(text.clone());
         Some(text)
+    }
+
+    pub fn apply_hotkey(&mut self, kind: GlobalHotkey, otty_front: bool) {
+        match apply_global_hotkey(kind, otty_front) {
+            HotkeyEffect::Raise => {
+                self.raised = true;
+                self.hidden = false;
+                if self.app.windows().is_empty() {
+                    let w = WindowId::new(self.next_window);
+                    let t = TabId::new(self.next_tab);
+                    let p = PaneId::new(self.next_pane);
+                    self.next_window += 1;
+                    self.next_tab += 1;
+                    self.next_pane += 1;
+                    self.app.add_window(w, t, p);
+                }
+            }
+            HotkeyEffect::Hide => {
+                self.hidden = true;
+                self.raised = false;
+            }
+            HotkeyEffect::None => {}
+        }
     }
 
     /// Drop a folder onto an edge: new terminal pane with that cwd.

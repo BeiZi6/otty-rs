@@ -17,6 +17,7 @@ pub mod context;
 pub mod details;
 pub mod dispatch;
 pub mod drop;
+pub mod hotkey;
 pub mod palette;
 pub mod pane_view;
 pub mod quickly;

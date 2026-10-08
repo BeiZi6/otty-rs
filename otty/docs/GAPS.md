@@ -65,7 +65,7 @@
 | GAP-S14 | 壳 | 拖放落点 | done | P2 |
 | GAP-S15 | 壳 | Composer / 队列 / Send to Chat | done | P1 |
 | GAP-S16 | 壳 | Pin / PiP | done | P2 |
-| GAP-S17 | 壳 | 全局热键 | open | P2 |
+| GAP-S17 | 壳 | 全局热键 | done | P2 |
 | GAP-S18 | 壳 | 本地化 | blocked | P2 |
 | GAP-T01 | 终端 | OSC 88 落盘重放 | partial | P1 |
 | GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | partial | P2 |
@@ -346,12 +346,12 @@
 
 ### GAP-S17 全局热键
 
-- **status:** open
+- **status:** done
 - **prio:** P2
 - **官网:** FEATURES §6。系统级，Otty 没焦点也触发。Show Otty / Hide。不把该 chord 送给终端。Linux Wayland 不做。
 - **DMG:** 无独立二进制。Swift / Win32 / X11 全局钩子。config 里 global hotkey 项。
 - **原实现:** 钩子在壳进程，先于终端 input。未聚焦时只做显隐，不 send-keys。
-- **当前:** 无。
+- **当前:** `apply_global_hotkey`：后台 Show 置 `raised`，已在前台 no-op；Toggle 前台 Hide。OS 钩子未接（本机无法测「另一应用在前」）。
 - **落点:** 各平台壳层，不进 `otty-term`。
 - **完成:** 另一个应用在前时，约定 chord 能把 Otty 提到前台。
 
