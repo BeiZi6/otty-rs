@@ -48,6 +48,7 @@
 //!   every other terminal does.
 
 pub mod attrs;
+pub mod bidi;
 pub mod events;
 pub mod features;
 pub mod find;
@@ -58,6 +59,7 @@ pub mod perform;
 pub mod screen;
 
 pub use attrs::{Cell, ColorSpec, Flags, PaletteLookup, Pen};
+pub use bidi::visual_order;
 pub use events::{
     AgentEvent, ColorStackOp, Event, ImageEvent, Notification, Progress, PromptMark, ResumeEvent,
     SpecialColor, WindowOp, WindowReport,

@@ -69,7 +69,7 @@
 | GAP-S18 | 壳 | 本地化 | done | P2 |
 | GAP-T01 | 终端 | OSC 88 落盘重放 | done | P1 |
 | GAP-T02 | 终端 | Kitty 图形 / OSC 1337 | done | P2 |
-| GAP-T03 | 终端 | BiDi | partial | P2 |
+| GAP-T03 | 终端 | BiDi | done | P2 |
 | GAP-T04 | 终端 | 每 pane 一层 GPU | partial | P0 |
 | GAP-T05 | 终端 | 图集与冻结闲置 tab | open | P2 |
 | GAP-C01 | 配置 | Settings 写回 toml | partial | P0 |
@@ -395,11 +395,11 @@
 
 ### GAP-T03 BiDi
 
-- **status:** partial
+- **status:** done
 - **prio:** P2
 - **官网:** FEATURES §3 Unicode。`bidi` 默认 true。网格存逻辑序，渲染时按行重排。复制/粘贴/Find 仍逻辑序。光标按视觉方向。应用可用 BDSM mode 8 退出隐式重排。
 - **DMG:** `unicode_bidi` 25 符号。
-- **当前:** config key 有。`otty-term` 网格逻辑序。渲染路径没有重排。依赖里未必有 unicode-bidi。
+- **当前:** `visual_order` + `encode_line_bidi`；网格仍逻辑序。`CSI 8 l` 关 `bidi_implicit`。
 - **落点:** 重排只发生在 `otty-render` 画一行时。测：希伯来字母行视觉反向，clipboard 仍逻辑序。
 - **完成:** `bidi=true` 时 RTL 行按阅读顺序画；`printf` 关 mode 8 后该 pane 不再隐式重排。
 

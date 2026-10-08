@@ -368,6 +368,8 @@ pub struct Terminal {
     pub keyboard_action_mode: bool,
     /// The application keypad is active (`DECKPAM`).
     pub keypad_application: bool,
+    /// Implicit BiDi reorder. `CSI 8 l` (BDSM) turns it off for this pane.
+    pub bidi_implicit: bool,
     /// The reverse-video wrap pad some line editors (zsh) leave behind.
     wrap_pad_pending: bool,
     /// Set while the alternate screen holds a full-screen application.
@@ -406,6 +408,7 @@ impl Terminal {
             replies: Vec::new(),
             keyboard_action_mode: false,
             keypad_application: false,
+            bidi_implicit: true,
             wrap_pad_pending: false,
             synchronized_output: false,
             kitty_flags: 0,

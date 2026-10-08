@@ -280,6 +280,7 @@ impl Perform for Terminal {
                 for i in 0..params.len().max(1) {
                     match param(params, i, 0) {
                         2 if self.config.vt_kam_allowed => self.keyboard_action_mode = true,
+                        8 => self.bidi_implicit = true,
                         20 => self.lnm = true,
                         n => log::trace!("unhandled ANSI mode {n} set"),
                     }
@@ -289,6 +290,7 @@ impl Perform for Terminal {
                 for i in 0..params.len().max(1) {
                     match param(params, i, 0) {
                         2 if self.config.vt_kam_allowed => self.keyboard_action_mode = false,
+                        8 => self.bidi_implicit = false,
                         20 => self.lnm = false,
                         n => log::trace!("unhandled ANSI mode {n} reset"),
                     }

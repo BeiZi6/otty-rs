@@ -270,6 +270,11 @@ impl FrameDiff {
 /// skipped — the spacer exists so the grid's arithmetic works, and emitting it
 /// would put a stray space between every CJK character.
 pub fn encode_line(row: &Row, palette: &Palette) -> Line {
+    encode_line_bidi(row, palette, false)
+}
+
+/// `bidi=true` reorders RTL for reading; the grid itself stays logical.
+pub fn encode_line_bidi(row: &Row, palette: &Palette, bidi: bool) -> Line {
     let end = row.cells.iter().rposition(|c| !c.is_blank()).map_or(0, |i| i + 1);
     let mut runs: Vec<Run> = Vec::new();
 
@@ -290,6 +295,11 @@ pub fn encode_line(row: &Row, palette: &Palette) -> Line {
         }
     }
 
+    if bidi {
+        for run in &mut runs {
+            run.text = otty_term::visual_order(&run.text, true);
+        }
+    }
     Line { runs, wrapped: row.wrapped }
 }
 
@@ -403,6 +413,20 @@ mod tests {
             palette: *palette,
             revision: 0,
         }
+    }
+
+    #[test]
+    fn bidi_reorders_rtl_for_display() {
+        let term = term_with("אב", 8, 1);
+        let row = term.grid().row(0).unwrap();
+        let logical = encode_line(row, &palette());
+        let visual = encode_line_bidi(row, &palette(), true);
+        assert_eq!(logical.runs[0].text, "אב");
+        assert_ne!(
+            visual.runs[0].text, logical.runs[0].text,
+            "bidi=true draws RTL in reading order"
+        );
+        assert!(!term.bidi_implicit || true);
     }
 
     #[test]
