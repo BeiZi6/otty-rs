@@ -6,10 +6,11 @@ Two things are true at once, and every section below says which one it is:
   = 520 passed / 0 failed in the **2026-10-06 14:21** pass (see the README's *Build status*, which
   also records that this tree is under active parallel development and that the dev host's `E:\` kept
   filling to 0 bytes).
-- **The Slint shell is launchable on the development host.** `otty-app` now opens the reconstructed
-  Otty chrome and runs the Rust PTY/VT/font/raster pipeline. The original Swift/Metal frontend was
-  not recovered; the Electron entry launches this same `otty-app` binary so it does not create a
-  second terminal implementation. Packaging steps that still need a target-specific toolchain are
+- **The Electron frontend is launchable on the development host.** `npm run dev` in
+  `frontend/electron` builds `otty-bridge` and opens the reconstructed Otty chrome over the Rust
+  PTY/VT/font/raster pipeline (`frontend/electron/PROTOCOL.md` is the contract between the two). The
+  original Swift/Metal frontend was not recovered. The Slint shell that used to build `otty-app` has
+  been removed; `otty-app` is now only the bare `winit` window in `packages/ui`. Packaging steps that still need a target-specific toolchain are
   marked **[target]** below.
 
 Provenance for the layout: the arm64 and Intel installers at `E:\study_serve\otty-re\dmg\`. Every
@@ -41,7 +42,8 @@ cargo build --workspace --release
 # A single crate, and the stubs:
 cargo build -p otty-core -p otty-config -p otty-term
 cargo check -p otty-fonts -p otty-render -p otty-ui   # compile the shared frontend layers
-cargo build -p otty-shell --bin otty-app            # build the Slint frontend
+cargo build -p otty-bridge                          # the engine the Electron frontend runs
+(cd frontend/electron && npm install && npm run dev)  # build it and open the app
 
 # Clippy / fmt — the components are installed.
 cargo clippy --workspace

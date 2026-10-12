@@ -65,7 +65,7 @@ pub fn tab_hit() -> ContextHit {
     }
 }
 
-/// Rows the shell feeds a Slint context menu.
+/// Rows the frontend feeds a context menu: `(label, action)`.
 pub fn context_rows(hit: &ContextHit) -> Vec<(String, String)> {
     context_items(hit)
         .into_iter()

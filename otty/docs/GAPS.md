@@ -9,9 +9,9 @@
 | 配置契约 | `spec/config-schema.json`，`packages/config/src/keys.rs`（248 key），`packages/config/src/actions.rs`（152 action） |
 | DMG | `dmg/arm64/Otty/Otty.app` 与 `dmg/x64/Otty (Intel)/Otty.app`，都是 1.5.4 / `io.appmakes.otty` |
 | 符号与资源 | `docs/RESTORATION.md`，`analysis/modules_main.txt`，`manifest_arm64.txt` |
-| 当前树 | `packages/*`，`frontend/electron/`，`packages/shell/` |
+| 当前树 | `packages/*`，`frontend/electron/` |
 
-原产品分层：Swift/AppKit 壳（符号已剥）+ Rust 静态库（`otty_core` / `otty_ffi` / `otty_config` / …）+ `Contents/Resources/`。重建是纯 Rust。逻辑落 `packages/`，产品面优先接 `otty-ui` + `otty-shell`（Slint）。Electron 铬条只过渡，不要再造一套终端。
+原产品分层：Swift/AppKit 壳（符号已剥）+ Rust 静态库（`otty_core` / `otty_ffi` / `otty_config` / …）+ `Contents/Resources/`。重建是纯 Rust。逻辑落 `packages/`，产品面是 Electron：`frontend/electron/` 画铬条，`packages/bridge`（`otty-bridge`）出模型和像素，两边的契约是 `frontend/electron/PROTOCOL.md`。终端画面仍是 Rust 引擎出的帧，不要再造一套终端。原来的 Slint 壳（`packages/shell`）已删除，不再维护；下面各条里说的"壳"现在指 Electron 前端，早先写着"壳浮层 / 壳右栏"的条目在 Electron 里由 `renderer/features/` 的对应模块承担。
 
 当前 Electron「左侧项目、上方 session tab」是新设计。原版侧栏列的是 tab，分组只是把同一 git 根收成段落。对齐原版时不要把新设计当缺口删掉，除非明确要改回。
 
@@ -137,7 +137,7 @@
 - **DMG:** `Contents/Resources/settings-ui.html`（1 498 025 B，两架构字节相同）。Vite 打出来的单页。
 - **原实现:** Swift 开一个窗加载这份 HTML。键名、枚举、分组以页面为准，和 `keys.rs` 应对上。`resources/dotfiles-catalog.json` 是 Settings 里的点文件目录。
 - **当前:** `resources/settings-ui.html`；`Config::settings_ui_html`；写盘走 `set_value`（一行补丁、local/shared）。壳窗见 GAP-S03。
-- **落点:** 两条路，选一条：(1) 从 DMG 抽出 HTML 嵌进壳；(2) 按 `keys.rs` + FEATURES §6 用 Slint 重做。不要两套。
+- **落点:** 两条路，选一条：(1) 从 DMG 抽出 HTML 嵌进壳；(2) 按 `keys.rs` + FEATURES §6 在前端重做。不要两套。
 - **完成:** ⌘, 打开；改一个 key 只补丁对应行；local / shared 范围正确。
 
 ### GAP-K04 补全数据库
@@ -175,8 +175,8 @@
 - **官网:** FEATURES §3 Shell Menu；§6 默认 keymap。File / Edit / View / Shell / Window。Shell 每次打开现场拼 About This Line / Ports / Git / Agent。
 - **DMG:** 菜单文案在 `en.json`。action 表即菜单命令。Swift `NSMenu`。AppleScript 标准套件也假设有菜单。
 - **原实现:** 菜单项 = action id。动态段（端口、git、agent）打开时查当前 pane。Windows 把 Ports/Git 做成对话框。Linux 无 Ports。
-- **当前:** `packages/config/src/menu.rs` 菜单表；`packages/ui/src/dispatch.rs` 点击分发；`packages/shell/ui/app.slint` MenuBar 绑 File/Edit/View/Shell/Window/Commands。动态 Ports/Git/Agent 段还没现场拼。
-- **落点:** `packages/shell` 建菜单，点击走同一套 action 分发（GAP-C03）。
+- **当前:** `packages/config/src/menu.rs` 菜单表；`packages/ui/src/dispatch.rs` 点击分发；Electron 用 `menu.list` 建原生菜单（`frontend/electron/main.js`），File/Edit/View/Shell/Window/Commands 都在。动态 Ports/Git/Agent 段还没现场拼。
+- **落点:** `frontend/electron` 建菜单，点击走同一套 action 分发（GAP-C03）。
 - **完成:** 默认 keymap 表里的菜单命令都能点到；无 shortcut 的项也在。
 
 ### GAP-S02 右键菜单
@@ -209,7 +209,7 @@
 - **DMG:** action `command_palette`。数据源就是 `ACTIONS` 152 项，不要自造 id。文案在 `en.json`。
 - **原实现:** Swift 浮层。过滤是对 action 名和当前 chord 做模糊匹配（Settings 键位页同样：输入 `cmd+t` 能找到绑定）。动态行（端口、当前行）在打开时从 focused pane 算，不是静态表。
 - **当前:** `otty-ui::palette` 列出 152 `ACTIONS`（含无 shortcut）；`filter_palette` 按 id/label/chord 搜；`run_palette(..., keep_open)` 是 ⌘↩。壳浮层 + ⌘⇧P。动态 ports/line-info 选择器未做。
-- **落点:** `packages/ui` 提供可搜索的 action 列表；`packages/shell` 画浮层。分发与菜单、快捷键共用 GAP-C03。
+- **落点:** `packages/ui` 提供可搜索的 action 列表；`frontend/electron/renderer/features/` 画浮层。分发与菜单、快捷键共用 GAP-C03。
 - **完成:** ⌘⇧P 打开；能搜到 `ACTIONS` 每一项；⌘↩ 保持打开；无 shortcut 的项也在。
 
 ### GAP-S05 Open Quickly
@@ -230,7 +230,7 @@
 - **官网:** FEATURES §1。⌘⇧R，右侧，始终跟 focused pane。内置四页：Info（cwd、进程、监听端口、open-in）、Outline（OSC 133 命令 / agent prompt / 文件 TOC）、Git、Files（以 pane cwd 为根）。`details-view` 可重排。自定义两种：`kind=tui`（面板里跑 lazydocker 等）、`kind=web`。
 - **DMG:** action `toggle_details_panel`、`details_tab_info/outline/git/files`。图标 `resources/view-icons/`（62 SVG，已拷）。TUI 视图用 `resources/view-sandbox/` 的 `open`/`xdg-open` 垫片，禁止从面板里弹出 GUI。
 - **原实现:** 右栏镜像左栏 tab 面板。TUI 视图是嵌在面板里的又一个终端，cwd/env 来自 focused pane。Web 视图非持久 data store。Linux 无 Ports。
-- **当前:** `otty-ui::details` Info 读 focused pane cwd；`toggle_details_panel` 显隐；切 tab 后 `details_info` 跟过去。壳右栏 + ⌘⇧R。Electron 侧四页都有数据：Info 的端口来自 `otty-pty::listening_ports`（Windows 读 TCP 表按进程树过滤，Unix 走 `lsof`，未在 Unix 上实测）；Outline 来自 `Grid::outline`——OSC 133 `A`/`B` 标记记在 `Row.mark` 上，随滚动和 reflow 走，点一行用 `pane.scroll` 滚过去。Slint 壳的 Outline/Git/Files 页仍空。自定义 `details-view`（tui / web）未做。
+- **当前:** `otty-ui::details` Info 读 focused pane cwd；`toggle_details_panel` 显隐；切 tab 后 `details_info` 跟过去。壳右栏 + ⌘⇧R。Electron 侧四页都有数据：Info 的端口来自 `otty-pty::listening_ports`（Windows 读 TCP 表按进程树过滤，Unix 走 `lsof`，未在 Unix 上实测）；Outline 来自 `Grid::outline`——OSC 133 `A`/`B` 标记记在 `Row.mark` 上，随滚动和 reflow 走，点一行用 `pane.scroll` 滚过去。自定义 `details-view`（tui / web）未做。
 - **落点:** 壳布局加右栏；Info 先接 cwd + 进程（`otty-pty` 已有 unix `processes`）。Outline 依赖 GAP 的 OSC 133 索引。
 - **完成:** ⌘⇧R 显隐；切 tab 后面板跟过去；Info 至少显示 cwd。
 
@@ -263,7 +263,7 @@
 - **官网:** FEATURES §2。拖 tab 可换窗或撕成新窗，拖时跟随预览、原位变鬼影。Move Tab to New Window、Move Up/Down。⌘N 新窗，⇧⌘W 关窗。Merge All Windows。
 - **DMG:** action `new_window`、`close_window`、`move_tab_to_new_window`、`merge_all_windows`。原产品无限窗、跨 Spaces。
 - **原实现:** window 拥有自己的侧栏状态、分组、panel 显隐，恢复时按窗记。撕 tab = 新 window 带着那一棵 split 树。
-- **当前:** `App::move_tab_to_new_window` / `move_tab_to_window` / `merge_all_windows` / `close_window`。Dispatcher 关最后一窗读 `quit-after-last-window-closed`。Electron 侧整个应用一个 `otty-bridge`，模型里每个 window 对应一个 BrowserWindow（`window-open` / `window-close` 事件）；tab 拖到另一个窗口走 `tab.move`，拖出窗口或 Move Tab to New Window 走 `tab.detach`，pane 树和 shell 原样跟过去；Merge All Windows 直接可用。拖动时没有跟随预览和鬼影。Slint 仍单 native 窗。
+- **当前:** `App::move_tab_to_new_window` / `move_tab_to_window` / `merge_all_windows` / `close_window`。Dispatcher 关最后一窗读 `quit-after-last-window-closed`。Electron 侧整个应用一个 `otty-bridge`，模型里每个 window 对应一个 BrowserWindow（`window-open` / `window-close` 事件）；tab 拖到另一个窗口走 `tab.move`，拖出窗口或 Move Tab to New Window 走 `tab.detach`，pane 树和 shell 原样跟过去；Merge All Windows 直接可用。拖动时没有跟随预览和鬼影。
 - **落点:** 模型已支持多窗；shell 要真的开第二个 native 窗，并把 tab 的 pane 树迁过去。
 - **完成:** 一个 tab 能进新窗；Merge 能收回来；关最后一窗走 `quit-after-last-window-closed`。
 
@@ -318,7 +318,7 @@
 - **官网:** FEATURES §1 Files and links。拖到窗口边缘四个落点：绿 = 新终端 pane 并以该路径为 cwd（或把文件路径当参数）；蓝 = 新 Otty 文件/文件夹 pane。拖到已有 pane 内部按类型打开。
 - **DMG:** 无独立资源。Swift 拖放。
 - **原实现:** 落点是全窗层，不是 tab 层。颜色按「终端 vs Otty 视图」分。
-- **当前:** `drop_zone` 四缘；`drop_path(Bottom)` 新终端 tab 且 cwd 为该文件夹。OS 拖放未接 Slint。
+- **当前:** `drop_zone` 四缘；`drop_path(Bottom)` 新终端 tab 且 cwd 为该文件夹。Electron 接了 OS 拖放：文件夹开新 tab，文件路径打进指针下的 pane（`renderer/panes.js`）；四个彩色落点没画。
 - **落点:** shell 接收 OS 拖放；绿路径走 `new_tab` + cwd；蓝路径走 GAP-S08。
 - **完成:** 拖一个文件夹到下缘，出现新终端且 cwd 是该文件夹。
 
@@ -340,7 +340,7 @@
 - **官网:** FEATURES §2。Pin Window 钉在其它应用之上。PiP：当前 pane 或 Follow Active，独立小窗，原产品靠「每 pane 一层 Metal」把那一层提出来。
 - **DMG:** action `pin_window`、`picture_in_picture`、`close_picture_in_picture`。
 - **原实现:** PiP 是 native 小窗贴同一 GPU layer，不是截图。Follow 随 focused pane 换 layer。
-- **当前:** `pin_window` 切 `pinned`（always-on-top 标志）；`picture_in_picture` 再开一窗看该 pane。OS always-on-top 未接到 Slint。
+- **当前:** `pin_window` 切 `pinned`（always-on-top 标志）；`picture_in_picture` 再开一窗看该 pane。OS always-on-top 还没接到 Electron 窗口。
 - **落点:** Pin 先做（窗口级 always-on-top）。PiP 等 GAP-T04 每 pane 一层，或退化为再开一个只含该 pane 的小窗。
 - **完成:** Pin 能让窗浮在别的应用上。PiP 能单独看一个 pane（小窗也算）。
 
@@ -410,8 +410,8 @@
 - **官网:** FEATURES §7 Performance。macOS 原生 Metal，每 pane 一层。Windows DX12（Performance 页标 planned，Unicode 页没标，`[conflict]`）。字形缓存一次、复用。
 - **DMG:** `Contents/Resources/Grid.metallib` 68 810 B，两架构字节相同。Metal IR，wgpu 不能加载。`core_graphics` 145、`core_text` 87。
 - **原实现:** 每个 pane 一个 CAMetalLayer。PiP / 撕 tab / freeze 都靠「一层 = 一个 pane」。字形 subpixel 缓存。
-- **当前:** `PaneSurfaces` 每 pane 一块 RGBA 目标；`freeze` / `extract` 单独冻或提出。Slint 仍可合成。
-- **落点:** 目标是 `otty-render` 给每个 pane 一块 surface，shell 只组合。不要把 metallib 塞进 wgpu。Electron 若继续当铬条，终端画面应嵌 `otty-app` 的 pane，而不是 xterm.js。
+- **当前:** `PaneSurfaces` 每 pane 一块 RGBA 目标；`freeze` / `extract` 单独冻或提出。Electron 每个 pane 一块 canvas，各收各的帧。
+- **落点:** 目标是 `otty-render` 给每个 pane 一块 surface，shell 只组合。不要把 metallib 塞进 wgpu。Electron 当铬条，终端画面是 `otty-bridge` 出的帧，不是 xterm.js。
 - **完成:** 一个 tab 两个 split，各有自己的渲染目标；其中一个能单独冻或提出（为 PiP 铺路）。
 
 ### GAP-T05 图集与冻结闲置 tab
@@ -560,7 +560,7 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 - **DMG:** `otty_state` session 表。原产品每次 tab 创建/关闭/改布局写快照。
 - **原实现:** 启动读库，按窗重建 tab 树、cwd、scrollback（session log）。agent 走 adapter resume。命令重跑看白名单，前缀匹配。
 - **当前:** `otty-state` schema v3 有 session 表。启动不读。Electron 关 tab 栈只在内存。无 banner、无进程重跑。
-- **落点:** 快照写在 `otty-ui` 改树时。启动在 `otty-shell`。agent 恢复复用 GAP-A03。
+- **落点:** 快照写在 `otty-ui` 改树时。启动在 `otty-bridge`。agent 恢复复用 GAP-A03。
 - **完成:** 开两个 tab、关 Otty、再开，两个 cwd 都在；⇧⌘T 能把刚关的那个要回来。
 
 ### GAP-W03 Frecency UI
@@ -599,7 +599,7 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 - **DMG:** 原产品壳进程听 socket。CLI 短连接、一行 JSON 去一行 JSON 回。
 - **原实现:** 请求类型见 `packages/ipc/src/lib.rs`：Window/Tab/Pane/AgentState/ReloadConfig/Badge/Notify/SetTheme/Status。敏感 pane 在 server 侧拒，不在 CLI 侧。
 - **当前:** `otty_ipc::serve`（Unix socket + Windows named pipe，首实例独占，18 测）；`packages/ui/src/ipc.rs` `handle` 把 Window/Tab/Pane/AgentState/Badge/Status 落到 `Dispatcher`（4 测）；`otty-shell` 启动 bind，请求在 UI 线程的 pump 里答。`OTTY_SOCKET` 可改路径。本机实测 `otty-cli window list` 0 / 关窗后 3 / 选择器不中 4。未接：ReloadConfig、Notify、SetTheme、window rename、tab move（明确回错，不假成功）。Electron 入口没听。
-- **落点:** `otty-shell` 启动时 bind。每个 `Request` 调 `otty-ui`。Electron 若还当入口，也要听同一 socket，否则 `otty tab new` 找不到 app。
+- **落点:** `otty-bridge` 启动时 bind。每个 `Request` 调 `otty-ui`。
 - **完成:** 壳开着时 `otty window list` 退出 0 并打印一窗；关掉后退出 3。
 
 ### GAP-I02 pane run / exec / capture / wait

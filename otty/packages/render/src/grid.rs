@@ -1,7 +1,7 @@
 //! The grid as a frame the shell can draw.
 //!
 //! This is the contract between the Rust engine and whatever paints the screen —
-//! a canvas in a webview, a Slint scene, or the wgpu pass in this crate. It is
+//! a canvas in a webview, or the wgpu pass in this crate. It is
 //! deliberately **serialisable and renderer-agnostic**: the engine's job is to say
 //! "row 3, columns 10–14, bold, red on default", and the shell's job is to turn
 //! that into pixels. Neither needs to know the other's internals.

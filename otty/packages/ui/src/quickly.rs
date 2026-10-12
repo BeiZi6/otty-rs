@@ -246,14 +246,6 @@ pub fn open_directory(path: &str, store: Option<&Store>, now: i64) -> Result<Str
     Ok(expanded)
 }
 
-/// Slint rows: (title, path, kind).
-pub fn quickly_rows(entries: &[QuicklyEntry]) -> Vec<(String, String, String)> {
-    entries
-        .iter()
-        .map(|e| (e.title.clone(), e.path.clone(), e.kind.as_str().to_string()))
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

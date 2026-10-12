@@ -7,6 +7,10 @@ A single Cargo workspace, `E:\study_serve\otty-re\otty`, version `1.5.4`, editio
 active parallel development). The dependency edges are read from the per-crate `Cargo.toml` files and
 are stable.
 
+Since that snapshot: `packages/bridge` (`otty-bridge`) was added as the backend of the Electron
+frontend in `frontend/electron/` — the maintained GUI, whose contract is
+`frontend/electron/PROTOCOL.md` — and the Slint shell (`packages/shell`) was removed.
+
 ## The crates
 
 | Crate | Source dir | Lines | Tests | Owns | Depends on |

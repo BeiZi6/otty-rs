@@ -57,8 +57,9 @@ hand-written code is checked against.
 ### Maturity, stated plainly
 
 - **Verified** — the twelve packages with counts above compile and pass their own unit tests. The
-  Slint shell is now built as `otty-app`; its PTY → VT → font rasteriser → RGBA path has been run
-  end to end and its frame dump contains terminal text and a cursor.
+  Electron frontend (`frontend/electron`) is the GUI: it draws the chrome and puts on screen the
+  frames `otty-bridge` composites, so the PTY → VT → font rasteriser → RGBA path runs end to end in
+  a real window.
 - **In flux** — `otty-fonts`, `otty-render` and `otty-ui` were written during this session and moved
   between *compiling*, *not compiling* and *test-hanging* while this document was written. Treat
   their numbers and internals as transient; the current shell verification is recorded above.
@@ -72,8 +73,9 @@ hand-written code is checked against.
   matrix not published, so only transmit-and-display is modelled), and the clamping of
   CUU/CUD/DL/SU/SD (clamped to the active region).
 - **Still limited** — the native macOS Swift frontend was not recovered. The cross-platform
-  frontend in this tree is the Slint `otty-app`, and the Electron entry launches that same binary
-  rather than introducing a second terminal renderer.
+  frontend in this tree is Electron over `otty-bridge` (`frontend/electron/PROTOCOL.md`); the
+  terminal is still the Rust engine and rasteriser, not a second renderer. The earlier Slint shell
+  (`packages/shell`) has been removed and is not maintained.
 
 ## Build and test
 

@@ -11,8 +11,8 @@
 //! * [`Chrome`] — the window furniture: titlebar, tab bar, sidebar, panels,
 //!   paddings, radii and the dividers between panes.
 //!
-//! Both are plain data with no `slint` and no `wgpu` in sight. The Slint side
-//! binds them to properties; a test can assert them without a window.
+//! Both are plain data with no `wgpu` in sight. The frontend binds them to
+//! its own properties; a test can assert them without a window.
 //!
 //! # The one conversion that is not mechanical
 //!
@@ -264,7 +264,7 @@ impl Chrome {
 
         // Furniture falls back to the terminal colours so a theme that only
         // names `[terminal]` still paints a matching window, instead of leaving
-        // the Slint defaults (which are dark, and wrong on One Light).
+        // the frontend's defaults (which are dark, and wrong on One Light).
         c.titlebar_background = colour(theme.titlebar.background.as_ref()).or(terminal_bg);
         c.titlebar_foreground = colour(theme.titlebar.text_primary.as_ref()).or(fg);
         c.tabbar_background = c.titlebar_background;
@@ -401,14 +401,14 @@ mod tests {
     }
 
     #[test]
-    fn one_light_furniture_follows_the_titlebar_not_the_slint_defaults() {
+    fn one_light_furniture_follows_the_titlebar_not_a_dark_default() {
         let themes = shipped();
         let (_, one) = themes.iter().find(|(n, _)| n == "one-light").expect("one-light");
         let c = Chrome::from_theme(one);
         assert_eq!(c.titlebar_background, Some(0xFFFFFFFF), "titlebar is #ffffff");
         assert_eq!(c.sidebar_background, Some(0xFFFFFFFF), "sidebar falls back to the titlebar");
         assert_eq!(c.tab_active_foreground, Some(0x2A2B33FF), "tab text is the terminal foreground");
-        assert_ne!(c.titlebar_background, Some(0x101014FF), "must not keep the dark Slint default");
+        assert_ne!(c.titlebar_background, Some(0x101014FF), "must not keep a dark default");
     }
 
     #[test]

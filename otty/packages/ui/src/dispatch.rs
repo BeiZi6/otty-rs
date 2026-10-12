@@ -542,30 +542,6 @@ pub fn shell_menu(catalog: Option<&Catalog>, map: &Keymap) -> Vec<Menu> {
     menu_bar(catalog, map)
 }
 
-/// Flattened (title, action) rows per top-level menu, for Slint models.
-pub fn shell_menu_models(
-    catalog: Option<&Catalog>,
-    map: &Keymap,
-) -> Vec<(&'static str, Vec<(String, String)>)> {
-    shell_menu(catalog, map)
-        .into_iter()
-        .map(|m| {
-            let rows = m
-                .items
-                .into_iter()
-                .map(|i| {
-                    let title = match i.shortcut {
-                        Some(s) => format!("{}\t{s}", i.label),
-                        None => i.label,
-                    };
-                    (title, i.action.to_string())
-                })
-                .collect();
-            (m.title, rows)
-        })
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -609,22 +585,6 @@ mod tests {
         let mut d = Dispatcher::new();
         assert!(d.activate("new_tab"));
         assert_eq!(d.app.counts(), (1, 2, 2));
-    }
-
-    #[test]
-    fn shell_menu_models_cover_the_five_menus_and_commands() {
-        let models = shell_menu_models(None, &Keymap::defaults());
-        let titles: Vec<_> = models.iter().map(|(t, _)| *t).collect();
-        assert_eq!(
-            titles,
-            ["File", "Edit", "View", "Shell", "Window", "Commands"]
-        );
-        let file = &models[0].1;
-        assert!(file.iter().any(|(_, a)| a == "new_tab"));
-        assert!(file.iter().any(|(_, a)| a == "quit"));
-        let n: usize = models.iter().map(|(_, rows)| rows.len()).sum();
-        assert_eq!(n, ACTIONS.len());
-        assert!(models[5].1.iter().any(|(title, _)| !title.contains('\t')));
     }
 
     #[test]

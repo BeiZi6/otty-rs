@@ -13,7 +13,6 @@ members = [
     "packages/ssh",
     "packages/render",
     "packages/ui",
-    "packages/shell",
     "packages/bridge",
     "packages/cli",
     "packages/helper",
@@ -42,12 +41,6 @@ otty-autocomplete = { path = "packages/autocomplete", version = "1.5.4" }
 otty-ssh = { path = "packages/ssh", version = "1.5.4" }
 otty-render = { path = "packages/render", version = "1.5.4" }
 otty-ui = { path = "packages/ui", version = "1.5.4" }
-otty-shell = { path = "packages/shell", version = "1.5.4" }
-# The Slint shell's UI toolkit. `femtovg` rather than `wgpu`: this build already
-# composites the grid on the CPU into an RGBA buffer (`otty-render::raster`), so
-# the toolkit only has to put that buffer on screen — a GPU renderer would be a
-# second graphics stack for no gain, and femtovg's software backend also keeps the
-# binary working where a GPU is absent.
 
 anyhow = "1"
 thiserror = "2"
@@ -91,14 +84,6 @@ winit = "0.30"
 crossbeam-channel = "0.5"
 rfd = "0.15"
 arboard = "3"
-
-# The Slint shell's UI toolkit. `femtovg` rather than `wgpu`: this build already
-# composites the grid on the CPU into an RGBA buffer (`otty-render::raster`), so
-# the toolkit only has to put that buffer on screen — a second graphics stack
-# would buy nothing, and femtovg's software path also works where no GPU exists.
-slint = { version = "1.8", default-features = false, features = ["compat-1-2", "std", "backend-winit", "renderer-femtovg"] }
-# The layout compiler, run from `build.rs` so a layout error is a build error.
-slint-build = "1.8"
 
 [profile.release]
 lto = "thin"

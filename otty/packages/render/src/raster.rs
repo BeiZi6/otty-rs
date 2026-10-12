@@ -1,9 +1,8 @@
 //! Compositing a frame into pixels.
 //!
-//! This is the CPU side of the Slint route: the engine produces a [`GridFrame`],
-//! glyphs come from an atlas, and this turns the two into one RGBA buffer that
-//! the shell hands to Slint as an `Image`. No GPU, no window, no `slint` — which
-//! is what makes it testable.
+//! This is the CPU route: the engine produces a [`GridFrame`], glyphs come
+//! from an atlas, and this turns the two into one RGBA buffer that the frontend
+//! puts on a canvas. No GPU and no window — which is what makes it testable.
 //!
 //! # Why CPU compositing is the right call here
 //!

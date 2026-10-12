@@ -82,20 +82,6 @@ pub fn filter_palette<'a>(entries: &'a [PaletteEntry], query: &str) -> Vec<&'a P
         .collect()
 }
 
-/// Slint rows: (title, action, scope).
-pub fn palette_rows(entries: &[PaletteEntry]) -> Vec<(String, String, String)> {
-    entries
-        .iter()
-        .map(|e| {
-            let title = match &e.shortcut {
-                Some(s) => format!("{}\t{s}", e.label),
-                None => e.label.clone(),
-            };
-            (title, e.action.to_string(), e.scope.as_str().to_string())
-        })
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

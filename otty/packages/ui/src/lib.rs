@@ -33,10 +33,10 @@ pub mod model;
 
 pub use context::{context_items, context_rows, pane_hit, tab_hit, ContextHit, ContextItem};
 pub use details::{details_info, DetailsInfo, DetailsTab};
-pub use dispatch::{shell_menu, shell_menu_models, Dispatcher};
-pub use palette::{filter_palette, palette_entries, palette_rows, PaletteEntry};
+pub use dispatch::{shell_menu, Dispatcher};
+pub use palette::{filter_palette, palette_entries, PaletteEntry};
 pub use quickly::{
-    open_directory, query_quickly, quickly_rows, OpenFilter, QuicklyEntry, QuicklySources,
+    open_directory, query_quickly, OpenFilter, QuicklyEntry, QuicklySources,
 };
 pub use settings::{set_setting, show_origin};
 pub use view::cell_size_for_font;

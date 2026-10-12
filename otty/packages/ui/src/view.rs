@@ -1,6 +1,6 @@
 //! The view: everything a shell needs, and nothing that knows what a shell is.
 //!
-//! This is the layer the Slint binding sits on. It owns the pieces that have to
+//! This is the layer a frontend sits on. It owns the pieces that have to
 //! be kept in step — the PTY, the VT engine, the frame, the glyph rasteriser, the
 //! layout and the theme's chrome — and exposes exactly what a window needs:
 //!
@@ -14,7 +14,7 @@
 //!     headers() / rows()        → the model, for the tab bar and sidebar
 //! ```
 //!
-//! It is deliberately free of `winit`, `slint` and `wgpu`, which is what lets the
+//! It is deliberately free of `winit` and `wgpu`, which is what lets the
 //! whole pipeline be tested without a window: a test spawns a real shell, writes
 //! to it, pumps, rasterises and asserts on pixels.
 //!
@@ -359,7 +359,7 @@ impl TerminalView {
         self.session.write(bytes)
     }
 
-    /// A keystroke from the window, as the text Slint reports for it.
+    /// A keystroke from the window, as key text (see [`bytes_for_key_text`]).
     ///
     /// Printable characters go through as UTF-8; named keys (Return, arrows,
     /// Backspace, …) are encoded with the engine's current keypad/cursor mode
@@ -592,11 +592,12 @@ fn first_of(db: &fontdb::Database) -> Option<fontdb::ID> {
     db.faces().next().map(|f| f.id)
 }
 
-/// Bytes a Slint `KeyEvent.text` should send to the PTY.
+/// Bytes a key's text should send to the PTY.
 ///
-/// Slint reports printable keys as themselves and named keys as either a C0
-/// control (`Return` = U+000A, `Backspace` = U+0008) or a Cocoa private-use
-/// code (`UpArrow` = U+F700). A PTY wants CR for Enter and CSI for arrows.
+/// Key text is what the frontend's `input` carries: printable keys as
+/// themselves, named keys as either a C0 control (`Return` = U+000A,
+/// `Backspace` = U+0008) or a Cocoa private-use code (`UpArrow` = U+F700).
+/// A PTY wants CR for Enter and CSI for arrows.
 pub fn bytes_for_key_text(text: &str, opts: &otty_term::KeyEncodeOptions) -> Vec<u8> {
     if text.is_empty() {
         return Vec::new();
@@ -926,7 +927,7 @@ mod tests {
     }
 
     #[test]
-    fn slint_key_text_encodes_the_bytes_a_pty_expects() {
+    fn key_text_encodes_the_bytes_a_pty_expects() {
         let opts = otty_term::KeyEncodeOptions::default();
         assert_eq!(bytes_for_key_text("\n", &opts), b"\r");
         assert_eq!(bytes_for_key_text("a", &opts), b"a");

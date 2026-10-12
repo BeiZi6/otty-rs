@@ -43,4 +43,4 @@ fi
 
 echo "==> done"
 echo "    otty      ${CARGO_TARGET_DIR:-$here/target}/$profile/otty"
-echo "    otty-app  ${CARGO_TARGET_DIR:-$here/target}/$profile/otty-app"
+echo "    otty-bridge  ${CARGO_TARGET_DIR:-$here/target}/$profile/otty-bridge  (frontend/electron runs it)"
