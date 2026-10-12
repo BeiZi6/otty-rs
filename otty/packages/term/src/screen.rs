@@ -1085,7 +1085,10 @@ impl Terminal {
     /// Resize, as `SIGWINCH` reports it. The alternate screen is re-laid out
     /// without reflow, matching every other terminal.
     pub fn resize(&mut self, cols: u16, rows: u16) {
-        self.primary.resize(cols, rows);
+        match self.mode {
+            Mode::Primary => self.cursor.row = self.primary.resize_at(cols, rows, self.cursor.row),
+            Mode::Alternate => self.primary.resize(cols, rows),
+        }
         self.alternate.resize(cols, rows);
         self.alternate.clear_screen();
         self.tabs.resize(cols);

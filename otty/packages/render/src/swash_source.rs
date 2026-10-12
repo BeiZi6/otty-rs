@@ -57,7 +57,10 @@ impl Face {
     /// Load a face from a `fontdb` database.
     pub fn load(db: &fontdb::Database, id: fontdb::ID, size_px: f32) -> Option<Self> {
         let (data, index) = db.with_face_data(id, |data, index| (data.to_vec(), index))?;
-        let data = Arc::new(data);
+        Self::from_data(id, Arc::new(data), index, size_px)
+    }
+
+    fn from_data(id: fontdb::ID, data: Arc<Vec<u8>>, index: u32, size_px: f32) -> Option<Self> {
         let font = swash::FontRef::from_index(&data, index as usize)?;
         // `metrics()` gives a proxy; the values live on the materialised form.
         let metrics = font.metrics(&[]);
@@ -118,9 +121,48 @@ impl Face {
     }
 }
 
+/// System families for what a Latin monospace lacks — CJK first, then symbols —
+/// in the order they are tried. Whichever the machine has answers.
+const FALLBACK_FAMILIES: &[&str] = &[
+    "Microsoft YaHei",
+    "PingFang SC",
+    "Noto Sans Mono CJK SC",
+    "Noto Sans CJK SC",
+    "WenQuanYi Micro Hei",
+    "Yu Gothic",
+    "Malgun Gothic",
+    "Segoe UI Symbol",
+];
+
+/// The installed [`FALLBACK_FAMILIES`], for [`SwashGlyphs::with_fallbacks`].
+///
+/// A CJK face is tens of megabytes, so the bytes are read once per process and
+/// shared by every pane. The ids are `db`'s, which is the database the primary
+/// face came from, so the two cannot collide in a glyph key.
+pub fn fallback_faces(db: &fontdb::Database, size_px: f32) -> Vec<Face> {
+    type Loaded = Vec<(fontdb::ID, Arc<Vec<u8>>, u32)>;
+    static DATA: std::sync::OnceLock<Loaded> = std::sync::OnceLock::new();
+    DATA.get_or_init(|| {
+        FALLBACK_FAMILIES
+            .iter()
+            .filter_map(|name| {
+                let families = [fontdb::Family::Name(name)];
+                let id = db.query(&fontdb::Query { families: &families, ..Default::default() })?;
+                let (data, index) = db.with_face_data(id, |data, index| (data.to_vec(), index))?;
+                Some((id, Arc::new(data), index))
+            })
+            .collect()
+    })
+    .iter()
+    .filter_map(|(id, data, index)| Face::from_data(*id, data.clone(), *index, size_px))
+    .collect()
+}
+
 /// Rasterises glyphs from a face, with a cache.
 pub struct SwashGlyphs {
     face: Face,
+    /// Faces asked, in order, for a character `face` does not have.
+    fallbacks: Vec<Face>,
     size_px: f32,
     /// The rasterised bitmaps, keyed exactly as the atlas keys its slots.
     cache: RefCell<HashMap<GlyphKey, GlyphBitmap>>,
@@ -133,12 +175,31 @@ impl SwashGlyphs {
     pub fn new(face: Face, size_px: f32) -> Self {
         Self {
             face,
+            fallbacks: Vec::new(),
             size_px,
             cache: RefCell::new(HashMap::new()),
             context: RefCell::new(swash::scale::ScaleContext::new()),
             embolden: false,
             slant: 0.0,
         }
+    }
+
+    pub fn with_fallbacks(mut self, faces: Vec<Face>) -> Self {
+        self.fallbacks = faces;
+        self
+    }
+
+    /// The first face that has `ch`, and its glyph there. Glyph 0 of the
+    /// primary face when none does.
+    fn pick(&self, ch: char) -> (&Face, u16) {
+        std::iter::once(&self.face)
+            .chain(&self.fallbacks)
+            .find_map(|face| {
+                let font = swash::FontRef::from_index(&face.data, face.index as usize)?;
+                let gid = u16::from(font.charmap().map(ch));
+                (gid != 0).then_some((face, gid))
+            })
+            .unwrap_or((&self.face, 0))
     }
 
     /// Synthesise bold for every glyph. Used when the family has no bold face
@@ -169,11 +230,10 @@ impl SwashGlyphs {
 
     /// The key this source would use for a character.
     pub fn key_for(&self, ch: char) -> GlyphKey {
+        let (face, gid) = self.pick(ch);
         GlyphKey::new(
-            self.face.id,
-            swash::FontRef::from_index(&self.face.data, self.face.index as usize)
-                .map(|f| u16::from(f.charmap().map(ch)))
-                .unwrap_or(0),
+            face.id,
+            gid,
             self.size_px,
             self.embolden,
             self.slant,
@@ -181,16 +241,14 @@ impl SwashGlyphs {
     }
 
     fn rasterise(&self, ch: char) -> GlyphBitmap {
-        let Some(font) = swash::FontRef::from_index(&self.face.data, self.face.index as usize) else {
-            return GlyphBitmap::blank();
-        };
-        // A character the face does not contain is not an error: the caller falls
-        // back to another family. Returning blank here keeps that decision where
-        // it belongs and keeps this function total.
-        let glyph_id = font.charmap().map(ch);
-        if u16::from(glyph_id) == 0 {
+        // A character no face contains is not an error; blank keeps this total.
+        let (face, glyph_id) = self.pick(ch);
+        if glyph_id == 0 {
             return GlyphBitmap::blank();
         }
+        let Some(font) = swash::FontRef::from_index(&face.data, face.index as usize) else {
+            return GlyphBitmap::blank();
+        };
 
         let mut context = self.context.borrow_mut();
         let mut scaler = context.builder(font).size(self.size_px).build();

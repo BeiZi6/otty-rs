@@ -341,7 +341,12 @@ impl TerminalView {
     /// so a full-screen program sees the same bytes a real terminal would send.
     pub fn handle_key(&mut self, text: &str) -> Result<(), PtyError> {
         let opts = otty_term::KeyEncodeOptions::for_terminal(self.session.terminal());
-        let bytes = bytes_for_key_text(text, &opts);
+        // Per character: an IME commit or a scripted `ls\n` is several keys in
+        // one text, and its newline is still Enter.
+        let bytes: Vec<u8> = text
+            .chars()
+            .flat_map(|c| bytes_for_key_text(c.encode_utf8(&mut [0; 4]), &opts))
+            .collect();
         if bytes.is_empty() {
             return Ok(());
         }
@@ -545,7 +550,8 @@ fn load_glyphs(config: &Config, size_px: f32) -> Result<(SwashGlyphs, CellSize),
 
     let face = face.ok_or(ViewError::NoFont)?;
     let cell = face.cell_size(size_px);
-    let glyphs = SwashGlyphs::new(face, size_px);
+    let glyphs = SwashGlyphs::new(face, size_px)
+        .with_fallbacks(otty_render::swash_source::fallback_faces(catalog.database(), size_px));
     Ok((glyphs, cell))
 }
 

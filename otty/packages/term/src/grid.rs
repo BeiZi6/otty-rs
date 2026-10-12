@@ -249,32 +249,56 @@ impl Grid {
     /// viewport is preserved, and a narrower grid rewraps the soft-wrapped
     /// lines instead of truncating them.
     pub fn resize(&mut self, cols: u16, screen_lines: u16) {
+        // No cursor known: treat the whole viewport as content.
+        self.resize_at(cols, screen_lines, self.screen_lines.saturating_sub(1));
+    }
+
+    /// [`Grid::resize`] for the grid the cursor is on. Returns the cursor's new
+    /// row.
+    ///
+    /// The blank rows below the cursor are free space, not content: a shell
+    /// that has printed three lines into a forty-row window must still show
+    /// those three lines at thirty rows, rather than have them scrolled away to
+    /// keep thirty blank ones.
+    pub fn resize_at(&mut self, cols: u16, screen_lines: u16, cursor_row: u16) -> u16 {
         if cols == self.cols && screen_lines == self.screen_lines {
-            return;
+            return cursor_row;
         }
         let old_cols = self.cols;
         self.cols = cols;
         self.screen_lines = screen_lines;
 
+        let mut cursor = (cursor_row as usize).min(self.rows.len().saturating_sub(1));
+        let full = self.rows.len();
+        while self.rows.len() > cursor + 1 && self.rows.back().is_some_and(Row::is_blank) {
+            self.rows.pop_back();
+        }
+        let was_full = self.rows.len() == full;
+
         if cols == old_cols {
             // Same width: only the number of visible rows changes.
-            while self.rows.len() < screen_lines as usize {
-                // Pull a scrollback row back in if there is one, else pad.
-                if let Some(r) = self.scrollback.pop_back() {
-                    self.rows.push_front(r);
-                } else {
-                    self.rows.push_back(Row::blank(cols));
-                }
-            }
             while self.rows.len() > screen_lines as usize {
-                let mut r = self.rows.pop_front().unwrap_or_else(|| Row::blank(cols));
-                r.resize(cols);
+                let r = self.rows.pop_front().unwrap_or_else(|| Row::blank(cols));
                 self.push_scrollback(r);
+                cursor = cursor.saturating_sub(1);
+            }
+            while self.rows.len() < screen_lines as usize {
+                // A full screen grows upward out of scrollback; otherwise pad.
+                match self.scrollback.pop_back().filter(|_| was_full) {
+                    Some(r) => {
+                        self.rows.push_front(r);
+                        cursor += 1;
+                    }
+                    None => self.rows.push_back(Row::blank(cols)),
+                }
             }
             self.scroll_region = ScrollRegion::full(screen_lines);
             self.display_offset = self.display_offset.min(self.scrollback.len());
-            return;
+            return cursor as u16;
         }
+        // ponytail: rows below the cursor are assumed not to rewrap; track the
+        // cursor's cell through the reflow if a full-screen app shows it off.
+        let below = self.rows.len() - 1 - cursor;
 
         // Width changed: rebuild the whole buffer by unwrapping to logical
         // lines, then rewrapping at the new width.
@@ -323,6 +347,7 @@ impl Grid {
 
         // Keep the last `screen_lines` rows visible, the rest in scrollback.
         let split = rebuilt.len().saturating_sub(screen_lines as usize);
+        let cursor = (rebuilt.len().saturating_sub(1 + below)).saturating_sub(split);
         let screen: Vec<Row> = rebuilt.split_off(split);
         let mut screen = screen;
         while screen.len() < screen_lines as usize {
@@ -335,6 +360,7 @@ impl Grid {
         }
         self.scroll_region = ScrollRegion::full(screen_lines);
         self.display_offset = self.display_offset.min(self.scrollback.len());
+        cursor as u16
     }
 
     /// Scroll the viewport by `delta` lines; a positive `delta` scrolls back
@@ -495,6 +521,26 @@ mod tests {
         g.resize(5, 3);
         let rebuilt: String = g.all_lines().map(Row::text).collect::<Vec<_>>().join("");
         assert!(rebuilt.contains("abcdefghij"), "reflow lost content: {rebuilt}");
+    }
+
+    #[test]
+    fn shrinking_keeps_the_text_above_the_cursor_not_the_blank_rows_below() {
+        for cols in [10, 6] {
+            let mut g = Grid::new(10, 8, 100);
+            for (row, c) in ['a', 'b', 'c'].into_iter().enumerate() {
+                g.row_mut(row as u16).unwrap().cells[0].ch = c;
+            }
+            // Cursor on row 3, the empty prompt line; rows 4–7 are free space.
+            let cursor = g.resize_at(cols, 5, 3);
+            let screen: Vec<String> = g.rows().map(Row::text).collect();
+            assert_eq!(screen, ["a", "b", "c", "", ""], "cols {cols}");
+            assert_eq!((cursor, g.scrollback_len()), (3, 0), "cols {cols}");
+
+            // Smaller than the content: the top scrolls away and the cursor follows.
+            assert_eq!(g.resize_at(cols, 2, cursor), 1, "cols {cols}");
+            assert_eq!(g.rows().map(Row::text).collect::<Vec<_>>(), ["c", ""]);
+            assert_eq!(g.scrollback_len(), 2);
+        }
     }
 
     #[test]
