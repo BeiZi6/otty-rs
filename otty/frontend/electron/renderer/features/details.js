@@ -16,6 +16,15 @@ OttyFeatures.register('details', (ctx) => {
   let tab = 'info';
   let followed = '';
   let serial = 0;
+  // Info and Outline change while the pane stays put — a server starts, a
+  // command runs — so they are asked again while shown, and redrawn on a new answer.
+  const POLLED = { info: 'details.info', outline: 'details.outline' };
+  let answer = '';
+  let timer = 0;
+  const remember = (data) => {
+    answer = JSON.stringify(data);
+    return data;
+  };
 
   // Icons are masks so they take the text colour of whatever theme is active.
   function icon(stem) {
@@ -35,7 +44,7 @@ OttyFeatures.register('details', (ctx) => {
 
   const views = {
     async info() {
-      const info = await ctx.request('details.info', paneParams());
+      const info = remember(await ctx.request('details.info', paneParams()));
       const agent = typeof info.agent === 'string' ? { name: info.agent } : info.agent;
       const processes = info.processes || [];
       const ports = info.ports || [];
@@ -47,7 +56,6 @@ OttyFeatures.register('details', (ctx) => {
         processes.length
           ? h('ul', { class: 'details-list' }, processes.map((name) => h('li', {}, name)))
           : message('—'),
-        // The backend reports no ports yet; the row appears once it does.
         ports.length > 0 && [
           heading(t('menu.ports', 'Ports')),
           h('div', { class: 'details-row' }, ports.map((port) => h('button', {
@@ -79,13 +87,12 @@ OttyFeatures.register('details', (ctx) => {
     },
 
     async outline() {
-      const rows = await ctx.request('details.outline', paneParams());
+      const rows = remember(await ctx.request('details.outline', paneParams()));
       if (!rows || !rows.length) return [message(t('menu.no_line_info', 'No Line Info'))];
       return [h('ul', { class: 'details-list' }, rows.map((row) => h('li', {}, h('button', {
         type: 'button',
         class: `details-item details-kind-${row.kind || 'command'}`,
-        // The protocol has no scroll-to-line; a find from that line is the closest read-only jump.
-        onclick: () => ctx.request('find.next', { ...paneParams(), query: row.title, from: { line: row.line, col: 0 } }).catch(() => {}),
+        onclick: () => ctx.request('pane.scroll', { ...paneParams(), line: row.line }).catch(() => {}),
       }, h('span', { class: 'details-line' }, String(row.line)), row.title))))];
     },
 
@@ -190,6 +197,14 @@ OttyFeatures.register('details', (ctx) => {
   }
   const reload = F.debounce(load, 120);
 
+  function poll() {
+    const method = POLLED[tab];
+    if (!root || !method) return;
+    ctx.request(method, paneParams()).then((data) => {
+      if (JSON.stringify(data) !== answer) load();
+    }, () => {});
+  }
+
   function paintTabs() {
     buttons.forEach((button, index) => {
       const selected = TABS[index][0] === tab;
@@ -232,9 +247,12 @@ OttyFeatures.register('details', (ctx) => {
       },
     }, buttons), panel));
     select(tab);
+    clearInterval(timer);
+    timer = setInterval(poll, 2000);
   }
 
   function hide() {
+    clearInterval(timer);
     root.remove();
     root = null;
     ctx.focusTerminal();

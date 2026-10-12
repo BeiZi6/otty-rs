@@ -90,6 +90,13 @@ function bindPaneMouse(view, id) {
   view.el.addEventListener('pointerup', () => {
     anchor = null;
   });
+  // Three lines a notch into scrollback; the backend stops at both ends.
+  view.el.addEventListener('wheel', (event) => {
+    const delta = Math.round(-event.deltaY / 33) || -Math.sign(event.deltaY);
+    if (!delta) return;
+    clearSelection();
+    request('pane.scroll', { pane: id, delta }).catch(report);
+  }, { passive: true });
   view.el.addEventListener('contextmenu', async (event) => {
     event.preventDefault();
     const [col, row] = cell(event);

@@ -230,7 +230,7 @@
 - **官网:** FEATURES §1。⌘⇧R，右侧，始终跟 focused pane。内置四页：Info（cwd、进程、监听端口、open-in）、Outline（OSC 133 命令 / agent prompt / 文件 TOC）、Git、Files（以 pane cwd 为根）。`details-view` 可重排。自定义两种：`kind=tui`（面板里跑 lazydocker 等）、`kind=web`。
 - **DMG:** action `toggle_details_panel`、`details_tab_info/outline/git/files`。图标 `resources/view-icons/`（62 SVG，已拷）。TUI 视图用 `resources/view-sandbox/` 的 `open`/`xdg-open` 垫片，禁止从面板里弹出 GUI。
 - **原实现:** 右栏镜像左栏 tab 面板。TUI 视图是嵌在面板里的又一个终端，cwd/env 来自 focused pane。Web 视图非持久 data store。Linux 无 Ports。
-- **当前:** `otty-ui::details` Info 读 focused pane cwd；`toggle_details_panel` 显隐；切 tab 后 `details_info` 跟过去。壳右栏 + ⌘⇧R。Outline/Git/Files 页仍空。
+- **当前:** `otty-ui::details` Info 读 focused pane cwd；`toggle_details_panel` 显隐；切 tab 后 `details_info` 跟过去。壳右栏 + ⌘⇧R。Electron 侧四页都有数据：Info 的端口来自 `otty-pty::listening_ports`（Windows 读 TCP 表按进程树过滤，Unix 走 `lsof`，未在 Unix 上实测）；Outline 来自 `Grid::outline`——OSC 133 `A`/`B` 标记记在 `Row.mark` 上，随滚动和 reflow 走，点一行用 `pane.scroll` 滚过去。Slint 壳的 Outline/Git/Files 页仍空。自定义 `details-view`（tui / web）未做。
 - **落点:** 壳布局加右栏；Info 先接 cwd + 进程（`otty-pty` 已有 unix `processes`）。Outline 依赖 GAP 的 OSC 133 索引。
 - **完成:** ⌘⇧R 显隐；切 tab 后面板跟过去；Info 至少显示 cwd。
 

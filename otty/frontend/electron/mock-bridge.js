@@ -215,6 +215,9 @@ const methods = {
     return null;
   },
   'pane.text': ({ pane }) => ({ rows: [`mock ${paneId(pane)}`] }),
+  'pane.scroll': () => null,
+  'details.info': ({ pane }) => ({ cwd: model.panes[paneId(pane)].cwd, processes: ['mock'], ports: [3000], agent: null }),
+  'details.outline': () => [{ line: 0, title: 'make build', kind: 'command' }, { line: 12, title: 'cargo test', kind: 'command' }],
   'pane.select': ({ pane, from, to }) => ({ text: `${paneId(pane)} ${from}..${to}` }),
   'pane.context': ({ selection }) => [
     ...(selection ? [{ label: 'Copy', action: 'copy' }] : []),

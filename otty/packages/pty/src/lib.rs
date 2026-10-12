@@ -298,6 +298,11 @@ impl Pty {
         self.pid.map(foreground_processes).unwrap_or_default()
     }
 
+    /// The TCP ports the shell and what it started are listening on.
+    pub fn ports(&self) -> Vec<u16> {
+        self.pid.map(listening_ports).unwrap_or_default()
+    }
+
     /// Try to reap the child without blocking. `Some` once it has exited.
     pub fn try_wait(&mut self) -> Option<portable_pty::ExitStatus> {
         self.child.try_wait().ok().flatten()
@@ -390,6 +395,71 @@ fn unix_foreground_processes(pid: u32) -> Vec<String> {
                 .unwrap_or(comm)
         })
         .collect()
+}
+
+/// The TCP ports `pid` and its descendants are listening on, ascending.
+///
+/// Windows asks the TCP table, which names each socket's owner. Unix asks
+/// `lsof` and `ps`; where `lsof` is not installed the answer is none.
+pub fn listening_ports(pid: u32) -> Vec<u16> {
+    #[cfg(windows)]
+    {
+        win_proc::listening_ports(pid)
+    }
+    #[cfg(unix)]
+    {
+        let run = |program: &str, args: &[&str]| {
+            let out = std::process::Command::new(program).args(args).output().ok()?;
+            Some(String::from_utf8_lossy(&out.stdout).into_owned())
+        };
+        let (Some(tree), Some(sockets)) = (run("ps", &["-axo", "pid=,ppid="]), run("lsof", &["-nP", "-iTCP", "-sTCP:LISTEN", "-Fpn"]))
+        else {
+            return Vec::new();
+        };
+        lsof_ports(&sockets, &ps_tree(&tree, pid))
+    }
+    #[cfg(not(any(unix, windows)))]
+    {
+        let _ = pid;
+        Vec::new()
+    }
+}
+
+/// `ps -axo pid=,ppid=` output → `root` and every process under it.
+#[cfg_attr(not(unix), allow(dead_code))]
+fn ps_tree(text: &str, root: u32) -> std::collections::HashSet<u32> {
+    let pairs: Vec<(u32, u32)> = text
+        .lines()
+        .filter_map(|line| {
+            let mut fields = line.split_whitespace();
+            Some((fields.next()?.parse().ok()?, fields.next()?.parse().ok()?))
+        })
+        .collect();
+    let mut tree = std::collections::HashSet::from([root]);
+    // ponytail: one pass per process found, O(n²) over the process table;
+    // index by parent if that ever shows up in a profile.
+    while pairs.iter().any(|(pid, parent)| tree.contains(parent) && tree.insert(*pid)) {}
+    tree
+}
+
+/// `lsof -Fpn` output — a `p<pid>` line, then an `n<address>:<port>` line per
+/// socket — → the ports owned by `pids`, ascending.
+#[cfg_attr(not(unix), allow(dead_code))]
+fn lsof_ports(text: &str, pids: &std::collections::HashSet<u32>) -> Vec<u16> {
+    let mut owner = None;
+    let mut ports = Vec::new();
+    for line in text.lines() {
+        if let Some(pid) = line.strip_prefix('p') {
+            owner = pid.parse::<u32>().ok();
+        } else if let Some(port) = line.strip_prefix('n').and_then(|name| name.rsplit(':').next()?.parse().ok()) {
+            if owner.is_some_and(|pid| pids.contains(&pid)) {
+                ports.push(port);
+            }
+        }
+    }
+    ports.sort_unstable();
+    ports.dedup();
+    ports
 }
 
 /// The `live-resize-sigwinch-delay-ms` policy.
@@ -566,6 +636,28 @@ pub fn resolve_working_directory(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ports_are_read_from_lsof_for_the_shell_s_process_tree_only() {
+        // 100 is the shell; 101 its child, 102 a grandchild; 200 is someone else.
+        let tree = ps_tree("  1     0
+100     1
+101   100
+102   101
+200     1
+", 100);
+        assert_eq!(tree, std::collections::HashSet::from([100, 101, 102]));
+        let lsof = "p101
+n*:8080
+n127.0.0.1:3000
+p102
+n[::1]:3000
+p200
+n*:5432
+";
+        assert_eq!(lsof_ports(lsof, &tree), [3000, 8080]);
+        assert!(lsof_ports("", &tree).is_empty());
+    }
 
     #[test]
     fn log_mode_parses_the_two_documented_values() {

@@ -122,6 +122,11 @@ impl Session {
         &self.terminal
     }
 
+    /// The terminal, for moving its viewport.
+    pub fn terminal_mut(&mut self) -> &mut Terminal {
+        &mut self.terminal
+    }
+
     /// Move every queued byte from the PTY into the terminal.
     ///
     /// Returns the number of bytes consumed, so a caller can tell "there was
@@ -239,6 +244,11 @@ impl Session {
 
     pub fn pid(&self) -> Option<u32> {
         self.pty()?.pid()
+    }
+
+    /// The TCP ports the shell and what it started are listening on.
+    pub fn ports(&self) -> Vec<u16> {
+        self.pty().map(Pty::ports).unwrap_or_default()
     }
 
     pub fn log_path(&self) -> Option<&std::path::Path> {

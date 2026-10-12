@@ -14,6 +14,7 @@
 use std::collections::VecDeque;
 
 use crate::attrs::Cell;
+use crate::events::PromptMark;
 
 /// A row of cells plus the reflow metadata.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -26,6 +27,10 @@ pub struct Row {
     pub wrapped: bool,
     /// The row was produced by a line feed, not a wrap.
     pub is_first_in_command: bool,
+    /// The `OSC 133` mark that landed on this row, and the column it landed
+    /// at: `A` where the prompt starts, `B` where the command line does. Kept
+    /// on the row so it scrolls, trims and reflows with the text it describes.
+    pub mark: Option<(PromptMark, u16)>,
 }
 
 impl Row {
@@ -35,6 +40,7 @@ impl Row {
             trailing_spacer: 0,
             wrapped: false,
             is_first_in_command: false,
+            mark: None,
         }
     }
 
@@ -218,6 +224,10 @@ impl Grid {
         while self.scrollback.len() > self.scrollback_limit {
             self.scrollback.pop_front();
         }
+        // A viewport scrolled back keeps showing the same lines as output arrives.
+        if self.display_offset > 0 {
+            self.display_offset = (self.display_offset + 1).min(self.scrollback.len());
+        }
     }
 
     /// Drop everything above the viewport — `Clear Scrollback Above`.
@@ -303,23 +313,31 @@ impl Grid {
         // Width changed: rebuild the whole buffer by unwrapping to logical
         // lines, then rewrapping at the new width.
         let mut logical: Vec<Vec<Cell>> = Vec::new();
+        // Each logical line's mark, as a cell offset into the line.
+        let mut marks: Vec<Option<(PromptMark, usize)>> = Vec::new();
+        let mut mark = None;
         let mut current: Vec<Cell> = Vec::new();
         let all: Vec<Row> = self.scrollback.iter().cloned().chain(self.rows.iter().cloned()).collect();
         for row in all {
+            if let Some((kind, col)) = row.mark {
+                mark = Some((kind, current.len() + col as usize));
+            }
             let mut cells = row.cells.clone();
             cells.truncate(old_cols as usize);
             current.extend(cells);
             if !row.wrapped {
                 logical.push(std::mem::take(&mut current));
+                marks.push(mark.take());
             }
         }
         if !current.is_empty() {
             logical.push(current);
+            marks.push(mark);
         }
 
         let mut rebuilt: Vec<Row> = Vec::new();
         let mut carry: Vec<Cell> = Vec::new();
-        for line in logical {
+        for (line, mark) in logical.into_iter().zip(marks) {
             let mut plain: Vec<Cell> = line;
             // Trim the blank padding the old width introduced.
             while plain.last().is_some_and(Cell::is_blank) {
@@ -334,13 +352,19 @@ impl Grid {
                 merged.extend(plain);
                 plain = merged;
             }
-            for chunk in plain.chunks(cols as usize) {
+            let last = (plain.len() - 1) / cols as usize;
+            for (at, chunk) in plain.chunks(cols as usize).enumerate() {
                 let mut r = Row::blank(cols);
-                let n = chunk.len();
                 for (i, c) in chunk.iter().enumerate() {
                     r.cells[i] = *c;
                 }
-                r.wrapped = n == cols as usize;
+                // Only a row with more of its line below it is a soft wrap: a
+                // line that exactly fills the width still ends here.
+                r.wrapped = at < last;
+                // A mark past the trimmed text stays on the line's last row.
+                r.mark = mark
+                    .filter(|(_, offset)| (offset / cols as usize).min(last) == at)
+                    .map(|(kind, offset)| (kind, (offset - at * cols as usize).min(cols as usize - 1) as u16));
                 rebuilt.push(r);
             }
         }
@@ -361,6 +385,33 @@ impl Grid {
         self.scroll_region = ScrollRegion::full(screen_lines);
         self.display_offset = self.display_offset.min(self.scrollback.len());
         cursor as u16
+    }
+
+    /// The command lines `OSC 133` marked, oldest first, as `(grid line, text)`.
+    ///
+    /// The text runs from the `B` mark (where the prompt ends) to the end of
+    /// the logical line. A shell that only sends `A` is read from there
+    /// instead, prompt included. Lines with nothing typed are left out.
+    pub fn outline(&self) -> Vec<(usize, String)> {
+        let end = |row: &Row| matches!(row.mark, Some((PromptMark::PromptEnd, _)));
+        let want = if self.all_lines().any(end) { PromptMark::PromptEnd } else { PromptMark::PromptStart };
+        let mut out = Vec::new();
+        for line in 0..self.total_lines() {
+            let Some((row, (_, col))) = self.line(line).and_then(|r| r.mark.filter(|m| m.0 == want).map(|m| (r, m))) else {
+                continue;
+            };
+            let cells = row.trimmed().iter().skip(col as usize);
+            let mut text: String = cells.filter(|c| !c.is_wide_spacer()).map(|c| c.ch).collect();
+            let mut next = line;
+            while self.line(next).is_some_and(|r| r.wrapped) {
+                next += 1;
+                text.push_str(&self.line(next).map(Row::text).unwrap_or_default());
+            }
+            if !text.trim().is_empty() {
+                out.push((line, text.trim().to_owned()));
+            }
+        }
+        out
     }
 
     /// Scroll the viewport by `delta` lines; a positive `delta` scrolls back

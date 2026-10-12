@@ -352,7 +352,6 @@ button { font: inherit; }
 .split-divider.horizontal::after { inset: 0 -3px; }
 .split-divider.vertical { min-height: 1px; cursor: row-resize; }
 .split-divider.vertical::after { inset: -3px 0; }
-.split-divider.fixed { cursor: default; }
 
 /* Mount slots (PROTOCOL.md "Renderer feature contract"). */
 .pane-overlay { position: absolute; z-index: 3; pointer-events: none; }

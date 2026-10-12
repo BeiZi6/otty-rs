@@ -39,6 +39,13 @@ pub trait Panes: PaneIo {
     fn selected_text(&self, pane: PaneId, from: (u16, u16), to: (u16, u16)) -> Option<String>;
     /// Scrollback plus the screen, one string per grid line.
     fn history(&self, pane: PaneId) -> Option<Vec<String>>;
+    /// The commands OSC 133 marked, as `(grid line, text)`, oldest first.
+    fn outline(&self, pane: PaneId) -> Option<Vec<(usize, String)>>;
+    /// The TCP ports the pane's processes are listening on.
+    fn ports(&self, pane: PaneId) -> Vec<u16>;
+    /// Move the viewport: grid line `line` to the top when given, else `delta`
+    /// lines back into history.
+    fn scroll(&mut self, pane: PaneId, line: Option<usize>, delta: i32);
     fn set_theme(&mut self, theme: &Theme);
     /// The font keys changed; re-measure every pane.
     fn set_font(&mut self, config: &Config);
@@ -559,6 +566,16 @@ impl Backend {
                 }
                 json!({"rows": rows})
             }
+            "pane.scroll" => {
+                let pane = self.pane(p)?;
+                let line = p["line"].as_u64().map(|line| line as usize);
+                let delta = p["delta"].as_i64().unwrap_or(0) as i32;
+                if line.is_none() && delta == 0 {
+                    return Err("missing `line` or `delta`".to_owned());
+                }
+                io.scroll(pane, line, delta);
+                Value::Null
+            }
             "pane.select" => {
                 let selected = io
                     .selected_text(self.pane(p)?, cell(p, "from")?, cell(p, "to")?)
@@ -756,8 +773,7 @@ impl Backend {
                 json!({
                     "cwd": self.cwd(p)?,
                     "processes": io.processes(pane),
-                    // Nothing in the workspace maps a pane to its listening ports yet.
-                    "ports": [],
+                    "ports": io.ports(pane),
                     "agent": agent.map(|(name, state)| json!({"name": name, "state": state.as_str()})),
                 })
             }
@@ -837,9 +853,13 @@ impl Backend {
                 json!({"language": language.code(), "strings": strings})
             }
 
-            // OSC 133 marks reach the bridge as events with no grid line, so
-            // there is nothing to build an outline from yet.
-            "details.outline" => return Err("not implemented".to_owned()),
+            "details.outline" => {
+                let rows = io.outline(self.pane(p)?).ok_or("pane has no live session")?;
+                json!(rows
+                    .iter()
+                    .map(|(line, title)| json!({"line": line, "title": title, "kind": "command"}))
+                    .collect::<Vec<_>>())
+            }
             _ => return Err(format!("unknown method `{method}`")),
         })
     }
@@ -857,6 +877,7 @@ mod tests {
         screen: Vec<String>,
         themes: Vec<String>,
         fonts: usize,
+        scrolls: Vec<(Option<usize>, i32)>,
     }
 
     impl PaneIo for Fake {
@@ -898,6 +919,15 @@ mod tests {
         }
         fn history(&self, _: PaneId) -> Option<Vec<String>> {
             Some(self.screen.clone())
+        }
+        fn outline(&self, _: PaneId) -> Option<Vec<(usize, String)>> {
+            Some(vec![(0, "cat /etc/hosts".to_owned())])
+        }
+        fn ports(&self, _: PaneId) -> Vec<u16> {
+            vec![3000]
+        }
+        fn scroll(&mut self, _: PaneId, line: Option<usize>, delta: i32) {
+            self.scrolls.push((line, delta));
         }
         fn set_theme(&mut self, theme: &Theme) {
             self.themes.push(theme.slug.clone());
@@ -969,7 +999,7 @@ mod tests {
     fn an_unknown_method_and_an_unbuilt_one_are_errors_not_crashes() {
         let (_dir, mut b, mut io) = backend();
         assert!(b.request(&mut io, "no.such", &json!({})).unwrap_err().contains("no.such"));
-        assert_eq!(b.request(&mut io, "details.outline", &json!({})).unwrap_err(), "not implemented");
+        assert_eq!(b.request(&mut io, "recipe.nope", &json!({})).unwrap_err(), "unknown method `recipe.nope`");
         assert!(b.request(&mut io, "pane.focus", &json!({"pane": "pane-9"})).is_err());
         assert!(b.request(&mut io, "tab.close", &Value::Null).is_err(), "params may be missing");
         assert_eq!(b.request(&mut io, "action.run", &json!({"id": "nope"})).unwrap(), json!({"handled": false}));
@@ -1093,6 +1123,16 @@ mod tests {
         assert_eq!(find(back), json!({"line": 3, "col": 0}), "wraps backwards");
         assert_eq!(find(json!({"query": "bar", "from": {"line": 1, "col": 4}})), json!({"line": 1, "col": 4}));
         assert_eq!(find(json!({"query": "nope"})), Value::Null);
+
+        // The outline is the pane's marked commands, and a row scrolls to its line.
+        let outline = b.request(&mut io, "details.outline", &json!({})).unwrap();
+        assert_eq!(outline, json!([{"line": 0, "title": "cat /etc/hosts", "kind": "command"}]));
+        b.request(&mut io, "pane.scroll", &json!({"line": 0})).unwrap();
+        b.request(&mut io, "pane.scroll", &json!({"pane": "pane-1", "delta": -3})).unwrap();
+        assert_eq!(io.scrolls, [(Some(0), 0), (None, -3)]);
+        assert!(b.request(&mut io, "pane.scroll", &json!({})).is_err());
+        let info = b.request(&mut io, "details.info", &json!({})).unwrap();
+        assert_eq!((&info["ports"], &info["processes"]), (&json!([3000]), &json!(["claude"])));
     }
 
     #[test]

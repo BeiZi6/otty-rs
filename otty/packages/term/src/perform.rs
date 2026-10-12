@@ -1152,6 +1152,37 @@ mod tests {
     }
 
     #[test]
+    fn the_outline_is_the_marked_command_lines_and_follows_them_through_scroll_and_reflow() {
+        let (mut t, mut p) = term(20, 3);
+        for command in ["make build", "", "cargo test --workspace"] {
+            feed(&mut t, &mut p, b"\x1b]133;A\x07$ \x1b]133;B\x07");
+            feed(&mut t, &mut p, command.as_bytes());
+            feed(&mut t, &mut p, b"\x1b]133;C\x07\r\nout\r\n\x1b]133;D;0\x07");
+        }
+        // Three rows of screen, so the first command is deep in scrollback.
+        let lines: Vec<String> = t.history().lines().map(str::to_owned).collect();
+        let outline = t.outline();
+        // The prompt is not part of the title, and the empty command is skipped.
+        assert_eq!(outline.iter().map(|(_, text)| text.as_str()).collect::<Vec<_>>(), ["make build", "cargo test --workspace"]);
+        assert_eq!(outline[0].0, 0);
+        for (line, text) in &outline {
+            assert!(lines[*line].contains(&text[..10]), "line {line} is {:?}", lines[*line]);
+        }
+
+        // The long command wrapped at 20 columns; at 12 it wraps twice, at 40 not at all.
+        for cols in [12, 40] {
+            t.resize(cols, 3);
+            let texts: Vec<String> = t.outline().into_iter().map(|(_, text)| text).collect();
+            assert_eq!(texts, ["make build", "cargo test --workspace"], "{cols} columns");
+        }
+
+        // A shell that only marks where the prompt starts is read from there.
+        let (mut t, mut p) = term(20, 3);
+        feed(&mut t, &mut p, b"\x1b]133;A\x07> ls\r\n");
+        assert_eq!(t.outline(), [(0, "> ls".to_owned())]);
+    }
+
+    #[test]
     fn inline_images_hand_over_the_undecoded_payload() {
         let (mut t, mut p) = term(20, 3);
         feed(&mut t, &mut p, b"\x1b]1337;File=name=a.png;inline=1:aGk=\x07");

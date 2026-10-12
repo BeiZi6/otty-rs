@@ -41,8 +41,9 @@ Ids are slugs: `tab-2`, `pane-3`. `pane` omitted = the focused pane.
 | `tab.reopen` | `{}` — last closed, stack of 12 | `{tab,pane}` or `null` |
 | `pane.split` | `{pane?,direction:"right"\|"left"\|"up"\|"down"}` | `{pane}` |
 | `pane.focus` / `pane.close` / `pane.zoom` | `{pane}` | `null` |
-| `pane.ratio` | `{pane,ratio}` — first child's share 10–90 of the split holding `pane` | `null` |
+| `pane.ratio` | `{pane,with?,ratio}` — first child's share 10–90 of the split that separates `pane` from `with` (omitted: the split holding `pane` directly) | `null` |
 | `pane.text` | `{pane?,lines?}` | `{rows:[string]}` visible grid |
+| `pane.scroll` | `{pane?,line}` grid line to the top of the viewport, or `{pane?,delta}` lines back into history (negative: towards live output) | `null` |
 | `pane.select` | `{pane?,from:[col,row],to:[col,row]}` cells | `{text}` |
 | `pane.context` | `{pane?,col,row,selection?}` | `[{label,action}]` |
 | `find.next` | `{pane?,query,from?:{line,col},backwards?:bool}` | `{line,col}` or `null` |
@@ -57,8 +58,8 @@ Ids are slugs: `tab-2`, `pane-3`. `pane` omitted = the focused pane.
 | `settings.reset` | `{key}` | `null` |
 | `theme.list` | `{}` | `[{name,dark:bool}]` |
 | `theme.set` | `{name}` | `null` (then a `ready`-shaped `chrome` event) |
-| `details.info` | `{pane?}` | `{cwd,processes:[string],ports:[number],agent}` |
-| `details.outline` | `{pane?}` | `[{line,title,kind}]` OSC 133 commands |
+| `details.info` | `{pane?}` | `{cwd,processes:[string],ports:[number],agent}` — `ports` are the TCP ports the pane's process tree listens on |
+| `details.outline` | `{pane?}` | `[{line,title,kind}]` OSC 133 commands, oldest first; `line` is a grid line, as `pane.scroll` and `find.next` count them |
 | `details.git` | `{pane?}` | `{root,branch,changes:[{path,status}]}` or `null` |
 | `details.files` | `{path}` | `[{name,dir:bool}]` |
 | `file.read` | `{path}` | `{kind:"text"\|"binary",body,language?}` |

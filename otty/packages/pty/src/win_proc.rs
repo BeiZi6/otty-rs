@@ -54,6 +54,16 @@ extern "system" {
     ) -> i32;
 }
 
+#[link(name = "iphlpapi")]
+extern "system" {
+    fn GetExtendedTcpTable(table: *mut u8, size: *mut u32, order: i32, family: u32, class: u32, reserved: u32) -> u32;
+}
+
+const TCP_TABLE_OWNER_PID_LISTENER: u32 = 3;
+/// `(address family, row size, offset of the port, offset of the owning pid)`
+/// for `MIB_TCPROW_OWNER_PID` and `MIB_TCP6ROW_OWNER_PID`.
+const TCP_TABLES: [(u32, usize, usize, usize); 2] = [(2, 24, 8, 20), (23, 56, 20, 52)];
+
 struct Proc {
     pid: u32,
     parent: u32,
@@ -77,6 +87,45 @@ pub fn foreground_processes(pid: u32) -> Vec<String> {
         }
     }
     out
+}
+
+/// The TCP ports `root` and its descendants are listening on, ascending.
+pub fn listening_ports(root: u32) -> Vec<u16> {
+    let snapshot = unsafe { snapshot_processes() };
+    let mut pids: HashSet<u32> = descendants(root, &snapshot).iter().map(|p| p.pid).collect();
+    pids.insert(root);
+    let mut ports = Vec::new();
+    for (family, row, port_at, pid_at) in TCP_TABLES {
+        let table = listener_table(family);
+        let count = table.get(..4).map_or(0, |n| u32::from_ne_bytes([n[0], n[1], n[2], n[3]]) as usize);
+        // The table is a count, then that many rows.
+        for entry in table.get(4..).unwrap_or_default().chunks_exact(row).take(count) {
+            let pid = u32::from_ne_bytes([entry[pid_at], entry[pid_at + 1], entry[pid_at + 2], entry[pid_at + 3]]);
+            if pids.contains(&pid) {
+                // The port is in network byte order.
+                ports.push(u16::from_be_bytes([entry[port_at], entry[port_at + 1]]));
+            }
+        }
+    }
+    ports.sort_unstable();
+    ports.dedup();
+    ports
+}
+
+/// The raw `TCP_TABLE_OWNER_PID_LISTENER` table for one address family, or
+/// nothing when the system will not give it.
+fn listener_table(family: u32) -> Vec<u8> {
+    let mut size = 0u32;
+    unsafe {
+        GetExtendedTcpTable(std::ptr::null_mut(), &mut size, 0, family, TCP_TABLE_OWNER_PID_LISTENER, 0);
+        // Room for the sockets opened between the two calls.
+        size += 1024;
+        let mut table = vec![0u8; size as usize];
+        match GetExtendedTcpTable(table.as_mut_ptr(), &mut size, 0, family, TCP_TABLE_OWNER_PID_LISTENER, 0) {
+            0 => table,
+            _ => Vec::new(),
+        }
+    }
 }
 
 fn descendants(root: u32, snapshot: &[Proc]) -> Vec<&Proc> {
@@ -199,7 +248,7 @@ fn command_line(pid: u32) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{foreground_processes, is_noise, snapshot_processes};
+    use super::{foreground_processes, is_noise, listening_ports, snapshot_processes};
     use std::process::{Command, Stdio};
     use std::time::{Duration, Instant};
 
@@ -210,6 +259,20 @@ mod tests {
         assert!(!is_noise("claude.exe"));
         assert!(!is_noise("node.exe"));
         assert!(!is_noise("pwsh.exe"));
+    }
+
+    #[test]
+    fn a_listening_socket_is_a_port_of_the_process_that_opened_it() {
+        let v4 = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let v6 = std::net::TcpListener::bind("[::1]:0").ok();
+        let ports = listening_ports(std::process::id());
+        for socket in std::iter::once(&v4).chain(&v6) {
+            let port = socket.local_addr().unwrap().port();
+            assert!(ports.contains(&port), "{port} is not in {ports:?}");
+        }
+        assert!(ports.windows(2).all(|pair| pair[0] < pair[1]), "sorted, no repeats: {ports:?}");
+        // A pid no process has owns nothing.
+        assert!(!listening_ports(u32::MAX).contains(&v4.local_addr().unwrap().port()));
     }
 
     #[test]

@@ -1124,7 +1124,20 @@ impl Terminal {
 
     /// The prompt marks the outline index is built from.
     pub fn push_prompt_mark(&mut self, mark: PromptMark) {
+        // Where the prompt starts and where it ends are kept on the row, which
+        // is what gives the outline a line that survives scrolling.
+        if matches!(mark, PromptMark::PromptStart | PromptMark::PromptEnd) && self.mode == Mode::Primary {
+            let (row, col) = (self.cursor.row, self.cursor.col);
+            if let Some(r) = self.primary.row_mut(row) {
+                r.mark = Some((mark, col));
+            }
+        }
         self.push_event(Event::PromptMark(mark));
+    }
+
+    /// The commands run in this terminal, oldest first: `(grid line, text)`.
+    pub fn outline(&self) -> Vec<(usize, String)> {
+        self.primary.outline()
     }
 }
 

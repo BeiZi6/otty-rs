@@ -313,6 +313,29 @@ impl TerminalView {
         otty_term::grid_lines(self.session.terminal().grid())
     }
 
+    /// The commands OSC 133 marked, oldest first: `(grid line, text)`.
+    pub fn outline(&self) -> Vec<(usize, String)> {
+        self.session.terminal().outline()
+    }
+
+    /// The TCP ports this pane's processes are listening on.
+    pub fn ports(&self) -> Vec<u16> {
+        self.session.ports()
+    }
+
+    /// Scroll the viewport `delta` lines back into history (negative: towards
+    /// the live output). Returns whether it moved.
+    pub fn scroll(&mut self, delta: i32) -> bool {
+        self.session.terminal_mut().grid_mut().scroll_display(delta)
+    }
+
+    /// Put grid line `line` at the top of the viewport, as far as history allows.
+    pub fn scroll_to_line(&mut self, line: usize) -> bool {
+        let grid = self.session.terminal_mut().grid_mut();
+        let back = grid.scrollback_len().saturating_sub(line) as i32;
+        grid.scroll_display(back - grid.display_offset as i32)
+    }
+
     /// Whether the shell has exited, so the pane can close.
     pub fn exited(&mut self) -> bool {
         self.session.status().is_some()
@@ -331,6 +354,8 @@ impl TerminalView {
 
     /// Send input to the shell.
     pub fn write(&mut self, bytes: &[u8]) -> Result<(), PtyError> {
+        // Typing answers the live prompt, so the viewport goes back to it.
+        self.session.terminal_mut().grid_mut().scroll_to_bottom();
         self.session.write(bytes)
     }
 
@@ -413,7 +438,13 @@ impl TerminalView {
     /// second copy of it here would be one more thing that can disagree.
     pub fn build_frame(&self) -> GridFrame {
         let term = self.session.terminal();
-        let lines: Vec<Line> = term.grid().rows().map(|r| encode_line(r, &self.palette)).collect();
+        let grid = term.grid();
+        // The viewport starts `display_offset` lines above the live screen.
+        let top = grid.scrollback_len() - grid.display_offset;
+        let lines: Vec<Line> = (top..top + term.rows() as usize)
+            .filter_map(|line| grid.line(line))
+            .map(|r| encode_line(r, &self.palette))
+            .collect();
         GridFrame {
             cols: term.cols(),
             rows: term.rows(),
@@ -435,10 +466,12 @@ impl TerminalView {
         // but the theme names the shape to use when the program has not asked for
         // one, so the theme wins here — which is what a themed window does.
         let engine = self.session.terminal().cursor;
+        // Scrolled back, the cursor moves down with its row and may leave the view.
+        let row = engine.row as usize + self.session.terminal().grid().display_offset;
         Cursor {
             col: engine.col,
-            row: engine.row,
-            visible: engine.visible,
+            row: row.min(u16::MAX as usize) as u16,
+            visible: engine.visible && row < self.session.terminal().rows() as usize,
             shape: self.chrome.cursor_shape,
             blinking: self.chrome.cursor_blink,
         }

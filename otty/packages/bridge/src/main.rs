@@ -149,6 +149,25 @@ impl Panes for Views {
         self.map.get(&pane).map(|v| v.history_lines())
     }
 
+    fn outline(&self, pane: PaneId) -> Option<Vec<(usize, String)>> {
+        self.map.get(&pane).map(|v| v.outline())
+    }
+
+    fn ports(&self, pane: PaneId) -> Vec<u16> {
+        self.map.get(&pane).map(|v| v.ports()).unwrap_or_default()
+    }
+
+    fn scroll(&mut self, pane: PaneId, line: Option<usize>, delta: i32) {
+        let Some(view) = self.map.get_mut(&pane) else { return };
+        let moved = match line {
+            Some(line) => view.scroll_to_line(line),
+            None => view.scroll(delta),
+        };
+        if moved {
+            self.owed.insert(pane);
+        }
+    }
+
     fn set_theme(&mut self, theme: &Theme) {
         for (id, view) in &mut self.map {
             view.set_theme(theme);
