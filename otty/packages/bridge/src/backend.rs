@@ -5,12 +5,12 @@
 //! reaching the sessions only through [`Panes`]. That is what lets a test
 //! drive it.
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::path::{Path, PathBuf};
 
 use otty_config::theme::{slugify, Mode, Theme};
 use otty_config::{bundled_resources, Catalog, Config, KeyKind, SaveScope, Value as Setting};
-use otty_core::{expand_path, PaneId, TabId, WindowId};
+use otty_core::{expand_path, AgentId, PaneId, TabId, WindowId};
 use otty_render::theme::Chrome;
 use otty_state::Store;
 use otty_term::{find_next, Event, FindHit, Progress};
@@ -27,6 +27,8 @@ use serde_json::{json, Map, Value};
 
 /// How many closed tabs `tab.reopen` remembers.
 const REOPEN_DEPTH: usize = 12;
+/// How many agent conversations Open Quickly offers.
+const TRANSCRIPTS: usize = 50;
 /// How many of a pane's latest commands a recipe saved with its commands keeps.
 const RECENT_COMMANDS: usize = 10;
 /// `file.read` answers in one JSON line, so it refuses anything bigger.
@@ -75,6 +77,9 @@ pub struct Backend {
     /// The focused pane's cwd as of the last `settle`; a new pane starts there.
     last_cwd: Option<String>,
     icons: HashMap<PaneId, &'static str>,
+    /// Claude Code's config directory, whose transcripts Open Quickly lists.
+    /// `None` in tests.
+    pub agent_home: Option<PathBuf>,
     /// The library saved recipes live in.
     pub recipes: PathBuf,
     /// Where `trusted_recipes.json` lives.
@@ -194,6 +199,7 @@ impl Backend {
             last_cwd: None,
             icons: HashMap::new(),
             projects: HashMap::new(),
+            agent_home: None,
             recipes: recipe::library_dir(),
             support: otty_core::app_support_dir(),
             replay: HashMap::new(),
@@ -495,6 +501,61 @@ impl Backend {
             .ok_or_else(|| format!("no tab `{s}`"))
     }
 
+    fn transcripts(&self) -> Vec<otty_agent::Transcript> {
+        self.agent_home.as_deref().map(|home| otty_agent::claude_transcripts(home, TRANSCRIPTS)).unwrap_or_default()
+    }
+
+    /// The command that resumes — or forks — `session` of `agent`.
+    fn agent_command(&self, agent: &AgentId, session: &str, fork: bool) -> Result<String, String> {
+        // The id is typed into a shell, so it must look like one.
+        if session.is_empty() || !session.chars().all(|c| c.is_ascii_alphanumeric() || "-_.".contains(c)) {
+            return Err(format!("`{session}` is not a session id"));
+        }
+        let overrides: BTreeMap<String, String> = self.config.get_pairs("agent-command").into_iter().collect();
+        let command = match fork {
+            true => otty_agent::fork_command(agent, session, &overrides),
+            false => otty_agent::resume_command(agent, session, &overrides),
+        };
+        command.ok_or_else(|| format!("{agent} cannot {} a conversation", if fork { "fork" } else { "resume" }))
+    }
+
+    /// Run `command` in a new pane in `cwd`: a split of the focused pane
+    /// (`split_right`, `split-down`, …), a new window, or else a new tab.
+    fn run_in<P: Panes>(&mut self, io: &mut P, place: &str, cwd: Option<String>, command: &str) -> Answer {
+        let before = self.d.focused_pane_id();
+        let place = place.replace('-', "_");
+        let split = place.strip_prefix("split_").and_then(SplitDirection::parse);
+        self.d.activate(match (split, place.as_str()) {
+            (Some(_), _) => &place,
+            (None, "new_window") => "new_window",
+            _ => "new_tab",
+        });
+        let pane = self.d.focused_pane_id().filter(|p| Some(*p) != before).ok_or("no pane to run it in")?;
+        if let (Some(p), Some(_)) = (self.d.app.pane_mut(pane), &cwd) {
+            p.cwd = cwd;
+        }
+        // The pane gets its session here, so the command has somewhere to go.
+        self.settle(io);
+        io.type_keys(pane, &format!("{command}\n"));
+        Ok(json!({"pane": pane.slug()}))
+    }
+
+    /// Fork the focused pane's agent conversation into a new pane at `place`.
+    // ponytail: "the pane's conversation" is the newest transcript for the
+    // pane's directory. The hooks report the real session id; use that once
+    // the bridge keeps it.
+    fn fork_here<P: Panes>(&mut self, io: &mut P, place: &str) -> Answer {
+        let cwd = self.cwd(&Value::Null)?;
+        let slashes = |path: &str| path.replace('\\', "/").to_lowercase();
+        let found = self
+            .transcripts()
+            .into_iter()
+            .find(|t| t.cwd.as_deref().is_some_and(|dir| slashes(dir) == slashes(&cwd)))
+            .ok_or("no agent conversation was found for this pane's directory")?;
+        let command = self.agent_command(&found.agent, &found.session, true)?;
+        self.run_in(io, place, Some(cwd), &command)
+    }
+
     /// What a recipe's `{{…}}` paths stand for, opened from `file` (if any) now.
     fn vars(&self, file: Option<&Path>) -> Vars {
         let cwd = self.d.focused_pane_id().and_then(|id| self.d.app.pane(id)?.cwd.clone());
@@ -646,7 +707,13 @@ impl Backend {
                 if let Some(rows) = self.d.focused_pane_id().and_then(|id| io.screen(id)) {
                     self.d.find_lines = rows;
                 }
-                json!({"handled": self.d.activate(text(p, "id")?)})
+                let id = text(p, "id")?;
+                // Fork / Branch in a split, a new tab or a new window.
+                if let Some(place) = id.strip_prefix("agent_fork_") {
+                    self.fork_here(io, place)?;
+                    return Ok(json!({"handled": true}));
+                }
+                json!({"handled": self.d.activate(id)})
             }
 
             "tab.new" => self.new_tab(p["cwd"].as_str().map(str::to_owned))?,
@@ -823,8 +890,9 @@ impl Backend {
                 };
                 sources.recipes = recipe::list(&self.recipes).into_iter().map(|(name, ..)| name).collect();
                 let filter = OpenFilter::from_key(p["filter"].as_str().unwrap_or("all"));
-                let rows = query_quickly(filter, p["query"].as_str().unwrap_or_default(), &sources);
-                json!(rows
+                let query = p["query"].as_str().unwrap_or_default();
+                let rows = query_quickly(filter, query, &sources);
+                let mut rows: Vec<Value> = rows
                     .iter()
                     .map(|e| {
                         let kind = e.kind.as_str();
@@ -834,7 +902,16 @@ impl Backend {
                             None => json!({"title": e.title, "subtitle": "", "kind": kind, "value": e.path}),
                         }
                     })
-                    .collect::<Vec<_>>())
+                    .collect();
+                // Agent conversations: titled by their first prompt, opened by session id.
+                if matches!(filter, Some(OpenFilter::All | OpenFilter::Agents)) {
+                    let query = query.trim().to_lowercase();
+                    let hit = |text: &str| text.to_lowercase().contains(&query);
+                    rows.extend(self.transcripts().iter().filter(|t| hit(&t.title) || t.cwd.as_deref().is_some_and(hit)).map(|t| {
+                        json!({"title": t.title, "subtitle": t.cwd, "kind": "agent", "value": format!("{}:{}", t.agent, t.session)})
+                    }));
+                }
+                json!(rows)
             }
             "quickly.open" => {
                 let value = text(p, "value")?;
@@ -859,15 +936,21 @@ impl Backend {
                         }
                     }
                     "url" => self.out.push(json!({"type": "open", "url": value})),
+                    // ↩ resumes the conversation where it ran; `fork` starts a second one from it.
+                    "agent" => {
+                        let (agent, session) = value.split_once(':').ok_or("an agent row is `agent:session`")?;
+                        let target = p["target"].as_str().unwrap_or_default();
+                        let command = self.agent_command(&AgentId::parse(agent), session, target == "fork")?;
+                        let cwd = self.transcripts().into_iter().find(|t| t.session == session).and_then(|t| t.cwd);
+                        self.run_in(io, target, cwd, &command)?;
+                    }
                     "ssh" => {
                         // The host is typed into a shell, so it must look like one.
                         let ok = |c: char| c.is_ascii_alphanumeric() || "._-@:".contains(c);
                         if value.is_empty() || value.starts_with('-') || !value.chars().all(ok) {
                             return Err(format!("`{value}` is not a host name"));
                         }
-                        let made = self.new_tab(None)?;
-                        self.settle(io);
-                        io.type_keys(made["pane"].as_str().and_then(|s| s.parse().ok()).ok_or("no pane")?, &format!("ssh {value}\n"));
+                        self.run_in(io, "new_tab", None, &format!("ssh {value}"))?;
                     }
                     _ => return Err("not implemented".to_owned()),
                 }
@@ -1506,6 +1589,45 @@ mod tests {
         let state = again.state(&io);
         assert_eq!(state["tabs"][2]["cwd"], "/gone");
         assert!(!again.restore(&mut io, "not = [toml"));
+    }
+
+    #[test]
+    fn an_agent_conversation_is_listed_resumed_and_forked() {
+        let (dir, mut b, mut io) = backend();
+        let project = dir.path().join("claude").join("projects").join("work");
+        std::fs::create_dir_all(&project).unwrap();
+        let row = r#"{"type":"user","cwd":"/work/api","message":{"content":"fix the login bug"}}"#;
+        std::fs::write(project.join("0a1b-2c3d.jsonl"), row).unwrap();
+        b.agent_home = Some(dir.path().join("claude"));
+
+        let rows = b.request(&mut io, "quickly.query", &json!({"filter": "agents", "query": "LOGIN"})).unwrap();
+        let agent = json!({"title": "fix the login bug", "subtitle": "/work/api", "kind": "agent", "value": "claude:0a1b-2c3d"});
+        assert_eq!(rows, json!([agent]));
+        assert_eq!(b.request(&mut io, "quickly.query", &json!({"filter": "agents", "query": "nope"})).unwrap(), json!([]));
+        assert_eq!(b.request(&mut io, "quickly.query", &json!({"filter": "ssh", "query": ""})).unwrap(), json!([]));
+
+        // ↩ resumes it in a new tab where it ran; Fork starts a second conversation.
+        b.request(&mut io, "quickly.open", &json!({"kind": "agent", "value": "claude:0a1b-2c3d"})).unwrap();
+        b.request(&mut io, "quickly.open", &json!({"kind": "agent", "value": "claude:0a1b-2c3d", "target": "fork"})).unwrap();
+        assert_eq!(io.written, [
+            (PaneId::new(2), "claude --resume 0a1b-2c3d\n".to_owned()),
+            (PaneId::new(3), "claude --resume 0a1b-2c3d --fork-session\n".to_owned()),
+        ]);
+        let state = b.state(&io);
+        assert_eq!((&state["panes"]["pane-2"]["cwd"], state["tabs"].as_array().unwrap().len()), (&json!("/work/api"), 3));
+
+        // Fork in Right Split, from the pane the agent is in: the pane's directory names the conversation.
+        b.request(&mut io, "action.run", &json!({"id": "agent_fork_split_right"})).unwrap();
+        assert_eq!(io.written[2], (PaneId::new(4), "claude --resume 0a1b-2c3d --fork-session\n".to_owned()));
+        assert_eq!(b.state(&io)["tabs"][2]["tree"]["axis"], "horizontal");
+        b.request(&mut io, "tab.activate", &json!({"tab": "tab-1"})).unwrap();
+        assert!(b.request(&mut io, "action.run", &json!({"id": "agent_fork_new_tab"})).is_err(), "nothing ran in /home");
+
+        // A session id is typed into a shell; one that could be more than an id is refused.
+        let bad = json!({"kind": "agent", "value": "claude:x; rm -rf ~"});
+        assert!(b.request(&mut io, "quickly.open", &bad).is_err());
+        assert!(b.request(&mut io, "quickly.open", &json!({"kind": "agent", "value": "cursor:abc", "target": "fork"})).is_err());
+        assert_eq!(io.written.len(), 3);
     }
 
     #[test]

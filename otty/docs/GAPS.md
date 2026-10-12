@@ -77,7 +77,7 @@
 | GAP-C03 | 配置 | keymap 热加载到 UI | done | P0 |
 | GAP-A01 | Agent | 一键装钩子 | done | P1 |
 | GAP-A02 | Agent | 徽章与通知 | partial | P1 |
-| GAP-A03 | Agent | 历史 / Resume / Fork UI | partial | P1 |
+| GAP-A03 | Agent | 历史 / Resume / Fork UI | done | P1 |
 | GAP-A04 | Agent | Usage / Quota | partial | P2 |
 | GAP-A05 | Agent | Skills 拷贝 | open | P2 |
 | GAP-A06 | Agent | 防休眠 helper | open | P2 |
@@ -495,12 +495,12 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 
 ### GAP-A03 历史 / Resume / Fork UI
 
-- **status:** partial
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §4。历史按路径识别 jsonl。Resume 用 adapter 的命令（Claude：`claude --resume <id>`）。Fork/Branch 是 GUI，不是 slash：四向 split / New Tab / New Window。Cursor/Kimi/CodeBuddy/Antigravity/Copilot 无 Fork。Grok/Reasonix 历史原产品也没接（GAP-U05）。
 - **DMG:** `otty_agent_history` 50 符号、`otty_markdown` 11、`pulldown_cmark` 54。action `agent_fork*`、`agent_branch`。`otty-state` 的 `agent_session` 表记指针，不改 agent 自己的文件。
 - **原实现:** 只读 agent 目录。阅读器当文件窗的一种 view（`view_as_agent_history` ↔ `view_as_jsonl`）。Resume：活着的 tab 就跳过去，否则新 pane 跑 resume 命令。Fork 跑 native fork 命令，新 pane 独立。
-- **当前:** `resume_command` / `fork_command` / `supports_history` 有。无阅读器、无选落点 UI。
+- **当前:** `otty_agent::claude_transcripts` 只读扫 `~/.claude/projects/*/*.jsonl`（或 `$CLAUDE_CONFIG_DIR`），每份只读开头，取 cwd 和第一句用户 prompt 当标题。Open Quickly → Agents 列出最近 50 条；↩ 在会话原来的 cwd 开新 tab 跑 `resume_command`，⌘K → Fork in New Tab 跑 `fork_command`，`agent-command` 覆盖照常生效。`agent_fork_split_*` / `agent_fork_new_tab` / `agent_fork_new_window` 对 focused pane 生效，Palette 的 Fork… / Branch… 选落点后走它们；"这个 pane 的会话"目前按 pane cwd 取最新的一份 transcript，不是钩子报上来的 session id。session id 会敲进 shell，所以只收字母数字和 `-_.`。没做：其它 agent 的 transcript 目录、阅读器（`view_as_agent_history`）、活着的 tab 直接跳过去。
 - **落点:** 扫描路径在 adapter；渲染用 markdown，不要自己造 jsonl 格式。落点选择器复用 GAP-S04 的 Split View picker。
 - **完成:** Open Quickly → Agents 能列出本机一份 Claude jsonl；↩ resume；Fork in New Tab 开出第二条会话。
 

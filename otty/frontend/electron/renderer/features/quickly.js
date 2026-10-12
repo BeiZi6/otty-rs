@@ -11,7 +11,8 @@ OttyFeatures.register('quickly', (ctx) => {
   ];
   const OPENERS = { open_quickly: 'all', open_files_quickly: 'files', open_recent: 'recent', open_agent: 'agents', open_folder: 'folders' };
   // ⌘K sub-list. `target` rides along on quickly.open; "copy" stays local.
-  const ACTIONS = [['', 'Open'], ['tab', 'Open in New Tab'], ['split-right', 'Open in Split Right'], ['copy', 'Copy Path']];
+  // `fork` is an agent conversation's: a second one, started from it.
+  const ACTIONS = [['', 'Open'], ['tab', 'Open in New Tab'], ['split-right', 'Open in Split Right'], ['fork', 'Fork in New Tab'], ['copy', 'Copy Path']];
 
   let filter = 'all';
   let target = null; // the row whose Actions list is up
@@ -41,7 +42,8 @@ OttyFeatures.register('quickly', (ctx) => {
     placeholder: () => (target ? `${t('quickly.actions', 'Actions')}: ${target.title}` : t('quickly.placeholder', 'Open Quickly')),
     load(query) {
       if (target) {
-        return ACTIONS.map(([how, label]) => ({ how, title: t(`quickly.action.${how || 'open'}`, label) })).filter((row) => fuzzy(row.title, query));
+        return ACTIONS.filter(([how]) => how !== 'fork' || target.kind === 'agent')
+          .map(([how, label]) => ({ how, title: t(`quickly.action.${how || 'open'}`, label) })).filter((row) => fuzzy(row.title, query));
       }
       return ctx.request('quickly.query', { filter, query }).then((rows) => (
         // A typed path that exists comes back as a `path` row: pin it.

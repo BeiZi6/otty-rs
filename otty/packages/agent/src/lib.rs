@@ -671,6 +671,73 @@ fn apply_template(template: &str, session: &str, override_cmd: Option<&str>) -> 
     base.replace("<id>", session).replace("<path>", session)
 }
 
+/// A conversation an agent left on disk.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Transcript {
+    pub agent: AgentId,
+    /// The agent's own session id: what its resume and fork commands take.
+    pub session: String,
+    /// The directory the conversation ran in.
+    pub cwd: Option<String>,
+    /// The first thing the user asked, cut short.
+    pub title: String,
+    /// Seconds since the epoch.
+    pub modified: i64,
+    pub path: PathBuf,
+}
+
+/// How much of a transcript is read to find its directory and first prompt.
+const TRANSCRIPT_HEAD: usize = 40;
+
+/// Claude Code's `limit` latest conversations, newest first. `config_home` is
+/// its config directory (`~/.claude`, or `$CLAUDE_CONFIG_DIR`); each is
+/// `projects/<directory>/<session>.jsonl`.
+///
+/// Only the head of each file is read, and the files are never written.
+// ponytail: Claude only. The other adapters with `history: true` keep their
+// transcripts elsewhere; give `Adapter` a transcript root when one is needed.
+pub fn claude_transcripts(config_home: &Path, limit: usize) -> Vec<Transcript> {
+    use std::io::BufRead;
+    let projects = std::fs::read_dir(config_home.join("projects")).into_iter().flatten().flatten();
+    let mut files: Vec<(i64, PathBuf)> = projects
+        .flat_map(|project| std::fs::read_dir(project.path()).into_iter().flatten().flatten())
+        .map(|entry| entry.path())
+        .filter(|path| path.extension().is_some_and(|ext| ext == "jsonl"))
+        .filter_map(|path| {
+            let modified = std::fs::metadata(&path).ok()?.modified().ok()?;
+            Some((modified.duration_since(std::time::UNIX_EPOCH).ok()?.as_secs() as i64, path))
+        })
+        .collect();
+    files.sort_by(|a, b| b.cmp(a));
+    files.truncate(limit);
+    files
+        .into_iter()
+        .filter_map(|(modified, path)| {
+            let session = path.file_stem()?.to_string_lossy().into_owned();
+            let (mut cwd, mut title) = (None, None);
+            let head = std::io::BufReader::new(std::fs::File::open(&path).ok()?).lines().take(TRANSCRIPT_HEAD);
+            for line in head.map_while(Result::ok) {
+                let Ok(row) = serde_json::from_str::<serde_json::Value>(&line) else { continue };
+                cwd = cwd.or_else(|| row["cwd"].as_str().map(str::to_owned));
+                if title.is_none() && row["type"] == "user" {
+                    // A prompt is a string, or parts of which the text ones count.
+                    let content = &row["message"]["content"];
+                    let parts = content.as_array().into_iter().flatten().filter_map(|part| part["text"].as_str());
+                    let text = content.as_str().map(str::to_owned).unwrap_or_else(|| parts.collect::<Vec<_>>().join(" "));
+                    let line = text.split_whitespace().collect::<Vec<_>>().join(" ");
+                    // Tool results and injected reminders are not what the user asked.
+                    title = Some(line).filter(|line| !line.is_empty() && !line.starts_with('<'));
+                }
+                if cwd.is_some() && title.is_some() {
+                    break;
+                }
+            }
+            let title = title.map_or_else(|| session.clone(), |t| t.chars().take(80).collect());
+            Some(Transcript { agent: AgentId::Claude, session, cwd, title, modified, path })
+        })
+        .collect()
+}
+
 /// A plan-quota probe.
 ///
 /// Otty runs the agent's own CLI in the background, using the login the CLI
@@ -871,6 +938,36 @@ pub fn match_pane(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn claude_transcripts_are_found_newest_first_with_their_directory_and_first_prompt() {
+        let home = tempfile::tempdir().unwrap();
+        let project = home.path().join("projects").join("E--work-api");
+        std::fs::create_dir_all(&project).unwrap();
+        let old = r#"{"type":"user","cwd":"E:\\work\\api","message":{"role":"user","content":"fix the   login\nbug"}}"#;
+        let new = concat!(
+            r#"{"type":"summary","summary":"x"}"#, "\n",
+            r#"{"type":"user","cwd":"/work/api","message":{"content":[{"type":"tool_result","content":"no"}]}}"#, "\n",
+            r#"{"type":"user","cwd":"/work/api","message":{"content":"<system-reminder>skip</system-reminder>"}}"#, "\n",
+            "not json\n",
+            r#"{"type":"user","cwd":"/work/api","message":{"content":[{"type":"text","text":"add a test"}]}}"#, "\n",
+        );
+        std::fs::write(project.join("aaaa-1111.jsonl"), old).unwrap();
+        std::fs::write(project.join("notes.txt"), "not a transcript").unwrap();
+        let newer = project.join("bbbb-2222.jsonl");
+        std::fs::write(&newer, new).unwrap();
+        let later = std::time::SystemTime::now() + std::time::Duration::from_secs(60);
+        std::fs::File::options().write(true).open(&newer).unwrap().set_modified(later).unwrap();
+
+        let found = super::claude_transcripts(home.path(), 10);
+        let rows: Vec<_> = found.iter().map(|t| (t.session.as_str(), t.title.as_str(), t.cwd.as_deref())).collect();
+        assert_eq!(rows, [
+            ("bbbb-2222", "add a test", Some("/work/api")),
+            ("aaaa-1111", "fix the login bug", Some("E:\\work\\api")),
+        ]);
+        assert_eq!(super::claude_transcripts(home.path(), 1).len(), 1);
+        assert!(super::claude_transcripts(&home.path().join("nowhere"), 10).is_empty());
+    }
+
     use super::*;
 
     fn home() -> PathBuf {

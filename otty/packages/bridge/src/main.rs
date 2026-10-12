@@ -224,6 +224,8 @@ fn main() {
         .or_else(|| std::env::current_dir().ok().map(|dir| dir.to_string_lossy().into_owned()));
     let mut backend = Backend::new(config, cwd);
     backend.store = otty_state::Store::open_default().ok();
+    let claude = std::env::var_os("CLAUDE_CONFIG_DIR").map_or_else(|| otty_core::expand_path("~/.claude").into(), Into::into);
+    backend.agent_home = Some(claude);
     let mut views = Views {
         map: HashMap::new(),
         scale,
