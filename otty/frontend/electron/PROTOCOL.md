@@ -61,6 +61,9 @@ Ids are slugs: `tab-2`, `pane-3`. `pane` omitted = the focused pane.
 | `palette.list` | `{query}` | `[{id,title,scope,shortcut}]` |
 | `quickly.query` | `{filter,query}` filter ∈ all, opened, recent, folders, ssh, agents, current, recipes, files | `[{title,subtitle,kind,value}]` |
 | `quickly.open` | `{kind,value}` | `null` |
+| `recipe.list` | `{}` — the library, `~/.config/otty/recipes` | `[{name,path,scope}]` |
+| `recipe.save` | `{name,scope:"tab"\|"window"\|"commands",content?:"layout"\|"commands",commands?:[string],path?,portable?:bool}` — `path` exports a file instead of saving to the library | `{path}` |
+| `recipe.open` | `{name}` from the library, or `{path,trust?:"once"\|"always"}` | `{opened:bool}` — `false` with a `recipe-trust` event when the file must be trusted first |
 | `keymap.list` | `{}` | `[{trigger,action}]` trigger like `cmd+shift+p` |
 | `menu.list` | `{}` | `[{title,items:[{label,action,shortcut}]}]` |
 | `settings.schema` | `{}` | `[{key,type,default,doc,group,values?}]` |
@@ -93,6 +96,8 @@ the frontend must show that plainly and keep working.
 {"type":"config", "key":"font-size"}     // a setting changed
 {"type":"bell", "pane":"pane-1"}
 {"type":"notify", "title":"…", "body":"…", "pane":"pane-1"}
+{"type":"recipe-trust", "window":"window-1", "path":"…", "name":"…",
+ "commands":[{"tab":1,"pane":2,"command":"make deploy"}]}   // ask, then `recipe.open` with `trust`
 {"type":"clipboard", "text":"…"}         // the frontend writes it to the OS clipboard
 {"type":"open", "url":"https://…"}       // the frontend opens it externally
 {"type":"error", "message":"…"}

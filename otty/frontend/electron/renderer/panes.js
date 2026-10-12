@@ -229,6 +229,7 @@ window.addEventListener('drop', async (event) => {
   const files = [];
   for (const target of dropped) {
     if (await window.otty.isDirectory(target)) request('tab.new', { cwd: target }).catch(report);
+    else if (/\.ottyrecipe$/i.test(target)) request('recipe.open', { path: target }).catch(report);
     else files.push(quotePath(target));
   }
   if (files.length && pane) window.otty.send({ type: 'input', pane, text: `${files.join(' ')} ` });

@@ -22,6 +22,7 @@ pub mod ipc;
 pub mod palette;
 pub mod pane_view;
 pub mod quickly;
+pub mod recipe;
 pub mod settings;
 pub mod layout;
 pub mod mode;

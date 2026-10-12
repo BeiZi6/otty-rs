@@ -345,6 +345,14 @@ ipcMain.handle('projects:open', async (event) => {
   return result.canceled ? null : result.filePaths[0] || null;
 });
 
+// Where to write a file the app exports, such as a recipe.
+ipcMain.handle('file:save-path', async (event, name) => {
+  const state = sessionFor(event);
+  if (!state) return null;
+  const result = await dialog.showSaveDialog(state.window, { defaultPath: typeof name === 'string' ? name : undefined });
+  return result.canceled ? null : result.filePath || null;
+});
+
 ipcMain.handle('path:is-directory', (_event, target) => {
   try {
     return fs.statSync(target).isDirectory();

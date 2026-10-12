@@ -187,6 +187,10 @@ impl Panes for Views {
         }
     }
 
+    fn type_keys(&mut self, pane: PaneId, text: &str) {
+        self.feed(Some(&pane.slug()), None, false, text.to_owned());
+    }
+
     fn set_theme(&mut self, theme: &Theme) {
         for (id, view) in &mut self.map {
             view.set_theme(theme);
@@ -228,6 +232,17 @@ fn main() {
         owed: HashSet::new(),
         fresh: HashMap::new(),
     };
+
+    // The last session comes back unless a clean quit under `on-launch =
+    // new_window` removed it. It is set aside while it is rebuilt, so a
+    // session that takes the app down is not tried a second time.
+    let session_file = otty_core::app_support_dir().join("last-session.toml");
+    let restoring = session_file.with_extension("restoring");
+    if let Ok(session) = std::fs::read_to_string(&session_file) {
+        let _ = std::fs::rename(&session_file, &restoring);
+        backend.restore(&mut views, &session);
+    }
+    let mut last_session = String::new();
 
     let inbox = listen();
     emit(&backend.ready());
@@ -320,12 +335,26 @@ fn main() {
         for event in backend.out.drain(..) {
             emit(&event);
         }
+        let mut changed = false;
         for id in &windows {
             let state = backend.state_of(&views, *id).to_string();
             if last_state.get(id) != Some(&state) {
                 emit_line(&state);
                 last_state.insert(*id, state);
+                changed = true;
             }
+        }
+        // Whatever a snapshot holds, a `state` shows: save when one changed.
+        // Not once the last window is gone, or quitting would save nothing.
+        let session = if changed && !windows.is_empty() { backend.session() } else { last_session.clone() };
+        if session != last_session {
+            if let Some(dir) = session_file.parent() {
+                let _ = std::fs::create_dir_all(dir);
+            }
+            if std::fs::write(&session_file, &session).is_ok() {
+                let _ = std::fs::remove_file(&restoring);
+            }
+            last_session = session;
         }
 
         // A frame goes out for a pane that changed, that just came into view,
@@ -359,6 +388,10 @@ fn main() {
             emit(&json!({"type": "quit"}));
             break;
         }
+    }
+    // Reached by a clean quit only; a crash leaves the session to be restored.
+    if backend.config.get_str("on-launch").as_deref() == Some("new_window") {
+        let _ = std::fs::remove_file(&session_file);
     }
 }
 

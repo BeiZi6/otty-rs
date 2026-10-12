@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('otty', {
   appMenu: () => ipcRenderer.send('menu:app'),
   windowAction: (action) => ipcRenderer.send('window:action', action),
   openProject: () => ipcRenderer.invoke('projects:open'),
+  saveFile: (name) => ipcRenderer.invoke('file:save-path', name),
   pathForFile: (file) => webUtils.getPathForFile(file),
   isDirectory: (target) => ipcRenderer.invoke('path:is-directory', target),
 });

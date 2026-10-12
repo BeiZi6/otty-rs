@@ -5,8 +5,8 @@
 //! reaching the sessions only through [`Panes`]. That is what lets a test
 //! drive it.
 
-use std::collections::HashMap;
-use std::path::Path;
+use std::collections::{HashMap, VecDeque};
+use std::path::{Path, PathBuf};
 
 use otty_config::theme::{slugify, Mode, Theme};
 use otty_config::{bundled_resources, Catalog, Config, KeyKind, SaveScope, Value as Setting};
@@ -17,6 +17,7 @@ use otty_term::{find_next, Event, FindHit, Progress};
 use otty_ui::ipc::PaneIo;
 use otty_ui::mode::InputMode;
 use otty_ui::quickly::now_secs;
+use otty_ui::recipe::{self, Place, Recipe, Vars};
 use otty_ui::tabs::{git_root, TabGroupMode};
 use otty_ui::{
     context_rows, filter_palette, palette_entries, pane_hit, query_quickly, shell_menu, Axis,
@@ -26,6 +27,8 @@ use serde_json::{json, Map, Value};
 
 /// How many closed tabs `tab.reopen` remembers.
 const REOPEN_DEPTH: usize = 12;
+/// How many of a pane's latest commands a recipe saved with its commands keeps.
+const RECENT_COMMANDS: usize = 10;
 /// `file.read` answers in one JSON line, so it refuses anything bigger.
 const FILE_LIMIT: u64 = 2 << 20;
 
@@ -46,6 +49,8 @@ pub trait Panes: PaneIo {
     /// Move the viewport: grid line `line` to the top when given, else `delta`
     /// lines back into history.
     fn scroll(&mut self, pane: PaneId, line: Option<usize>, delta: i32);
+    /// Type key text (`\n` is Enter) into a pane, once its shell is ready for it.
+    fn type_keys(&mut self, pane: PaneId, text: &str);
     fn set_theme(&mut self, theme: &Theme);
     /// The font keys changed; re-measure every pane.
     fn set_font(&mut self, config: &Config);
@@ -70,6 +75,14 @@ pub struct Backend {
     /// The focused pane's cwd as of the last `settle`; a new pane starts there.
     last_cwd: Option<String>,
     icons: HashMap<PaneId, &'static str>,
+    /// The library saved recipes live in.
+    pub recipes: PathBuf,
+    /// Where `trusted_recipes.json` lives.
+    pub support: PathBuf,
+    /// Recipe commands a pane has not been given yet, and its replay mode.
+    replay: HashMap<PaneId, (VecDeque<String>, String)>,
+    /// Panes whose command finished since the last `settle`.
+    finished: Vec<PaneId>,
     /// cwd → git root.
     projects: HashMap<String, String>,
 }
@@ -181,6 +194,10 @@ impl Backend {
             last_cwd: None,
             icons: HashMap::new(),
             projects: HashMap::new(),
+            recipes: recipe::library_dir(),
+            support: otty_core::app_support_dir(),
+            replay: HashMap::new(),
+            finished: Vec::new(),
         }
     }
 
@@ -340,6 +357,7 @@ impl Backend {
                     };
                 }
             }
+            Event::CommandFinished { .. } => self.finished.push(pane),
             Event::Bell => self.out.push(json!({"type": "bell", "pane": slug})),
             Event::Notify(n) if !n.silent => self.out.push(json!({
                 "type": "notify", "title": n.title.unwrap_or_default(), "body": n.body, "pane": slug,
@@ -417,6 +435,11 @@ impl Backend {
             self.out.push(json!({"type": "error", "message": format!("{pane} could not start: {why}")}));
             self.close_pane(pane);
         }
+        // A pane back at its prompt gets the next of its recipe's commands.
+        self.replay.retain(|pane, _| live.iter().any(|(id, _)| id == pane));
+        for pane in std::mem::take(&mut self.finished) {
+            self.feed(io, pane);
+        }
 
         if let Some(text) = self.d.clipboard.take() {
             self.out.push(json!({"type": "clipboard", "text": text}));
@@ -470,6 +493,112 @@ impl Backend {
             .find(|(_, t)| Some(t.id) == id)
             .map(|(_, t)| (t.id, t.focused))
             .ok_or_else(|| format!("no tab `{s}`"))
+    }
+
+    /// What a recipe's `{{…}}` paths stand for, opened from `file` (if any) now.
+    fn vars(&self, file: Option<&Path>) -> Vars {
+        let cwd = self.d.focused_pane_id().and_then(|id| self.d.app.pane(id)?.cwd.clone());
+        Vars {
+            current_folder: cwd.unwrap_or_default(),
+            home: expand_path("~"),
+            recipe_location: file.and_then(Path::parent).map(|dir| dir.display().to_string()).unwrap_or_default(),
+        }
+    }
+
+    /// Hand `pane` the next of its recipe commands, as far as its mode allows:
+    /// `auto` runs them, `ask_once` leaves them at the prompt for one Enter,
+    /// `manually` leaves one. A command that hands the terminal to another
+    /// shell ends the batch; the rest wait for the pane's next prompt.
+    // ponytail: "next prompt" is OSC 133 D, so without shell integration what
+    // follows a hand-off (or, in `manually`, the first command) never arrives.
+    fn feed<P: Panes>(&mut self, io: &mut P, pane: PaneId) {
+        let Some((queue, mode)) = self.replay.get_mut(&pane) else { return };
+        let mut batch = Vec::new();
+        while let Some(command) = queue.pop_front() {
+            let last = *mode == "manually" || recipe::hands_off(&command);
+            batch.push(command);
+            if last {
+                break;
+            }
+        }
+        let keys = match mode.as_str() {
+            "auto" => batch.iter().map(|command| format!("{command}\n")).collect(),
+            _ => batch.join("; "),
+        };
+        if queue.is_empty() {
+            self.replay.remove(&pane);
+        }
+        io.type_keys(pane, &keys);
+    }
+
+    /// Open the recipe at `path`. One that is neither from the library nor
+    /// trusted, and would run commands, is not opened: the asking window gets
+    /// a `recipe-trust` event listing them, and asks again with `trust`.
+    fn open_recipe<P: Panes>(&mut self, io: &mut P, path: &Path, trust: Option<&str>) -> Answer {
+        let bytes = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
+        let found = recipe::parse(&bytes)?;
+        let saved = path.parent() == Some(self.recipes.as_path());
+        let commands = recipe::commands_of(&found);
+        let store = self.support.join("trusted_recipes.json");
+        if !saved && !commands.is_empty() && !recipe::is_trusted(&store, &bytes) {
+            match trust {
+                Some("always") => recipe::trust(&store, &bytes).map_err(|e| e.to_string())?,
+                Some("once") => {}
+                _ => {
+                    self.out.push(json!({
+                        "type": "recipe-trust",
+                        "window": self.d.app.active_window().map(|w| w.id.slug()),
+                        "path": path.display().to_string(),
+                        "name": found.recipe.name,
+                        "commands": commands
+                            .iter()
+                            .map(|(tab, pane, command)| json!({"tab": tab, "pane": pane, "command": command}))
+                            .collect::<Vec<_>>(),
+                    }));
+                    return Ok(json!({"opened": false}));
+                }
+            }
+        }
+        let (key, default) = if saved { ("recipe-replay-saved", "ask_once") } else { ("recipe-replay-file", "manually") };
+        let mode = self.config.get_str(key).unwrap_or_else(|| default.to_owned());
+        let vars = self.vars(Some(path));
+        let window = found.window.unwrap_or_default();
+        let made = match found.recipe.scope.as_str() {
+            "commands" => vec![(self.pane(&Value::Null)?, found.recipe.commands)],
+            "tab" => recipe::apply(&mut self.d, &window, Place::NewTabs, &vars),
+            _ => recipe::apply(&mut self.d, &window, Place::NewWindow, &vars),
+        };
+        // The new panes get their sessions here, so the commands have somewhere to go.
+        self.settle(io);
+        for (pane, commands) in made {
+            if !commands.is_empty() {
+                self.replay.insert(pane, (commands.into(), mode.clone()));
+                self.feed(io, pane);
+            }
+        }
+        Ok(json!({"opened": true}))
+    }
+
+    /// Every window as a recipe document: what [`Backend::restore`] reads back.
+    pub fn session(&self) -> String {
+        recipe::render(&recipe::capture_session(&self.d.app, self.closed.iter().flatten().cloned().collect()))
+    }
+
+    /// Rebuild the windows of a [`Backend::session`] document, the first over
+    /// the fresh window this backend started with.
+    pub fn restore<P: Panes>(&mut self, io: &mut P, session: &str) -> bool {
+        let Ok(session) = recipe::parse(session.as_bytes()) else { return false };
+        let vars = self.vars(None);
+        let windows = session.windows.iter().filter(|w| w.tabs.iter().any(|t| !t.panes.is_empty()));
+        for (n, window) in windows.enumerate() {
+            recipe::apply(&mut self.d, window, if n == 0 { Place::Here } else { Place::NewWindow }, &vars);
+        }
+        if let Some(first) = self.windows().first() {
+            self.d.app.focus_window(*first);
+        }
+        self.closed = session.recipe.closed.into_iter().map(Some).collect();
+        self.settle(io);
+        true
     }
 
     fn cwd(&self, p: &Value) -> Result<String, String> {
@@ -688,10 +817,11 @@ impl Backend {
                 opened.sort();
                 opened.dedup();
                 // `live` reads the default store and `~/.ssh/config`; tests have neither.
-                let sources = match self.store {
+                let mut sources = match self.store {
                     Some(_) => QuicklySources::live(opened),
                     None => QuicklySources { opened, ..Default::default() },
                 };
+                sources.recipes = recipe::list(&self.recipes).into_iter().map(|(name, ..)| name).collect();
                 let filter = OpenFilter::from_key(p["filter"].as_str().unwrap_or("all"));
                 let rows = query_quickly(filter, p["query"].as_str().unwrap_or_default(), &sources);
                 json!(rows
@@ -709,6 +839,12 @@ impl Backend {
             "quickly.open" => {
                 let value = text(p, "value")?;
                 match text(p, "kind")? {
+                    "recipe" => {
+                        self.open_recipe(io, &recipe::library_path(&self.recipes, value), None)?;
+                    }
+                    _ if value.ends_with(".ottyrecipe") => {
+                        self.open_recipe(io, Path::new(&expand_path(value)), None)?;
+                    }
                     // A row's kind says where it came from; whether it opens a
                     // shell or a viewer is decided by what is on disk.
                     "path" | "folder" | "opened" | "recent" | "current" if !Path::new(value).is_file() => {
@@ -731,11 +867,75 @@ impl Backend {
                         }
                         let made = self.new_tab(None)?;
                         self.settle(io);
-                        write(io, made["pane"].as_str().and_then(|s| s.parse().ok()).ok_or("no pane")?, format!("ssh {value}\r").as_bytes())?;
+                        io.type_keys(made["pane"].as_str().and_then(|s| s.parse().ok()).ok_or("no pane")?, &format!("ssh {value}\n"));
                     }
                     _ => return Err("not implemented".to_owned()),
                 }
                 Value::Null
+            }
+            "recipe.list" => json!(recipe::list(&self.recipes)
+                .iter()
+                .map(|(name, path, scope)| json!({"name": name, "path": path.display().to_string(), "scope": scope}))
+                .collect::<Vec<_>>()),
+            "recipe.open" => {
+                let path = match (p["name"].as_str(), p["path"].as_str()) {
+                    (Some(name), _) => recipe::library_path(&self.recipes, name),
+                    (None, Some(path)) => PathBuf::from(expand_path(path)),
+                    _ => return Err("missing `name` or `path`".to_owned()),
+                };
+                self.open_recipe(io, &path, p["trust"].as_str())?
+            }
+            "recipe.save" => {
+                let name = text(p, "name")?.trim();
+                if name.is_empty() {
+                    return Err("a recipe needs a name".to_owned());
+                }
+                let scope = p["scope"].as_str().unwrap_or("window");
+                // A pane's latest commands, oldest first, as OSC 133 marked them.
+                let recent = |io: &P, pane: PaneId| -> Vec<String> {
+                    let all = io.outline(pane).unwrap_or_default();
+                    all[all.len().saturating_sub(RECENT_COMMANDS)..].iter().map(|(_, command)| command.clone()).collect()
+                };
+                let meta = recipe::Meta { name: name.to_owned(), version: 1, scope: scope.to_owned(), ..Default::default() };
+                let mut saved = Recipe { recipe: meta, ..Default::default() };
+                match scope {
+                    "commands" => {
+                        saved.recipe.commands = match p["commands"].as_array() {
+                            Some(list) => list.iter().filter_map(Value::as_str).map(str::to_owned).collect(),
+                            None => recent(io, self.pane(&Value::Null)?),
+                        };
+                        saved.recipe.commands.retain(|command| !command.trim().is_empty());
+                        if saved.recipe.commands.is_empty() {
+                            return Err("there are no commands to save".to_owned());
+                        }
+                    }
+                    "tab" | "window" => {
+                        let app = &self.d.app;
+                        let window = app.active_window().ok_or("no window")?;
+                        let mut spec = match scope {
+                            "tab" => recipe::WindowSpec { tabs: window.active_tab().map(|t| recipe::capture_tab(app, t)).into_iter().collect() },
+                            _ => recipe::capture_window(app, window.id),
+                        };
+                        let vars = self.vars(None);
+                        for pane in spec.tabs.iter_mut().flat_map(|tab| &mut tab.panes) {
+                            if p["content"] == "commands" {
+                                pane.commands = pane.pane.map(|id| recent(io, id)).unwrap_or_default();
+                            }
+                            if p["portable"].as_bool().unwrap_or(false) {
+                                pane.cwd = pane.cwd.as_deref().map(|cwd| vars.portable(cwd));
+                            }
+                        }
+                        saved.window = Some(spec);
+                    }
+                    other => return Err(format!("scope `{other}` is not tab, window or commands")),
+                }
+                // With a path it is an export; without, it goes to the library.
+                let path = match p["path"].as_str() {
+                    Some(path) => PathBuf::from(expand_path(path)),
+                    None => recipe::library_path(&self.recipes, name),
+                };
+                recipe::write(&path, &saved).map_err(|e| e.to_string())?;
+                json!({"path": path.display().to_string()})
             }
             "keymap.list" => json!(self
                 .config
@@ -991,6 +1191,9 @@ mod tests {
         fn scroll(&mut self, _: PaneId, line: Option<usize>, delta: i32) {
             self.scrolls.push((line, delta));
         }
+        fn type_keys(&mut self, pane: PaneId, text: &str) {
+            self.written.push((pane, text.to_owned()));
+        }
         fn set_theme(&mut self, theme: &Theme) {
             self.themes.push(theme.slug.clone());
         }
@@ -1003,6 +1206,8 @@ mod tests {
     fn backend() -> (tempfile::TempDir, Backend, Fake) {
         let dir = tempfile::tempdir().unwrap();
         let mut b = Backend::new(Config::load_from(dir.path()), Some("/home".to_owned()));
+        b.recipes = dir.path().join("recipes");
+        b.support = dir.path().join("support");
         let mut io = Fake::default();
         b.settle(&mut io);
         (dir, b, io)
@@ -1209,6 +1414,101 @@ mod tests {
     }
 
     #[test]
+    fn a_window_is_saved_as_a_recipe_listed_and_opened_with_its_commands() {
+        let (dir, mut b, mut io) = backend();
+        b.request(&mut io, "pane.split", &json!({"direction": "down"})).unwrap();
+        let save = json!({"name": "dev", "scope": "window", "content": "commands"});
+        let saved = b.request(&mut io, "recipe.save", &save).unwrap();
+        let path = dir.path().join("recipes").join("dev.ottyrecipe");
+        assert_eq!(saved, json!({"path": path.display().to_string()}));
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.contains("split = \"down\"") && text.contains("cat /etc/hosts"), "{text}");
+        assert_eq!(b.request(&mut io, "recipe.list", &json!({})).unwrap()[0]["name"], "dev");
+        let rows = b.request(&mut io, "quickly.query", &json!({"filter": "recipes", "query": "de"})).unwrap();
+        assert_eq!(rows, json!([{"title": "dev", "subtitle": "", "kind": "recipe", "value": "dev"}]));
+
+        // From the library it is trusted, opens a window, and asks once per pane.
+        let opened = b.request(&mut io, "quickly.open", &json!({"kind": "recipe", "value": "dev"})).unwrap();
+        assert_eq!(opened, Value::Null);
+        assert_eq!(b.windows().len(), 2);
+        let state = b.state(&io);
+        assert_eq!(state["tabs"][0]["tree"]["axis"], "vertical");
+        assert_eq!(state["panes"]["pane-3"]["cwd"], "/home");
+        let typed: Vec<_> = io.written.iter().map(|(pane, text)| (pane.get(), text.as_str())).collect();
+        assert_eq!(typed, [(3, "cat /etc/hosts"), (4, "cat /etc/hosts")], "ask_once leaves them at the prompt");
+
+        assert!(b.request(&mut io, "recipe.save", &json!({"name": " ", "scope": "tab"})).is_err());
+        assert!(b.request(&mut io, "recipe.save", &json!({"name": "x", "scope": "galaxy"})).is_err());
+        assert!(b.request(&mut io, "recipe.open", &json!({"name": "nope"})).is_err());
+    }
+
+    #[test]
+    fn a_recipe_file_from_elsewhere_asks_before_it_runs_anything() {
+        let (dir, mut b, mut io) = backend();
+        let file = dir.path().join("team.ottyrecipe");
+        let text = "[recipe]\nname = \"team\"\nversion = 1\nscope = \"tab\"\n\n[[window.tabs]]\n\n[[window.tabs.panes]]\n\
+                    cwd = \"{{recipe_location}}\"\ncommands = [\"make setup\", \"ssh web1\", \"uptime\"]\n";
+        std::fs::write(&file, text).unwrap();
+        let open = |trust: Option<&str>| json!({"path": file.display().to_string(), "trust": trust});
+
+        assert_eq!(b.request(&mut io, "recipe.open", &open(None)).unwrap(), json!({"opened": false}));
+        assert_eq!(b.d.app.counts().1, 1, "nothing was opened");
+        let asked = b.out.pop().unwrap();
+        assert_eq!((&asked["type"], &asked["window"], &asked["name"]), (&json!("recipe-trust"), &json!("window-1"), &json!("team")));
+        assert_eq!(asked["commands"][1], json!({"tab": 1, "pane": 1, "command": "ssh web1"}));
+
+        // Run Once: opened, fed one command at a time (`recipe-replay-file` is `manually`).
+        assert_eq!(b.request(&mut io, "recipe.open", &open(Some("once"))).unwrap(), json!({"opened": true}));
+        let pane = PaneId::new(2);
+        assert_eq!(b.state(&io)["panes"]["pane-2"]["cwd"], dir.path().display().to_string());
+        assert_eq!(io.written, [(pane, "make setup".to_owned())]);
+        b.on_event(pane, Event::CommandFinished { exit_code: Some(0) });
+        b.settle(&mut io);
+        b.on_event(pane, Event::CommandFinished { exit_code: Some(0) });
+        b.settle(&mut io);
+        b.on_event(pane, Event::CommandFinished { exit_code: Some(0) });
+        b.settle(&mut io);
+        let typed: Vec<_> = io.written.iter().map(|(_, text)| text.as_str()).collect();
+        assert_eq!(typed, ["make setup", "ssh web1", "uptime"]);
+        assert_eq!(b.request(&mut io, "recipe.open", &open(None)).unwrap(), json!({"opened": false}), "once is once");
+
+        // Always Trust: remembered by hash, and `auto` stops after the hand-off.
+        b.request(&mut io, "settings.set", &json!({"key": "recipe-replay-file", "value": "auto"})).unwrap();
+        io.written.clear();
+        b.request(&mut io, "recipe.open", &open(Some("always"))).unwrap();
+        assert_eq!(b.request(&mut io, "recipe.open", &open(None)).unwrap(), json!({"opened": true}), "trusted now");
+        assert_eq!(io.written[0].1, "make setup\nssh web1\n", "what follows ssh waits for the prompt");
+        std::fs::write(&file, format!("{text}# edited\n")).unwrap();
+        assert_eq!(b.request(&mut io, "recipe.open", &open(None)).unwrap(), json!({"opened": false}), "an edit asks again");
+    }
+
+    #[test]
+    fn a_session_comes_back_with_its_windows_trees_directories_and_closed_tabs() {
+        let (_dir, mut b, mut io) = backend();
+        b.request(&mut io, "tab.new", &json!({"cwd": "/work"})).unwrap();
+        b.request(&mut io, "pane.split", &json!({"direction": "right"})).unwrap();
+        b.request(&mut io, "tab.new", &json!({"cwd": "/gone"})).unwrap();
+        b.request(&mut io, "tab.close", &json!({"tab": "tab-3"})).unwrap();
+        b.request(&mut io, "action.run", &json!({"id": "new_window"})).unwrap();
+        let session = b.session();
+
+        let (_dir, mut again, mut io) = backend();
+        assert!(again.restore(&mut io, &session));
+        let windows = tabs_by_window(&mut again, &io);
+        assert_eq!(windows.iter().map(|(_, tabs)| tabs.len()).collect::<Vec<_>>(), [2, 1]);
+        let state = again.state(&io);
+        assert_eq!(state["window"], "window-1");
+        assert_eq!((&state["tabs"][0]["cwd"], &state["tabs"][1]["cwd"]), (&json!("/home"), &json!("/work")));
+        assert_eq!(state["tabs"][1]["tree"]["axis"], "horizontal");
+        assert_eq!(io.live.len(), 4, "every pane has a shell again");
+        // ⇧⌘T still has the tab that was closed before the relaunch.
+        again.request(&mut io, "tab.reopen", &json!({})).unwrap();
+        let state = again.state(&io);
+        assert_eq!(state["tabs"][2]["cwd"], "/gone");
+        assert!(!again.restore(&mut io, "not = [toml"));
+    }
+
+    #[test]
     fn text_selection_context_and_find_read_the_pane() {
         let (_dir, mut b, mut io) = backend();
         io.screen = vec!["$ cat /etc/hosts".into(), "foo bar foo".into(), "".into(), "foo".into(), "".into()];
@@ -1271,7 +1571,7 @@ mod tests {
         assert_eq!(io.written, [(PaneId::new(1), "hello\r".to_owned())]);
 
         b.request(&mut io, "quickly.open", &json!({"kind": "ssh", "value": "web1"})).unwrap();
-        assert_eq!(io.written[1], (PaneId::new(2), "ssh web1\r".to_owned()));
+        assert_eq!(io.written[1], (PaneId::new(2), "ssh web1\n".to_owned()));
         let bad = json!({"kind": "ssh", "value": "x; rm -rf ~"});
         assert!(b.request(&mut io, "quickly.open", &bad).is_err());
         assert_eq!(io.written.len(), 2);

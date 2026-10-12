@@ -81,8 +81,8 @@
 | GAP-A04 | Agent | Usage / Quota | partial | P2 |
 | GAP-A05 | Agent | Skills 拷贝 | open | P2 |
 | GAP-A06 | Agent | 防休眠 helper | open | P2 |
-| GAP-W01 | 工作流 | Recipes | open | P1 |
-| GAP-W02 | 工作流 | 启动恢复 | partial | P0 |
+| GAP-W01 | 工作流 | Recipes | done | P1 |
+| GAP-W02 | 工作流 | 启动恢复 | done | P0 |
 | GAP-W03 | 工作流 | Frecency UI | partial | P1 |
 | GAP-W04 | 工作流 | SSH 远程 pane | partial | P2 |
 | GAP-I01 | IPC | 壳内 IPC server 全套 | done | P0 |
@@ -543,23 +543,23 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 
 ### GAP-W01 Recipes
 
-- **status:** open
+- **status:** done
 - **prio:** P1
 - **官网:** FEATURES §5。范围 tab / window / commands。内容 Layout Only / Include Scrollback / Include Commands。内部库 `~/.config/otty/recipes/`。导出 `.ottyrecipe` 不含 scrollback。信任按 SHA-256，记在 `trusted_recipes.json`。回放：auto / ask_once / manually（页上还有 Skip，和 Configuration 三值 conflict）。ssh/tmux/docker exec 会暂停后续。
 - **DMG:** action `save_recipe`、`save_recipe_as`。snippets 走 autocomplete 别名。
 - **原实现:** 内部库 SQLite 或目录 + toml。打开 `.ottyrecipe` 先过信任框。路径可变成 `{{current_folder}}` / `{{home}}` / `{{recipe_location}}`。
-- **当前:** 无解析器、无 UI、无信任表。
+- **当前:** `packages/ui/src/recipe.rs`：`.ottyrecipe` 的 TOML（`capture_tab` / `capture_window` / `apply`），`{{current_folder}}` / `{{home}}` / `{{recipe_location}}` 展开与反向替换，库目录 `~/.config/otty/recipes/`，信任按 SHA-256 记在 app-support 的 `trusted_recipes.json`。文档格式只有"相对上一个 pane"，表达不了任意分屏树，所以多了一个可选键 `of = N`（分第 N 个 pane）；`commands` 范围的命令放在 `[recipe] commands`，这两处是重建自定的。bridge：`recipe.list` / `recipe.save` / `recipe.open`，未信任且带命令的文件先发 `recipe-trust` 事件；回放读 `recipe-replay-saved` / `recipe-replay-file`（auto / ask_once / manually），遇到 ssh、tmux、`docker exec -it` 这类交出终端的命令就停，等该 pane 下一个 OSC 133 D 再继续。Electron：`features/recipes.js` 的 Save（`save_recipe`）、导出（`save_recipe_as`）和信任框；Open Quickly → Recipes 打开库里的，`.ottyrecipe` 拖进窗口打开文件。没做：Include Scrollback、Skip 模式、Text Snippets、Settings → Recipes 页、`otty open foo.ottyrecipe`、"由 recipe 恢复出来的命令不再入下一份 recipe"。没有 shell integration 时 manually 模式只会给出第一条命令。
 - **落点:** 格式按 FEATURES 那段 TOML。回放命令走 GAP-I02。安全框不要省。
 - **完成:** 存一个两 pane 的 window recipe，再打开能长出同样的树和 cwd；未信任文件会问。
 
 ### GAP-W02 启动恢复
 
-- **status:** partial
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §5。干净退出跟 `on-launch`（默认 `restore_session`）。崩溃无条件恢复，连崩几次改开空窗。更新后总是恢复。关 tab 栈 12 条（⇧⌘T）。Open Recent 10 条。`session-restore-multiplayer` 重贴 tmux。`privilege-resume-agent-session` 恢复 agent。`session-restore-processes` none/whitelist/all。banner 默认 on。
 - **DMG:** `otty_state` session 表。原产品每次 tab 创建/关闭/改布局写快照。
 - **原实现:** 启动读库，按窗重建 tab 树、cwd、scrollback（session log）。agent 走 adapter resume。命令重跑看白名单，前缀匹配。
-- **当前:** `otty-state` schema v3 有 session 表。启动不读。Electron 关 tab 栈只在内存。无 banner、无进程重跑。
+- **当前:** 快照就是一份多窗口的 recipe 文档（`recipe::capture_session`），`otty-bridge` 在任何窗口的 `state` 变了时写到 app-support 的 `last-session.toml`，启动时读回并用同一个 `recipe::apply` 重建：每个窗口、tab、分屏树、cwd、用户改的标题，外加关 tab 栈（⇧⌘T 跨重启仍在）。`on-launch = new_window` 时干净退出会删掉快照；崩溃留下的快照照常恢复。恢复前先把文件改名为 `.restoring`，所以一份一恢复就崩的快照只会试一次。`otty-state` 的 session 表没用上（它没有分屏树）。没做：scrollback、agent 会话 resume、tmux 重贴、进程重跑、Closed at / Restored at 横幅、Open Recent。
 - **落点:** 快照写在 `otty-ui` 改树时。启动在 `otty-bridge`。agent 恢复复用 GAP-A03。
 - **完成:** 开两个 tab、关 Otty、再开，两个 cwd 都在；⇧⌘T 能把刚关的那个要回来。
 
