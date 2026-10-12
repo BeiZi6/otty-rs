@@ -24,14 +24,15 @@ test('nested splits lay out by axis and ratio', () => {
     { pane: 'pane-3', x: 0.25, y: 0.5, w: 0.75, h: 0.5 },
   ]);
   assert.equal(dividers.length, 2);
-  assert.deepEqual(dividers[0], { horizontal: true, rect: { x: 0, y: 0, w: 1, h: 1 }, at: 0.25, pane: 'pane-1' });
-  assert.deepEqual(dividers[1], { horizontal: false, rect: { x: 0.25, y: 0, w: 0.75, h: 1 }, at: 0.5, pane: 'pane-2' });
+  assert.deepEqual(dividers[0], { horizontal: true, rect: { x: 0, y: 0, w: 1, h: 1 }, at: 0.25, pane: 'pane-1', with: 'pane-2' });
+  assert.deepEqual(dividers[1], { horizontal: false, rect: { x: 0.25, y: 0, w: 0.75, h: 1 }, at: 0.5, pane: 'pane-2', with: 'pane-3' });
   assert.deepEqual(leaves(tree), ['pane-1', 'pane-2', 'pane-3']);
 });
 
-test('a divider between two splits has no pane to address', () => {
-  const both = { axis: 'vertical', ratio: 50, first: tree, second: tree };
-  assert.equal(layout(both).dividers[0].pane, null);
+test('a divider between two splits is addressed by a leaf on each side', () => {
+  const other = { axis: 'horizontal', ratio: 50, first: leaf('pane-4'), second: leaf('pane-5') };
+  const [root] = layout({ axis: 'vertical', ratio: 50, first: tree, second: other }).dividers;
+  assert.deepEqual([root.pane, root.with], ['pane-1', 'pane-4']);
 });
 
 test('dragging a divider gives a ratio inside its own split, clamped 10 to 90', () => {

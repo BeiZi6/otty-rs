@@ -104,8 +104,11 @@
   function shortcutLabel(text, mac) {
     const parts = String(text || '').toLowerCase().split('+').map((part) => MODS[part] || part);
     if (mac) return parts.map((part) => GLYPHS[part] || part.toUpperCase()).join('');
+    // Off macOS cmd is Ctrl; a trigger holding both becomes Ctrl+Alt, as the
+    // core's keymap matches it.
+    const both = parts.includes('cmd') && parts.includes('ctrl');
     return parts
-      .map((part) => (part === 'cmd' ? 'ctrl' : part))
+      .map((part) => (part === 'cmd' ? 'ctrl' : both && part === 'ctrl' ? 'alt' : part))
       .map((part) => part.replace(/(^|_)(.)/g, (_, gap, ch) => (gap && ' ') + ch.toUpperCase()))
       .join('+');
   }

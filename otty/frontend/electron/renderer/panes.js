@@ -137,12 +137,9 @@ function createDivider() {
   el.setAttribute('role', 'separator');
   let sent = 0;
   const setRatio = (ratio) => {
-    // ponytail: `pane.ratio` addresses a split by a leaf directly under it, so
-    // a divider between two nested splits cannot be moved; needs a split id in
-    // the protocol.
-    if (!el.divider.pane || ratio === sent) return;
+    if (ratio === sent) return;
     sent = ratio;
-    request('pane.ratio', { pane: el.divider.pane, ratio }).catch(report);
+    request('pane.ratio', { pane: el.divider.pane, with: el.divider.with, ratio }).catch(report);
   };
   el.addEventListener('pointerdown', (event) => {
     event.preventDefault();
@@ -188,7 +185,7 @@ function renderPanes() {
     const el = dividerEls[index] || createDivider();
     el.divider = divider;
     el.hidden = false;
-    el.className = `split-divider ${divider.horizontal ? 'horizontal' : 'vertical'}${divider.pane ? '' : ' fixed'}`;
+    el.className = `split-divider ${divider.horizontal ? 'horizontal' : 'vertical'}`;
     el.setAttribute('aria-orientation', divider.horizontal ? 'vertical' : 'horizontal');
     place(el, divider.horizontal
       ? { x: divider.at, y: divider.rect.y, w: 0, h: divider.rect.h }

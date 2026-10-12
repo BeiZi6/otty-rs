@@ -218,6 +218,23 @@ impl Node {
             }
         }
     }
+
+    /// Set the ratio of the split that separates `a` from `b`: the innermost
+    /// node holding both. This is what addresses a divider between two splits.
+    pub fn set_ratio_between(&mut self, a: PaneId, b: PaneId, ratio: u8) -> bool {
+        let Self::Split { first, second, ratio: r, .. } = self else { return false };
+        if first.contains(a) && first.contains(b) {
+            return first.set_ratio_between(a, b, ratio);
+        }
+        if second.contains(a) && second.contains(b) {
+            return second.set_ratio_between(a, b, ratio);
+        }
+        let apart = (first.contains(a) && second.contains(b)) || (first.contains(b) && second.contains(a));
+        if apart {
+            *r = ratio.clamp(10, 90);
+        }
+        apart
+    }
 }
 
 /// A pane's live session.
@@ -947,6 +964,23 @@ mod tests {
         let before = tree.clone();
         assert!(!tree.set_ratio_for(p(99), 20));
         assert_eq!(tree, before);
+    }
+
+    #[test]
+    fn a_divider_between_two_splits_is_addressed_by_a_pane_on_each_side() {
+        // (1 over 2) | (3 over 4): no leaf sits directly under the root.
+        let mut tree = Node::Leaf(p(1));
+        tree.split(p(1), p(3), SplitDirection::Right, 50);
+        tree.split(p(1), p(2), SplitDirection::Down, 50);
+        tree.split(p(3), p(4), SplitDirection::Down, 50);
+        assert!(tree.set_ratio_between(p(1), p(3), 30));
+        assert!(tree.set_ratio_between(p(4), p(3), 70));
+        let Node::Split { ratio, first, second, .. } = &tree else { panic!("{tree:?}") };
+        assert_eq!(*ratio, 30);
+        assert!(matches!(**first, Node::Split { ratio: 50, .. }));
+        assert!(matches!(**second, Node::Split { ratio: 70, .. }));
+        assert!(!tree.set_ratio_between(p(1), p(99), 20));
+        assert!(!tree.set_ratio_between(p(1), p(1), 20));
     }
 
     #[test]

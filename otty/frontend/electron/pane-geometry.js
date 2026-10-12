@@ -14,8 +14,8 @@
   }
 
   // Split tree → pane rects and divider lines, as fractions of the tab area.
-  // A divider's `pane` is what `pane.ratio` takes: a leaf directly under that
-  // split, or null when both children are splits themselves.
+  // A divider's `pane` and `with` are what `pane.ratio` takes: a leaf on each
+  // side, which names the split whatever its children are.
   function layout(tree, rect = { x: 0, y: 0, w: 1, h: 1 }, out = { panes: [], dividers: [] }) {
     if (!tree) return out;
     if (tree.pane) {
@@ -32,7 +32,8 @@
       horizontal,
       rect,
       at: horizontal ? second.x : second.y,
-      pane: tree.first.pane || tree.second.pane || null,
+      pane: leaves(tree.first)[0],
+      with: leaves(tree.second)[0],
     });
     layout(tree.first, first, out);
     layout(tree.second, second, out);

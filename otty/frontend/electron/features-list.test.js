@@ -77,6 +77,7 @@ test('shortcutLabel renders glyphs on macOS and words elsewhere', () => {
   assert.equal(shortcutLabel('cmd+opt+d', true), '⌘⌥D');
   assert.equal(shortcutLabel('cmd+shift+p', false), 'Ctrl+Shift+P');
   assert.equal(shortcutLabel('cmd+shift+left_bracket', false), 'Ctrl+Shift+Left Bracket');
+  assert.equal(shortcutLabel('cmd+ctrl+equal', false), 'Ctrl+Alt+Equal');
   assert.equal(shortcutLabel('', false), '');
 });
 

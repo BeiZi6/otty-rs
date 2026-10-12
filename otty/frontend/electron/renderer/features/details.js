@@ -69,7 +69,9 @@ OttyFeatures.register('details', (ctx) => {
           : message(t('menu.not_running', 'Not Running')),
         heading(t('menu.open_in', 'Open in')),
         h('div', { class: 'details-row' }, [
-          ['reveal_in_finder', 'menu.reveal_in_finder', 'Reveal in Finder'],
+          ctx.platform === 'macos'
+            ? ['reveal_in_finder', 'menu.reveal_in_finder', 'Reveal in Finder']
+            : ['reveal_in_finder', 'details.reveal_in_explorer', 'Reveal in File Explorer'],
           ['open_with_default_app', 'settings.key_bindings.actions.open_with_default_app', 'Open with Default App'],
           ['copy_path', 'menu.copy_path', 'Copy Path'],
         ].map(([id, key, fallback]) => h('button', { type: 'button', class: 'details-chip', onclick: () => run(id) }, t(key, fallback)))),

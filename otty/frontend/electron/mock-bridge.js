@@ -103,13 +103,15 @@ function removeLeaf(tree, pane) {
   return first && second ? { ...tree, first, second } : first || second;
 }
 
-function setRatio(tree, pane, ratio) {
+// The split that separates `pane` from `other`, or the one holding `pane` directly.
+function setRatio(tree, pane, other, ratio) {
   if (tree.pane) return false;
-  if (tree.first.pane === pane || tree.second.pane === pane) {
-    tree.ratio = ratio;
-    return true;
-  }
-  return setRatio(tree.first, pane, ratio) || setRatio(tree.second, pane, ratio);
+  const [first, second] = [leaves(tree.first), leaves(tree.second)];
+  const apart = other
+    ? (first.includes(pane) && second.includes(other)) || (first.includes(other) && second.includes(pane))
+    : tree.first.pane === pane || tree.second.pane === pane;
+  if (apart) tree.ratio = ratio;
+  return apart || setRatio(tree.first, pane, other, ratio) || setRatio(tree.second, pane, other, ratio);
 }
 
 function equalize(tree) {
@@ -208,8 +210,8 @@ const methods = {
     tab.focused = target;
     return null;
   },
-  'pane.ratio': ({ pane, ratio }) => {
-    setRatio(need(tabOf(pane), 'pane').tree, pane, clampRatio(ratio));
+  'pane.ratio': ({ pane, with: other, ratio }) => {
+    setRatio(need(tabOf(pane), 'pane').tree, pane, other, clampRatio(ratio));
     return null;
   },
   'pane.text': ({ pane }) => ({ rows: [`mock ${paneId(pane)}`] }),

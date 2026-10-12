@@ -55,6 +55,9 @@ struct Views {
     size: (u32, u32),
     /// Panes whose pixels changed since their last frame.
     owed: HashSet<PaneId>,
+    /// Panes whose shell has not printed anything yet, with the input held for
+    /// them: a shell still starting up flushes its tty and eats what was typed.
+    fresh: HashMap<PaneId, (Instant, Vec<(bool, String)>)>,
 }
 
 impl Views {
@@ -65,6 +68,31 @@ impl Views {
             None => focused,
         }?;
         self.map.get_mut(&id).map(|view| (id, view))
+    }
+
+    /// Keys (`paste = false`) or a paste for a pane, held while it is fresh.
+    fn feed(&mut self, pane: Option<&str>, focused: Option<PaneId>, paste: bool, text: String) {
+        let Some(id) = self.target(pane, focused).map(|(id, _)| id) else { return };
+        if let Some((_, held)) = self.fresh.get_mut(&id) {
+            held.push((paste, text));
+        } else if let Some(view) = self.map.get_mut(&id) {
+            report(if paste { view.paste(&text) } else { view.handle_key(&text) });
+        }
+    }
+
+    /// Release a pane's held input once its shell has drawn something.
+    // ponytail: "drew something" is the readiness signal, with a 5 s cap; a
+    // shell-integration prompt mark (OSC 133 A) is the exact one.
+    fn release(&mut self, id: PaneId) {
+        let Some(view) = self.map.get_mut(&id) else { return };
+        let Some((since, _)) = self.fresh.get(&id) else { return };
+        let drew = (0..view.grid_size().1).any(|row| !view.line_text(row).trim().is_empty());
+        if !drew && since.elapsed() < Duration::from_secs(5) {
+            return;
+        }
+        for (paste, text) in self.fresh.remove(&id).map(|(_, held)| held).unwrap_or_default() {
+            report(if paste { view.paste(&text) } else { view.handle_key(&text) });
+        }
     }
 }
 
@@ -94,6 +122,7 @@ impl Panes for Views {
         // Dropping a view retires its PTY on a helper thread; `close` would
         // wait for the drain on this one.
         self.map.retain(|id, _| panes.iter().any(|(pane, _)| pane == id));
+        self.fresh.retain(|id, _| self.map.contains_key(id));
         let mut failed = Vec::new();
         for (id, cwd) in panes {
             if self.map.contains_key(id) {
@@ -104,6 +133,7 @@ impl Panes for Views {
                 Ok(view) => {
                     self.map.insert(*id, view);
                     self.owed.insert(*id);
+                    self.fresh.insert(*id, (Instant::now(), Vec::new()));
                 }
                 Err(e) => failed.push((*id, e.to_string())),
             }
@@ -152,7 +182,7 @@ fn main() {
         .or_else(|| std::env::current_dir().ok().map(|dir| dir.to_string_lossy().into_owned()));
     let mut backend = Backend::new(config, cwd);
     backend.store = otty_state::Store::open_default().ok();
-    let mut views = Views { map: HashMap::new(), scale, size: (1200, 700), owed: HashSet::new() };
+    let mut views = Views { map: HashMap::new(), scale, size: (1200, 700), owed: HashSet::new(), fresh: HashMap::new() };
 
     let inbox = listen();
     emit(&backend.ready());
@@ -174,14 +204,10 @@ fn main() {
                     if backend.d.handle_mode_key(&text) {
                         continue;
                     }
-                    if let Some((_, view)) = views.target(pane.as_deref(), focused) {
-                        report(view.handle_key(&text));
-                    }
+                    views.feed(pane.as_deref(), focused, false, text);
                 }
                 Msg::Line(Command::Paste { pane, text }) => {
-                    if let Some((_, view)) = views.target(pane.as_deref(), focused) {
-                        report(view.paste(&text));
-                    }
+                    views.feed(pane.as_deref(), focused, true, text);
                 }
                 Msg::Line(Command::Resize { pane, width, height }) => {
                     let size = (width.clamp(16, 8192), height.clamp(16, 8192));
@@ -215,6 +241,9 @@ fn main() {
             if view.exited() {
                 backend.close_pane(*id);
             }
+        }
+        for id in views.fresh.keys().copied().collect::<Vec<_>>() {
+            views.release(id);
         }
         if icons_at.is_none_or(|at| at.elapsed() >= Duration::from_millis(500)) {
             icons_at = Some(Instant::now());

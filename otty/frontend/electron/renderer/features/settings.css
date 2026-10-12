@@ -63,7 +63,7 @@
 .settings-row { display: flex; align-items: flex-start; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--divider); }
 .settings-about { flex: 1 1 auto; min-width: 0; }
 .settings-key { font-family: var(--font-mono); font-weight: 650; user-select: text; }
-.settings-doc { margin: 3px 0 0; color: var(--muted); user-select: text; }
+.settings-doc { margin: 3px 0 0; color: var(--muted); font-family: var(--font-serif); font-size: 13px; user-select: text; }
 .settings-meta { display: flex; gap: 10px; margin: 3px 0 0; color: var(--muted); font-size: 10px; }
 .settings-origin { overflow: hidden; font-family: var(--font-mono); text-overflow: ellipsis; white-space: nowrap; }
 .settings-note { color: var(--accent); }

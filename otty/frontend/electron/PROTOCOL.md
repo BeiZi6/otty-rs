@@ -155,7 +155,7 @@ CSS variables the core defines for features: `--window-bg --titlebar-bg
 --titlebar-fg --tab-bg --tab-fg --tab-active-bg --tab-active-fg --tab-hover-bg
 --tab-indicator --sidebar-bg --sidebar-fg --sidebar-border --divider
 --overlay-bg --overlay-fg --overlay-border --overlay-shadow --accent --muted
---radius --font-ui --font-mono`. Features style only their own classes, prefixed
+--radius --font-ui --font-serif --font-mono` (chrome, long-form prose, code — the roles of `docs/TYPOGRAPHY.md`). Features style only their own classes, prefixed
 with the feature name (`.palette-…`).
 
 ## Ceilings

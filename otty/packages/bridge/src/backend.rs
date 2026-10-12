@@ -542,7 +542,11 @@ impl Backend {
             "pane.ratio" => {
                 let pane = self.pane(p)?;
                 let ratio = p["ratio"].as_f64().ok_or("missing `ratio`")?.clamp(10.0, 90.0) as u8;
-                self.d.app.tab_mut_of(pane).map(|t| t.tree.set_ratio_for(pane, ratio));
+                let with = p["with"].as_str().map(|s| self.pane(&json!({"pane": s}))).transpose()?;
+                self.d.app.tab_mut_of(pane).map(|t| match with {
+                    Some(other) => t.tree.set_ratio_between(pane, other, ratio),
+                    None => t.tree.set_ratio_for(pane, ratio),
+                });
                 Value::Null
             }
             "pane.text" => {
@@ -626,17 +630,20 @@ impl Backend {
             "quickly.open" => {
                 let value = text(p, "value")?;
                 match text(p, "kind")? {
-                    "path" | "folder" | "opened" | "recent" | "current" => {
+                    // A row's kind says where it came from; whether it opens a
+                    // shell or a viewer is decided by what is on disk.
+                    "path" | "folder" | "opened" | "recent" | "current" if !Path::new(value).is_file() => {
                         if !self.d.run_quickly(value, self.store.as_ref(), now_secs()) {
                             return Err(format!("{value} is not a directory"));
                         }
                         self.new_tab(self.d.last_opened.clone())?;
                     }
-                    "file" => {
+                    "file" | "path" | "folder" | "opened" | "recent" | "current" => {
                         if !self.d.open_view(value) {
                             return Err(format!("{value} could not be opened"));
                         }
                     }
+                    "url" => self.out.push(json!({"type": "open", "url": value})),
                     "ssh" => {
                         // The host is typed into a shell, so it must look like one.
                         let ok = |c: char| c.is_ascii_alphanumeric() || "._-@:".contains(c);

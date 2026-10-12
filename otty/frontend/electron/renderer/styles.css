@@ -30,8 +30,25 @@
   --danger: #e98079;
   --radius: 8px;
   --right-panel-width: 300px;
-  --font-ui: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* The type stack of docs/TYPOGRAPHY.md, one variable per role: Styrene for
+     chrome, Tiempos for long-form prose, JetBrains Mono (bundled) for code.
+     Styrene and Tiempos are commercial and not shipped; they answer when the
+     machine has them installed, and the rest of each chain answers otherwise. */
+  --font-ui: "Styrene B", "Styrene A", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --font-serif: "Tiempos Text", Charter, Georgia, "Songti SC", SimSun, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, "Microsoft YaHei", monospace;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: local("JetBrains Mono"), url("../../../resources/fonts/JetBrainsMono.ttf");
+  font-weight: 100 800;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: local("JetBrains Mono Italic"), url("../../../resources/fonts/JetBrainsMono-Italic.ttf");
+  font-weight: 100 800;
+  font-style: italic;
 }
 
 * { box-sizing: border-box; }
