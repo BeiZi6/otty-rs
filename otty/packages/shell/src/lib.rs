@@ -441,11 +441,34 @@ pub fn run(config: Config) -> Result<(), ShellError> {
         });
     }
 
+    // The control socket. The listener thread only ferries: the view is not
+    // `Send`, so each request is answered on the UI thread by the pump below.
+    let (ipc_tx, ipc_rx) =
+        std::sync::mpsc::channel::<(otty_ipc::Request, std::sync::mpsc::Sender<otty_ipc::Response>)>();
+    let socket = otty_ipc::socket_path(
+        std::env::var_os("OTTY_SOCKET").as_deref().map(std::path::Path::new),
+    );
+    if let Err(e) = otty_ipc::serve(&socket, move |req| {
+        let (tx, rx) = std::sync::mpsc::channel();
+        let _ = ipc_tx.send((req, tx));
+        rx.recv_timeout(std::time::Duration::from_secs(2)).unwrap_or_else(|_| {
+            otty_ipc::Response::error(otty_ipc::code::TIMEOUT, "Otty did not answer")
+        })
+    }) {
+        // Usually another Otty already owns it; this one still works as a terminal.
+        log::warn!("ipc: not listening on {}: {e}", socket.display());
+    }
+    let gates = otty_ipc::Gates {
+        allow_send_keys: config.get_bool("ipc-allow-send-keys").unwrap_or(false),
+        allow_sensitive_sessions: config.get_bool("ipc-allow-sensitive-sessions").unwrap_or(false),
+    };
+
     let ui_weak = ui.as_weak();
     let last_blink = std::cell::Cell::new(blink_phase());
     let pump = {
         let view = view.clone();
         let tabs = tabs.clone();
+        let dispatch = dispatch.clone();
         // A timer rather than Slint's `invoke_from_event_loop` in a thread: the
         // view is deliberately not `Send` (it owns a `fontdb` database and a
         // brush cache), so the pump has to run on the UI thread. 8 ms is a cap,
@@ -457,6 +480,14 @@ pub fn run(config: Config) -> Result<(), ShellError> {
             move || {
                 let Some(ui) = ui_weak.upgrade() else { return };
                 let mut v = view.borrow_mut();
+                while let Ok((req, reply)) = ipc_rx.try_recv() {
+                    let _ = reply.send(otty_ui::ipc::handle_view(
+                        &mut dispatch.borrow_mut(),
+                        &mut v,
+                        gates,
+                        req,
+                    ));
+                }
                 let changed = v.pump();
                 let title = v.tab_title();
                 if ui.get_title_text() != title.as_str() {

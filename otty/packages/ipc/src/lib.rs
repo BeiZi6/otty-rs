@@ -480,6 +480,167 @@ impl Client {
     }
 }
 
+/// The listening end: one connection at a time, one request per connection.
+#[cfg(unix)]
+struct Listener(std::os::unix::net::UnixListener);
+
+#[cfg(unix)]
+impl Listener {
+    fn bind(path: &Path) -> std::io::Result<Self> {
+        use std::os::unix::fs::PermissionsExt;
+        use std::os::unix::net::{UnixListener, UnixStream};
+        if let Some(dir) = path.parent() {
+            std::fs::create_dir_all(dir)?;
+        }
+        let listener = match UnixListener::bind(path) {
+            // A socket file nobody answers on is what a crashed app leaves behind.
+            Err(e) if e.kind() == std::io::ErrorKind::AddrInUse => {
+                if UnixStream::connect(path).is_ok() {
+                    return Err(e);
+                }
+                std::fs::remove_file(path)?;
+                UnixListener::bind(path)?
+            }
+            other => other?,
+        };
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+        Ok(Self(listener))
+    }
+
+    fn accept(&mut self) -> std::io::Result<std::os::unix::net::UnixStream> {
+        let (stream, _) = self.0.accept()?;
+        // A client that connects and says nothing must not stall the channel.
+        stream.set_read_timeout(Some(Duration::from_millis(3000)))?;
+        Ok(stream)
+    }
+}
+
+#[cfg(windows)]
+mod pipe {
+    use std::ffi::c_void;
+
+    pub const PIPE_ACCESS_DUPLEX: u32 = 0x3;
+    pub const FILE_FLAG_FIRST_PIPE_INSTANCE: u32 = 0x0008_0000;
+    pub const PIPE_REJECT_REMOTE_CLIENTS: u32 = 0x8;
+    pub const PIPE_UNLIMITED_INSTANCES: u32 = 255;
+    pub const ERROR_PIPE_CONNECTED: i32 = 535;
+
+    #[link(name = "kernel32")]
+    extern "system" {
+        pub fn CreateNamedPipeW(
+            name: *const u16,
+            open_mode: u32,
+            pipe_mode: u32,
+            max_instances: u32,
+            out_buffer: u32,
+            in_buffer: u32,
+            default_timeout: u32,
+            security: *mut c_void,
+        ) -> *mut c_void;
+        pub fn ConnectNamedPipe(pipe: *mut c_void, overlapped: *mut c_void) -> i32;
+    }
+}
+
+/// On Windows every connection consumes one pipe instance, so the listener
+/// holds the instance the next client will land on.
+#[cfg(windows)]
+struct Listener {
+    name: Vec<u16>,
+    next: std::fs::File,
+}
+
+#[cfg(windows)]
+impl Listener {
+    fn instance(name: &[u16], first: bool) -> std::io::Result<std::fs::File> {
+        use std::os::windows::io::FromRawHandle;
+        // `first` makes a second app fail to bind instead of sharing the name.
+        let mode = pipe::PIPE_ACCESS_DUPLEX
+            | if first { pipe::FILE_FLAG_FIRST_PIPE_INSTANCE } else { 0 };
+        // The default security descriptor lets only the creating user write.
+        let handle = unsafe {
+            pipe::CreateNamedPipeW(
+                name.as_ptr(),
+                mode,
+                pipe::PIPE_REJECT_REMOTE_CLIENTS,
+                pipe::PIPE_UNLIMITED_INSTANCES,
+                65536,
+                65536,
+                0,
+                std::ptr::null_mut(),
+            )
+        };
+        if handle as isize == -1 {
+            return Err(std::io::Error::last_os_error());
+        }
+        Ok(unsafe { std::fs::File::from_raw_handle(handle) })
+    }
+
+    fn bind(path: &Path) -> std::io::Result<Self> {
+        use std::os::windows::ffi::OsStrExt;
+        let name: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
+        let next = Self::instance(&name, true)?;
+        Ok(Self { name, next })
+    }
+
+    // ponytail: no read timeout on a pipe, so a client that connects and never
+    // writes stalls the channel until it exits; overlapped I/O if that bites.
+    fn accept(&mut self) -> std::io::Result<std::fs::File> {
+        use std::os::windows::io::AsRawHandle;
+        let ok = unsafe { pipe::ConnectNamedPipe(self.next.as_raw_handle(), std::ptr::null_mut()) };
+        if ok == 0 {
+            let e = std::io::Error::last_os_error();
+            if e.raw_os_error() != Some(pipe::ERROR_PIPE_CONNECTED) {
+                return Err(e);
+            }
+        }
+        let fresh = Self::instance(&self.name, false)?;
+        Ok(std::mem::replace(&mut self.next, fresh))
+    }
+}
+
+/// Read one request line, answer it, hang up.
+fn answer<C, F>(mut conn: C, handler: &mut F) -> std::io::Result<()>
+where
+    C: std::io::Read + Write,
+    F: FnMut(Request) -> Response,
+{
+    use std::io::Read;
+    let mut line = String::new();
+    BufReader::new((&mut conn).take(1 << 20)).read_line(&mut line)?;
+    let response = match serde_json::from_str::<Request>(&line) {
+        Ok(req) => handler(req),
+        Err(e) => Response::error(code::USAGE, format!("not a request: {e}")),
+    };
+    let mut payload = serde_json::to_vec(&response)?;
+    payload.push(b'\n');
+    conn.write_all(&payload)?;
+    conn.flush()
+}
+
+/// Listen on `path` and answer every request with `handler`, on a new thread.
+///
+/// Binding happens before this returns, so "another Otty already owns the
+/// socket" is an error the app sees at startup rather than a silent thread.
+pub fn serve<F>(path: &Path, mut handler: F) -> std::io::Result<std::thread::JoinHandle<()>>
+where
+    F: FnMut(Request) -> Response + Send + 'static,
+{
+    let mut listener = Listener::bind(path)?;
+    std::thread::Builder::new().name("otty-ipc".into()).spawn(move || loop {
+        match listener.accept() {
+            Ok(conn) => {
+                if let Err(e) = answer(conn, &mut handler) {
+                    log::debug!("ipc: connection dropped: {e}");
+                }
+            }
+            Err(e) => {
+                log::error!("ipc: listener stopped: {e}");
+                return;
+            }
+        }
+    })
+}
+
 /// A parsed `key=value` argument list, the shape `otty state:<agent>` uses.
 pub fn parse_pairs<I, S>(args: I) -> BTreeMap<String, String>
 where
@@ -760,6 +921,36 @@ mod tests {
         assert!(matches!(client.request(&Request::Status), Err(ClientError::NoApp)));
         assert_eq!(ClientError::NoApp.exit_code(), code::NO_APP);
         assert_eq!(ClientError::Timeout.exit_code(), code::TIMEOUT);
+    }
+
+    #[test]
+    fn a_served_socket_answers_and_a_second_bind_is_refused() {
+        let dir = tempfile::tempdir().unwrap();
+        #[cfg(windows)]
+        let path = PathBuf::from(format!(r"\\.\pipe\otty-test-{}", std::process::id()));
+        #[cfg(not(windows))]
+        let path = dir.path().join("otty.sock");
+        let _ = &dir;
+
+        serve(&path, |req| match req {
+            Request::Status => Response::ok(serde_json::json!({"panes": 1})),
+            _ => Response::error(code::NO_MATCH, "nope"),
+        })
+        .unwrap();
+        assert!(serve(&path, |_| Response::empty()).is_err(), "one app per socket");
+
+        let client = Client::new(Some(&path));
+        // Twice: the listener must be ready for the next connection.
+        for _ in 0..2 {
+            assert_eq!(
+                client.request(&Request::Status).unwrap(),
+                Response::ok(serde_json::json!({"panes": 1}))
+            );
+        }
+        match client.request(&Request::ReloadConfig).unwrap() {
+            Response::Err { code, .. } => assert_eq!(code, code::NO_MATCH),
+            other => panic!("{other:?}"),
+        }
     }
 
     #[test]

@@ -20,6 +20,7 @@ otty-config = { workspace = true }
 otty-term = { workspace = true }
 otty-pty = { workspace = true }
 otty-ui = { workspace = true }
+otty-ipc = { workspace = true }
 otty-render = { workspace = true }
 otty-fonts = { workspace = true }
 slint = { workspace = true }

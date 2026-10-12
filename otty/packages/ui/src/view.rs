@@ -164,6 +164,11 @@ impl TerminalView {
         self.cell
     }
 
+    /// The pane this view draws.
+    pub fn pane_id(&self) -> PaneId {
+        self.pane
+    }
+
     /// The grid size the engine is running at.
     pub fn grid_size(&self) -> (u16, u16) {
         (self.session.terminal().cols(), self.session.terminal().rows())

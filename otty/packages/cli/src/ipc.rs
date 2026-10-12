@@ -291,6 +291,22 @@ pub fn pane(global: &Global, cmd: &PaneCmd, opts: OutputOptions) -> Result<i32, 
             })
         }
     };
+    // The app answers a wait with one poll (9 = still busy); the waiting is here,
+    // so the app's UI thread never blocks on a script.
+    if let PaneCmd::Wait { timeout_secs, .. } = cmd {
+        let started = std::time::Instant::now();
+        loop {
+            match send(global, &req) {
+                Err(CliError::Message { code, .. })
+                    if code == exit::TIMEOUT
+                        && timeout_secs.is_none_or(|s| started.elapsed().as_secs() < s) =>
+                {
+                    std::thread::sleep(std::time::Duration::from_millis(200));
+                }
+                other => return other.map(|_| exit::OK),
+            }
+        }
+    }
     let response = send(global, &req)?;
     // `otty pane busy` answers with an exit code as well as a line, because the
     // question it answers is yes/no: 0 busy, 4 idle. A script that only wants the

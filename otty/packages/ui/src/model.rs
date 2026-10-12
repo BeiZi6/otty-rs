@@ -619,6 +619,28 @@ impl App {
         false
     }
 
+    /// The tab holding `pane`, in any window.
+    pub fn tab_mut_of(&mut self, pane: PaneId) -> Option<&mut Tab> {
+        self.windows
+            .iter_mut()
+            .flat_map(|w| w.tabs.iter_mut())
+            .find(|t| t.tree.contains(pane))
+    }
+
+    /// Focus a pane and bring its tab and window to the front, which is what
+    /// `otty pane focus` means from outside the window.
+    pub fn reveal_pane(&mut self, pane: PaneId) -> bool {
+        for (wi, w) in self.windows.iter_mut().enumerate() {
+            if let Some(ti) = w.tabs.iter().position(|t| t.tree.contains(pane)) {
+                w.active = ti;
+                w.tabs[ti].focused = pane;
+                self.active = wi;
+                return true;
+            }
+        }
+        false
+    }
+
     /// Zoom a pane to fill its tab, or un-zoom it if it already is.
     pub fn toggle_zoom(&mut self, pane: PaneId) -> bool {
         let Some(tab_id) = self.tab_of(pane) else { return false };

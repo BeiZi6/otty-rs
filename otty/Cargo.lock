@@ -4165,6 +4165,7 @@ dependencies = [
  "otty-config",
  "otty-core",
  "otty-fonts",
+ "otty-ipc",
  "otty-pty",
  "otty-render",
  "otty-term",

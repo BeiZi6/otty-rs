@@ -85,8 +85,8 @@
 | GAP-W02 | 工作流 | 启动恢复 | partial | P0 |
 | GAP-W03 | 工作流 | Frecency UI | partial | P1 |
 | GAP-W04 | 工作流 | SSH 远程 pane | partial | P2 |
-| GAP-I01 | IPC | 壳内 IPC server 全套 | partial | P0 |
-| GAP-I02 | IPC | `pane run/exec/capture/wait` | open | P0 |
+| GAP-I01 | IPC | 壳内 IPC server 全套 | done | P0 |
+| GAP-I02 | IPC | `pane run/exec/capture/wait` | partial | P0 |
 | GAP-I03 | IPC | `otty://` 与 Install CLI | open | P1 |
 | GAP-P01 | 打包 | macOS `.app` | open | P3 |
 | GAP-P02 | 打包 | helper 四 triple | partial | P2 |
@@ -489,7 +489,7 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 - **官网:** FEATURES §3 Progress、§4 Agent Behaviour。processing / idle / awaiting / error。不依赖 shell integration。开关：`privilege-badge-agent-*`、`privilege-notify-agent-*`。默认 processing 徽章文档有 conflict（Monitor 页 off，Configuration 页 on）。
 - **DMG:** IPC `Request::AgentState`。钩子调 `otty state:<agent> state=… agent-pid=$$ session-id=…`。pane 匹配按进程树：pid 必须是某 pane shell 的后代。
 - **原实现:** 钩子异步报状态。壳更新 tab 徽章、系统通知、Dock 转圈。awaiting 对手形。idle 对完成点。
-- **当前:** `otty-agent` 有状态机和 `effects_for`。IPC 类型有。tab 上不画、不通知、钩子报上来没地方接。
+- **当前:** `otty-agent` 有状态机和 `effects_for`。钩子的 `AgentState` 现在经 IPC 落进 `pane.agent`、`App.agents`（`otty watch:<agent>` 读的就是它）和 tab 的模型徽章；pane 匹配按 cwd 再退到 focused，不是进程树。壳侧 tab 上仍不画、不发系统通知，`privilege-badge-agent-*` 开关未读。
 - **落点:** 壳跑 IPC server（GAP-I01）后，把 `AgentState` 填进 `otty-ui` 的 pane.agent，再画 GAP-S10 的徽章。通知走 OS。
 - **完成:** 跑一个装了钩子的 claude 回合，tab 出现 processing，idle 后变成完成点；Otty 不在前台时有系统通知。
 
@@ -593,23 +593,23 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 
 ### GAP-I01 壳内 IPC server 全套
 
-- **status:** partial
+- **status:** done
 - **prio:** P0
 - **官网:** FEATURES §5–6。一人一个 socket。POSIX Unix socket，Windows named pipe。闸门：`ipc-allow-send-keys`（默认关）、`ipc-allow-sensitive-sessions`（默认关，挡 ssh/sudo）。
 - **DMG:** 原产品壳进程听 socket。CLI 短连接、一行 JSON 去一行 JSON 回。
 - **原实现:** 请求类型见 `packages/ipc/src/lib.rs`：Window/Tab/Pane/AgentState/ReloadConfig/Badge/Notify/SetTheme/Status。敏感 pane 在 server 侧拒，不在 CLI 侧。
-- **当前:** 类型 + 17 测。Unix 路径是实现。壳没听。Windows named pipe 只写了文档。
+- **当前:** `otty_ipc::serve`（Unix socket + Windows named pipe，首实例独占，18 测）；`packages/ui/src/ipc.rs` `handle` 把 Window/Tab/Pane/AgentState/Badge/Status 落到 `Dispatcher`（4 测）；`otty-shell` 启动 bind，请求在 UI 线程的 pump 里答。`OTTY_SOCKET` 可改路径。本机实测 `otty-cli window list` 0 / 关窗后 3 / 选择器不中 4。未接：ReloadConfig、Notify、SetTheme、window rename、tab move（明确回错，不假成功）。Electron 入口没听。
 - **落点:** `otty-shell` 启动时 bind。每个 `Request` 调 `otty-ui`。Electron 若还当入口，也要听同一 socket，否则 `otty tab new` 找不到 app。
 - **完成:** 壳开着时 `otty window list` 退出 0 并打印一窗；关掉后退出 3。
 
 ### GAP-I02 pane run / exec / capture / wait
 
-- **status:** open
+- **status:** partial
 - **prio:** P0
 - **官网:** FEATURES §5。`send-text` 解释 `\x03`，不自动加换行。`run` 提交后等到结束，返回进程状态不是输出。`exec` 拆 stdout/stderr。`wait` 什么都不打，idle 即 0；pane 两边都不能报则 6。`capture` 是屏幕网格快照。agent pane 的 idle 以钩子为准，不是 OSC 133。
 - **DMG:** `PaneRequest` 已列全。AppleScript `contents`/`history`/`busy` 走同一套。
 - **原实现:** run 需要 shell integration + 空闲 prompt。闸门关时 send-keys 退 13。
-- **当前:** clap 有。没有执行。
+- **当前:** `packages/ui/src/ipc.rs`：`send-text`（解 `\n \r \t \e \\ \xHH`）、`send-keys`（`key:Enter` 等）、`capture`（可见网格，去尾部空行，`--lines`）、`busy`、`dimensions`、`processes`、`tty`、`wait`（服务端单次探询 0/9/6，CLI 轮询；agent pane 以钩子为准）。闸门在解析出真实 pane 之后才判，无 selector 的 ssh pane 也拒。本机实测 send-text 进 pane、wait 退 0。欠：`run` 只提交不等结束状态（要 OSC 133 D）；`exec`、`resize` 回错；`capture --escapes` 仍是纯文本；只有 pane-1 有真 session，split/new tab 出来的 pane 是模型，带 `--command` 会回错。
 - **落点:** 接在 GAP-I01 后面。wait 对 agent 看 GAP-A02，对 shell 看 OSC 133 D。capture 从 `otty-term` grid 取。
 - **完成:** `otty pane send-text --pane $OTTY_PANE_ID 'echo hi\n'` 在该 pane 出现；`wait` 在命令结束后退 0。
 
