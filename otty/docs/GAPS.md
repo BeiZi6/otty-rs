@@ -263,7 +263,7 @@
 - **官网:** FEATURES §2。拖 tab 可换窗或撕成新窗，拖时跟随预览、原位变鬼影。Move Tab to New Window、Move Up/Down。⌘N 新窗，⇧⌘W 关窗。Merge All Windows。
 - **DMG:** action `new_window`、`close_window`、`move_tab_to_new_window`、`merge_all_windows`。原产品无限窗、跨 Spaces。
 - **原实现:** window 拥有自己的侧栏状态、分组、panel 显隐，恢复时按窗记。撕 tab = 新 window 带着那一棵 split 树。
-- **当前:** `App::move_tab_to_new_window` / `merge_all_windows` / `close_window`。Dispatcher 关最后一窗读 `quit-after-last-window-closed`。Slint 仍单 native 窗。
+- **当前:** `App::move_tab_to_new_window` / `move_tab_to_window` / `merge_all_windows` / `close_window`。Dispatcher 关最后一窗读 `quit-after-last-window-closed`。Electron 侧整个应用一个 `otty-bridge`，模型里每个 window 对应一个 BrowserWindow（`window-open` / `window-close` 事件）；tab 拖到另一个窗口走 `tab.move`，拖出窗口或 Move Tab to New Window 走 `tab.detach`，pane 树和 shell 原样跟过去；Merge All Windows 直接可用。拖动时没有跟随预览和鬼影。Slint 仍单 native 窗。
 - **落点:** 模型已支持多窗；shell 要真的开第二个 native 窗，并把 tab 的 pane 树迁过去。
 - **完成:** 一个 tab 能进新窗；Merge 能收回来；关最后一窗走 `quit-after-last-window-closed`。
 

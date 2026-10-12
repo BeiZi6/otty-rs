@@ -346,11 +346,10 @@ function stepSession(direction) {
   if (next) activateTab(next.id);
 }
 
-// ponytail: one bridge per window, so the session cannot follow the tab
-// (PROTOCOL.md "Ceilings"); this opens a window at the tab's cwd and leaves the
-// tab where it is. Move the pane tree once the backend can hand a tab over.
-function moveTabToNewWindow(tab) {
-  if (tab) window.otty.newWindow(tab.cwd);
+// The tab goes with its panes and their shells; `at` is the screen point it
+// was dropped at, when it was dragged out.
+function moveTabToNewWindow(tab, at = {}) {
+  if (tab) request('tab.detach', { tab: tab.id, ...at }).catch(report);
 }
 
 actions.set('copy', async () => {
@@ -359,7 +358,6 @@ actions.set('copy', async () => {
   else await request('action.run', { id: 'copy' });
 });
 actions.set('paste', async () => paste(await window.otty.readClipboard()));
-actions.set('new_window', () => window.otty.newWindow());
 actions.set('close_window', () => window.otty.windowAction('close'));
 actions.set('minimize', () => window.otty.windowAction('minimize'));
 actions.set('toggle_full_screen', () => window.otty.windowAction('toggle-full-screen'));

@@ -1,6 +1,6 @@
 // Stand-in for `otty-bridge`: protocol v2 over stdio with an in-memory model
 // and solid-colour frames. Selected by OTTY_ENGINE_MOCK=1; PROTOCOL.md is the
-// contract. No shell runs here — input is swallowed.
+// contract. No shell runs here — input is swallowed — and there is one window.
 const readline = require('node:readline');
 const path = require('node:path');
 const { leaves, clampRatio } = require('./pane-geometry');
@@ -270,6 +270,7 @@ for (let n = 1; n <= 9; n += 1) {
 function emitState() {
   const state = {
     type: 'state',
+    window: 'window-1',
     activeTab: model.activeTab,
     tabs: model.tabs.map((tab) => ({
       id: tab.id,
@@ -298,7 +299,7 @@ function emitFrame(pane) {
   if (!size || !activeTab() || !leaves(activeTab().tree).includes(pane)) return;
   const colour = COLOURS[Number(pane.split('-')[1]) % COLOURS.length];
   const pixels = Buffer.alloc(size.width * size.height * 4, Buffer.from([...colour, 255]));
-  emit({ type: 'frame', pane, ...size, pixels: pixels.toString('base64') });
+  emit({ type: 'frame', window: 'window-1', pane, ...size, pixels: pixels.toString('base64') });
 }
 
 function onCommand(command) {
@@ -336,6 +337,7 @@ model.activeTab = first.tab;
 
 emit({ type: 'ready', version: 'mock', chrome: {}, layout: 'sidebar-left', sidebar_visible: true,
   platform: { win32: 'windows', darwin: 'macos' }[process.platform] || 'linux' });
+emit({ type: 'window-open', window: 'window-1' });
 emitState();
 
 readline.createInterface({ input: process.stdin })

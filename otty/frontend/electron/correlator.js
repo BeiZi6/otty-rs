@@ -4,12 +4,13 @@ function createCorrelator(write) {
   const pending = new Map();
   let nextId = 1;
 
-  function request(method, params = {}) {
+  // `extra`: fields beside the request, such as the window it comes from.
+  function request(method, params = {}, extra = {}) {
     return new Promise((resolve) => {
       const id = nextId;
       nextId += 1;
       pending.set(id, resolve);
-      write({ type: 'request', id, method, params });
+      write({ type: 'request', id, method, params, ...extra });
     });
   }
 

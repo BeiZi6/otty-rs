@@ -251,6 +251,12 @@ impl GridRasterizer {
             if !dirty.contains(&(frame.cursor.row as u32)) {
                 dirty.push(frame.cursor.row as u32);
             }
+            // The row now holds the cursor's pixels, which its hash knows
+            // nothing of. Forget the hash, so the row is repainted when the
+            // cursor has moved on or blinked off.
+            if let Some(slot) = self.row_hashes.get_mut(frame.cursor.row as usize) {
+                *slot = !*slot;
+            }
         }
 
         self.previous_palette = Some(frame.palette);
@@ -845,6 +851,29 @@ mod tests {
         r.set_cursor(CursorShape::Block, false);
         r.rasterize(&frame, &glyphs());
         assert_eq!(r.pixel(56, 8), BG, "the cursor is in its off phase");
+    }
+
+    #[test]
+    fn a_cursor_that_blinks_off_or_moves_away_leaves_no_block_behind() {
+        let mut frame = frame_with("A", 8, 2);
+        frame.cursor = Cursor { col: 6, row: 0, visible: true, shape: CursorShape::Block, blinking: true };
+        let mut r = GridRasterizer::new(64, 32);
+        r.set_cursor(CursorShape::Block, true);
+        r.rasterize(&frame, &glyphs());
+        assert_ne!(r.pixel(50, 8), BG, "the cursor is drawn");
+
+        // Same grid, off phase: the row's text did not change, its pixels must.
+        r.set_cursor(CursorShape::Block, false);
+        r.rasterize(&frame, &glyphs());
+        assert_eq!(r.pixel(50, 8), BG, "blinked off");
+
+        // Same grid, cursor on the other row.
+        r.set_cursor(CursorShape::Block, true);
+        r.rasterize(&frame, &glyphs());
+        frame.cursor.row = 1;
+        r.rasterize(&frame, &glyphs());
+        assert_eq!(r.pixel(50, 8), BG, "the row it left is clean");
+        assert_ne!(r.pixel(50, 24), BG, "and it is on the row it went to");
     }
 
     #[test]

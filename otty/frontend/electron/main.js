@@ -8,8 +8,15 @@ const { createCorrelator } = require('./correlator');
 const { accelerator } = require('./keymap');
 const { describeFont } = require('./font-files');
 
-// One bridge per window (PROTOCOL.md "Transport"); the backend owns tabs and panes.
+// One bridge for the app (PROTOCOL.md "Transport"). The backend owns windows,
+// tabs and panes; `sessions` holds a BrowserWindow for each model window
+// (`id`: `window-1`, …; null until the backend has claimed it).
 const sessions = new Map();
+let bridge = null;
+let quitting = false;
+// The last `ready`, replayed to every window that opens after it.
+let ready = null;
+const requests = createCorrelator(write);
 const workspace = path.resolve(__dirname, '..', '..');
 const mac = process.platform === 'darwin';
 const mock = process.env.OTTY_ENGINE_MOCK === '1';
@@ -55,14 +62,22 @@ function send(state, channel, payload) {
   else state.window.webContents.send(channel, payload);
 }
 
-function write(state, command) {
-  const bridge = state.bridge;
+// An event that names a window goes to it; the rest go to every window.
+function deliver(event) {
+  for (const state of sessions.values()) {
+    if (!event.window || event.window === state.id) send(state, 'bridge:event', event);
+  }
+}
+
+function write(command) {
   if (!bridge || bridge.killed || !bridge.stdin.writable) return;
   bridge.stdin.write(`${JSON.stringify(command)}\n`);
 }
 
-function fail(state, message) {
-  send(state, 'bridge:event', { type: 'error', message });
+// Shown in every window, or in one opened to show it.
+function fail(message) {
+  if (!sessions.size && !quitting) createWindow();
+  deliver({ type: 'error', message });
 }
 
 function openExternal(url) {
@@ -81,8 +96,8 @@ function runAction(window, action) {
 
 // Menu rows are action ids; the renderer's runAction decides who handles one.
 // Accelerators are shown, not registered — the renderer keymap owns the keys.
-async function refreshMenu(state) {
-  const reply = await state.requests.request('menu.list');
+async function refreshMenu() {
+  const reply = await requests.request('menu.list');
   if (!reply.ok || !Array.isArray(reply.result)) return;
   const template = reply.result.map((menu) => ({
     label: String(menu.title),
@@ -101,77 +116,107 @@ async function refreshMenu(state) {
   }
 }
 
-function onBridgeEvent(state, event) {
+// The model opened a window: a BrowserWindow nobody has claimed takes it
+// (the one put up at launch), else a new one, where a torn-off tab was dropped.
+function openWindow({ window: id, x, y }) {
+  const free = [...sessions.values()].find((state) => state.id === null);
+  const state = free || createWindow(Number.isFinite(x) && Number.isFinite(y) ? { x, y } : undefined);
+  state.id = id;
+}
+
+function onBridgeEvent(event) {
   if (event.type === 'response') {
-    state.requests.settle(event);
+    requests.settle(event);
     return;
   }
   if (event.type === 'clipboard' && typeof event.text === 'string') clipboard.writeText(event.text);
   else if (event.type === 'open') openExternal(event.url);
   else if (event.type === 'notify' && Notification.isSupported()) {
     const notification = new Notification({ title: String(event.title || 'Otty'), body: String(event.body || '') });
-    notification.on('click', () => state.window.isDestroyed() || state.window.show());
+    notification.on('click', () => (BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0])?.show());
     notification.show();
   } else if (event.type === 'quit') {
-    app.quit();
+    // On macOS the app outlives its last window; `activate` starts the bridge again.
+    if (!mac || sessions.size) app.quit();
     return;
-  } else if (event.type === 'ready' || event.type === 'config') refreshMenu(state);
-  send(state, 'bridge:event', event);
+  } else if (event.type === 'window-open') {
+    openWindow(event);
+    return;
+  } else if (event.type === 'window-close') {
+    const state = [...sessions.values()].find((item) => item.id === event.window);
+    if (state) {
+      // Forgotten first, so `closed` does not report back what the model already knows.
+      sessions.delete(state.key);
+      state.window.close();
+    }
+    return;
+  } else if (event.type === 'ready') {
+    ready = event;
+    refreshMenu();
+  } else if (event.type === 'config') refreshMenu();
+  else if (event.type === 'chrome' && ready) ready = { ...ready, chrome: event.chrome };
+  deliver(event);
 }
 
-function startBridge(state, cwd) {
+function startBridge() {
+  const cwd = process.env.OTTY_CWD || app.getPath('home');
   const binary = mock ? process.execPath : enginePath();
   if (!binary) {
-    fail(state, 'Rust engine not found. Run `npm run build:engine` first.');
+    fail('Rust engine not found. Run `npm run build:engine` first.');
     return;
   }
-  const scale = screen.getDisplayMatching(state.window.getBounds()).scaleFactor;
-  const env = { ...process.env, OTTY_SCALE_FACTOR: String(scale), OTTY_CWD: cwd };
+  // The primary display's scale, until a pane reports its own with `resize`.
+  const env = { ...process.env, OTTY_SCALE_FACTOR: String(screen.getPrimaryDisplay().scaleFactor), OTTY_CWD: cwd };
   if (mock) env.ELECTRON_RUN_AS_NODE = '1';
-  let bridge;
+  let child;
   try {
-    bridge = spawn(binary, mock ? [path.join(__dirname, 'mock-bridge.js')] : [], {
+    child = spawn(binary, mock ? [path.join(__dirname, 'mock-bridge.js')] : [], {
       cwd,
       env,
       stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true,
     });
   } catch (error) {
-    fail(state, error.message);
+    fail(error.message);
     return;
   }
-  state.bridge = bridge;
-  readline.createInterface({ input: bridge.stdout }).on('line', (line) => {
+  bridge = child;
+  readline.createInterface({ input: child.stdout }).on('line', (line) => {
     let event;
     try {
       event = JSON.parse(line);
     } catch {
-      fail(state, 'Rust engine sent an invalid event.');
+      fail('Rust engine sent an invalid event.');
       return;
     }
-    onBridgeEvent(state, event);
+    onBridgeEvent(event);
   });
-  bridge.stdin.on('error', () => {});
-  bridge.stderr.setEncoding('utf8');
-  bridge.stderr.on('data', (data) => console.error(`[otty-bridge:${state.window.id}] ${data.trimEnd()}`));
-  bridge.once('error', (error) => fail(state, error.message));
-  bridge.once('exit', (code) => {
-    state.requests.failAll('Rust engine exited.');
-    if (state.closing || state.window.isDestroyed()) return;
-    // A clean exit is the backend closing its last tab.
-    if (code === 0) state.window.close();
-    else fail(state, `Rust engine exited (${code ?? 'signal'}).`);
+  child.stdin.on('error', () => {});
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (data) => console.error(`[otty-bridge] ${data.trimEnd()}`));
+  child.once('error', (error) => fail(error.message));
+  child.once('exit', (code) => {
+    requests.failAll('Rust engine exited.');
+    if (bridge === child) bridge = null;
+    ready = null;
+    if (quitting) return;
+    // A clean exit is the backend closing its last window.
+    if (code !== 0) fail(`Rust engine exited (${code ?? 'signal'}).`);
+    else if (!mac) app.quit();
   });
 }
 
-function stopBridge(state) {
-  state.closing = true;
-  write(state, { type: 'close' });
-  setTimeout(() => state.bridge?.kill(), 300);
+function stopBridge() {
+  quitting = true;
+  write({ type: 'close' });
+  const child = bridge;
+  setTimeout(() => child?.kill(), 300);
 }
 
-function createWindow(cwd) {
+// `at`: the screen point a torn-off tab was dropped at; its titlebar goes there.
+function createWindow(at) {
   const window = new BrowserWindow({
+    ...(at ? { x: Math.round(at.x - 120), y: Math.round(at.y - 16) } : {}),
     width: 1180,
     height: 760,
     minWidth: 720,
@@ -187,9 +232,9 @@ function createWindow(cwd) {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-  const state = { window, bridge: null, loaded: false, closing: false, queue: [] };
-  state.requests = createCorrelator((command) => write(state, command));
-  sessions.set(window.id, state);
+  const state = { window, key: window.id, id: null, loaded: false, queue: [] };
+  sessions.set(state.key, state);
+  if (ready) send(state, 'bridge:event', ready);
 
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', (event, url) => {
@@ -210,27 +255,33 @@ function createWindow(cwd) {
   window.on('maximize', () => send(state, 'bridge:event', { type: 'window-state', maximized: true }));
   window.on('unmaximize', () => send(state, 'bridge:event', { type: 'window-state', maximized: false }));
   window.on('closed', () => {
-    stopBridge(state);
-    sessions.delete(window.id);
+    // Still known here means the user closed it: its tabs and shells go too.
+    if (sessions.delete(state.key) && state.id && !quitting) write({ type: 'close', window: state.id });
   });
   window.loadFile(path.join(__dirname, 'renderer', 'index.html'));
-  startBridge(state, cwd || process.env.OTTY_CWD || app.getPath('home'));
+  return state;
+}
 
-  // Dev only: OTTY_SHOT=<png> captures the window after OTTY_SHOT_MS and quits;
-  // OTTY_SHOT_EVAL runs a renderer snippet first, to stage what gets captured.
-  if (process.env.OTTY_SHOT && !app.isPackaged) {
-    setTimeout(async () => {
-      try {
-        if (process.env.OTTY_SHOT_EVAL) {
-          console.log('[shot]', JSON.stringify(await window.webContents.executeJavaScript(process.env.OTTY_SHOT_EVAL)));
-        }
-        fs.writeFileSync(process.env.OTTY_SHOT, (await window.webContents.capturePage()).toPNG());
-      } catch (error) {
-        console.error(`[shot] ${error.message}`);
+// Dev only: OTTY_SHOT=<png> captures every window after OTTY_SHOT_MS and quits
+// (the first to that path, the others to <name>-2.png, …); OTTY_SHOT_EVAL runs
+// a renderer snippet in the first window beforehand, to stage what is captured.
+function scheduleShot() {
+  if (!process.env.OTTY_SHOT || app.isPackaged) return;
+  const windows = () => BrowserWindow.getAllWindows().sort((a, b) => a.id - b.id);
+  setTimeout(async () => {
+    try {
+      if (process.env.OTTY_SHOT_EVAL) {
+        console.log('[shot]', JSON.stringify(await windows()[0].webContents.executeJavaScript(process.env.OTTY_SHOT_EVAL)));
       }
-      app.quit();
-    }, Number(process.env.OTTY_SHOT_MS) || 5000);
-  }
+      for (const [index, window] of windows().entries()) {
+        const file = index ? process.env.OTTY_SHOT.replace(/(\.\w+)?$/, `-${index + 1}$1`) : process.env.OTTY_SHOT;
+        fs.writeFileSync(file, (await window.webContents.capturePage()).toPNG());
+      }
+    } catch (error) {
+      console.error(`[shot] ${error.message}`);
+    }
+    app.quit();
+  }, Number(process.env.OTTY_SHOT_MS) || 5000);
 }
 
 function sessionFor(event) {
@@ -241,8 +292,9 @@ function sessionFor(event) {
 ipcMain.handle('bridge:request', (event, method, params) => {
   const state = sessionFor(event);
   if (!state || typeof method !== 'string') return { ok: false, error: 'Bad request.' };
-  if (!state.bridge || state.bridge.exitCode !== null) return { ok: false, error: 'Rust engine is not running.' };
-  return state.requests.request(method, params && typeof params === 'object' ? params : {});
+  if (!bridge || bridge.exitCode !== null) return { ok: false, error: 'Rust engine is not running.' };
+  // The asking window rides along; the backend acts on that one.
+  return requests.request(method, params && typeof params === 'object' ? params : {}, state.id ? { window: state.id } : {});
 });
 
 ipcMain.on('bridge:send', (event, command) => {
@@ -252,11 +304,12 @@ ipcMain.on('bridge:send', (event, command) => {
   if (type === 'input' || type === 'paste') {
     // Key text is short; a paste may be a file's worth.
     if (typeof text !== 'string' || text.length > (type === 'input' ? 8192 : 1 << 20)) return;
-    write(state, { type, pane, text });
+    write({ type, pane, text });
   } else if (type === 'resize') {
     if (!Number.isInteger(width) || !Number.isInteger(height)) return;
     if (width < 1 || height < 1 || width > 8192 || height > 8192) return;
-    write(state, { type, pane, width, height });
+    const scale = Number.isFinite(command.scale) && command.scale > 0 ? command.scale : undefined;
+    write({ type, pane, width, height, scale });
   }
 });
 
@@ -300,8 +353,6 @@ ipcMain.handle('path:is-directory', (_event, target) => {
   }
 });
 
-ipcMain.on('window:new', (_event, cwd) => createWindow(typeof cwd === 'string' && cwd ? cwd : undefined));
-
 ipcMain.on('window:action', (event, action) => {
   const window = BrowserWindow.fromWebContents(event.sender);
   if (!window) return;
@@ -314,9 +365,16 @@ ipcMain.on('window:action', (event, action) => {
 app.whenReady().then(() => {
   // Electron's default menu would claim Ctrl+W and Ctrl+R before ours arrives.
   Menu.setApplicationMenu(null);
+  // The first window is up before the engine is: startup shows something, and
+  // an engine that will not start has somewhere to say so.
   createWindow();
+  startBridge();
+  scheduleShot();
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length) return;
+    createWindow();
+    if (bridge) requests.request('action.run', { id: 'new_window' });
+    else startBridge();
   });
 });
 
@@ -324,6 +382,4 @@ app.on('window-all-closed', () => {
   if (!mac) app.quit();
 });
 
-app.on('before-quit', () => {
-  for (const state of sessions.values()) stopBridge(state);
-});
+app.on('before-quit', stopBridge);

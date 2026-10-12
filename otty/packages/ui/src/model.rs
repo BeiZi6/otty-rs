@@ -525,6 +525,30 @@ impl App {
         true
     }
 
+    /// Make `id` the active window, the one a request with no window acts on.
+    pub fn focus_window(&mut self, id: WindowId) -> bool {
+        let at = self.windows.iter().position(|w| w.id == id);
+        self.active = at.unwrap_or(self.active);
+        at.is_some()
+    }
+
+    /// Move `tab` into `window` at `position` (clamped) and make it active
+    /// there, from whichever window holds it. The window it left may be empty.
+    pub fn move_tab_to_window(&mut self, tab: TabId, window: WindowId, position: usize) -> bool {
+        let (Some(from), Some(to)) = (
+            self.windows.iter().position(|w| w.tabs.iter().any(|t| t.id == tab)),
+            self.windows.iter().position(|w| w.id == window),
+        ) else {
+            return false;
+        };
+        let Some(moved) = self.windows[from].take_tab(tab) else { return false };
+        let dest = &mut self.windows[to];
+        let at = position.min(dest.tabs.len());
+        dest.tabs.insert(at, moved);
+        dest.active = at;
+        true
+    }
+
     /// Pull every tab into the active window and drop the empty ones.
     pub fn merge_all_windows(&mut self) -> bool {
         if self.windows.len() < 2 {
@@ -880,6 +904,23 @@ mod tests {
         // The last tab cannot be closed on its own.
         win.close_tab(t(2));
         assert!(!win.close_tab(t(3)), "closing the last tab is the window's business");
+    }
+
+    #[test]
+    fn a_tab_moves_to_another_window_with_its_panes_and_becomes_active_there() {
+        let mut app = app_with_one_pane();
+        app.split_pane(p(1), p(2), SplitDirection::Right, 50);
+        app.add_window(w(2), t(2), p(3));
+        app.add_tab(w(2), t(3), p(4));
+        assert!(app.move_tab_to_window(t(1), w(2), 1));
+        let dest = &app.windows()[1];
+        assert_eq!(dest.tabs().iter().map(|t| t.id).collect::<Vec<_>>(), [t(2), t(1), t(3)]);
+        assert_eq!(dest.active_tab().unwrap().tree.panes(), [p(1), p(2)]);
+        assert!(app.windows()[0].tabs().is_empty(), "the caller decides what an empty window means");
+        assert!(!app.move_tab_to_window(t(1), w(9), 0) && !app.move_tab_to_window(t(9), w(2), 0));
+
+        assert!(app.focus_window(w(1)) && !app.focus_window(w(9)));
+        assert_eq!(app.active_window().unwrap().id, w(1));
     }
 
     #[test]

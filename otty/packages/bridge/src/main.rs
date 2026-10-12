@@ -1,4 +1,4 @@
-//! `otty-bridge`: one Electron window's backend, speaking the JSON lines of
+//! `otty-bridge`: the Electron app's backend, speaking the JSON lines of
 //! `frontend/electron/PROTOCOL.md` over stdio.
 //!
 //! This file is the part that cannot be tested without a shell: the pipes, the
@@ -18,7 +18,7 @@ use backend::{Backend, Panes};
 use base64::Engine;
 use otty_config::theme::Theme;
 use otty_config::Config;
-use otty_core::PaneId;
+use otty_core::{PaneId, WindowId};
 use otty_ui::ipc::PaneIo;
 use otty_ui::TerminalView;
 use serde::Deserialize;
@@ -29,14 +29,28 @@ use serde_json::{json, Value};
 enum Command {
     Input { pane: Option<String>, text: String },
     Paste { pane: Option<String>, text: String },
-    Resize { pane: String, width: u32, height: u32 },
+    Resize {
+        pane: String,
+        width: u32,
+        height: u32,
+        /// The device pixel ratio of the display the pane is on.
+        #[serde(default)]
+        scale: Option<f32>,
+    },
     Request {
         id: Value,
+        /// The window asking; it becomes the active one.
+        #[serde(default)]
+        window: Option<String>,
         method: String,
         #[serde(default)]
         params: Value,
     },
-    Close,
+    /// One window was closed, or — with none named — the app is going away.
+    Close {
+        #[serde(default)]
+        window: Option<String>,
+    },
 }
 
 /// What the main loop wakes for.
@@ -49,7 +63,10 @@ enum Msg {
 /// The model's terminal panes, live: one view — PTY, engine, pixels — each.
 struct Views {
     map: HashMap<PaneId, TerminalView>,
+    /// The scale the last pane was laid out at; a new pane starts there.
     scale: f32,
+    /// The scale each pane's glyphs were last measured at.
+    scales: HashMap<PaneId, f32>,
     /// The last size the frontend gave any pane. A new pane starts there and
     /// is resized as soon as the frontend has laid it out.
     size: (u32, u32),
@@ -123,6 +140,7 @@ impl Panes for Views {
         // wait for the drain on this one.
         self.map.retain(|id, _| panes.iter().any(|(pane, _)| pane == id));
         self.fresh.retain(|id, _| self.map.contains_key(id));
+        self.scales.retain(|id, _| self.map.contains_key(id));
         let mut failed = Vec::new();
         for (id, cwd) in panes {
             if self.map.contains_key(id) {
@@ -132,6 +150,7 @@ impl Panes for Views {
             match TerminalView::new_in(config, *id, self.size, self.scale, cwd) {
                 Ok(view) => {
                     self.map.insert(*id, view);
+                    self.scales.insert(*id, self.scale);
                     self.owed.insert(*id);
                     self.fresh.insert(*id, (Instant::now(), Vec::new()));
                 }
@@ -177,7 +196,7 @@ impl Panes for Views {
 
     fn set_font(&mut self, config: &Config) {
         for (id, view) in &mut self.map {
-            if let Err(e) = view.apply_font_size(config, self.scale) {
+            if let Err(e) = view.apply_font_size(config, self.scales.get(id).copied().unwrap_or(self.scale)) {
                 eprintln!("otty-bridge: {id}: {e}");
             }
             self.owed.insert(*id);
@@ -201,12 +220,21 @@ fn main() {
         .or_else(|| std::env::current_dir().ok().map(|dir| dir.to_string_lossy().into_owned()));
     let mut backend = Backend::new(config, cwd);
     backend.store = otty_state::Store::open_default().ok();
-    let mut views = Views { map: HashMap::new(), scale, size: (1200, 700), owed: HashSet::new(), fresh: HashMap::new() };
+    let mut views = Views {
+        map: HashMap::new(),
+        scale,
+        scales: HashMap::new(),
+        size: (1200, 700),
+        owed: HashSet::new(),
+        fresh: HashMap::new(),
+    };
 
     let inbox = listen();
     emit(&backend.ready());
 
-    let mut last_state = String::new();
+    // The windows the frontend has been told about, and what it last saw of each.
+    let mut windows: Vec<WindowId> = Vec::new();
+    let mut last_state: HashMap<WindowId, String> = HashMap::new();
     let mut shown = Vec::new();
     let mut last_blink = false;
     let mut icons_at: Option<Instant> = None;
@@ -228,21 +256,31 @@ fn main() {
                 Msg::Line(Command::Paste { pane, text }) => {
                     views.feed(pane.as_deref(), focused, true, text);
                 }
-                Msg::Line(Command::Resize { pane, width, height }) => {
+                Msg::Line(Command::Resize { pane, width, height, scale }) => {
                     let size = (width.clamp(16, 8192), height.clamp(16, 8192));
-                    if let Some((id, view)) = views.target(Some(&pane), None) {
+                    let scale = scale.filter(|s| s.is_finite() && *s > 0.0);
+                    let id = pane.parse::<PaneId>().ok();
+                    // By field, not `target`: the scales are borrowed alongside the view.
+                    if let Some((id, view)) = id.and_then(|id| Some((id, views.map.get_mut(&id)?))) {
+                        // A pane on a display with another pixel ratio is re-measured.
+                        if let Some(scale) = scale.filter(|s| views.scales.get(&id) != Some(s)) {
+                            report(view.apply_font_size(&backend.config, scale));
+                            views.scales.insert(id, scale);
+                            views.scale = scale;
+                        }
                         view.resize(size.0, size.1, true);
                         views.owed.insert(id);
                         views.size = size;
                     }
                 }
-                Msg::Line(Command::Request { id, method, params }) => {
-                    emit(&match backend.request(&mut views, &method, &params) {
+                Msg::Line(Command::Request { id, window, method, params }) => {
+                    emit(&match backend.request_in(&mut views, window.as_deref(), &method, &params) {
                         Ok(result) => json!({"type": "response", "id": id, "ok": true, "result": result}),
                         Err(error) => json!({"type": "response", "id": id, "ok": false, "error": error}),
                     });
                 }
-                Msg::Line(Command::Close) => break 'window,
+                Msg::Line(Command::Close { window: Some(window) }) => backend.close_window(&window),
+                Msg::Line(Command::Close { window: None }) => break 'window,
                 Msg::Ipc(request, reply) => {
                     let _ = reply.send(otty_ui::ipc::handle(&mut backend.d, &mut views, gates, request));
                 }
@@ -269,13 +307,25 @@ fn main() {
             backend.refresh_icons(&views);
         }
         backend.settle(&mut views);
+        let now = backend.windows();
+        for id in windows.iter().filter(|id| !now.contains(id)) {
+            emit(&json!({"type": "window-close", "window": id.slug()}));
+            last_state.remove(id);
+        }
+        for id in now.iter().filter(|id| !windows.contains(id)) {
+            let at = backend.placed.remove(id);
+            emit(&json!({"type": "window-open", "window": id.slug(), "x": at.map(|at| at.0), "y": at.map(|at| at.1)}));
+        }
+        windows = now;
         for event in backend.out.drain(..) {
             emit(&event);
         }
-        let state = backend.state(&views).to_string();
-        if state != last_state {
-            emit_line(&state);
-            last_state = state;
+        for id in &windows {
+            let state = backend.state_of(&views, *id).to_string();
+            if last_state.get(id) != Some(&state) {
+                emit_line(&state);
+                last_state.insert(*id, state);
+            }
         }
 
         // A frame goes out for a pane that changed, that just came into view,
@@ -286,17 +336,19 @@ fn main() {
         let blinked = blink != last_blink;
         last_blink = blink;
         let visible = backend.visible();
-        for id in &visible {
+        for shows in &visible {
+            let (window, id) = shows;
             let Some(view) = views.map.get_mut(id) else { continue };
             let owed = views.owed.remove(id);
-            if owed || blinked || !shown.contains(id) {
+            // `shown` holds the window too, so a pane that changed windows is new there.
+            if owed || blinked || !shown.contains(shows) {
                 view.set_cursor_blink(blink);
                 view.frame();
                 let (width, height) = view.buffer_size();
                 // Written by hand: base64 needs no escaping, and a `Value`
                 // would copy megabytes of it once more.
                 emit_line(&format!(
-                    r#"{{"type":"frame","pane":"{id}","width":{width},"height":{height},"pixels":"{}"}}"#,
+                    r#"{{"type":"frame","window":"{window}","pane":"{id}","width":{width},"height":{height},"pixels":"{}"}}"#,
                     base64::engine::general_purpose::STANDARD.encode(view.pixels()),
                 ));
             }
@@ -337,7 +389,7 @@ fn listen() -> Receiver<Msg> {
                 let Ok(line) = line else { break };
                 match serde_json::from_str::<Command>(&line) {
                     Ok(command) => {
-                        let closing = matches!(command, Command::Close);
+                        let closing = matches!(command, Command::Close { window: None });
                         if sender.send(Msg::Line(command)).is_err() || closing {
                             return;
                         }
@@ -345,8 +397,8 @@ fn listen() -> Receiver<Msg> {
                     Err(error) => emit(&json!({"type": "error", "message": error.to_string()})),
                 }
             }
-            // The frontend went away; so does this window.
-            let _ = sender.send(Msg::Line(Command::Close));
+            // The frontend went away; so does the app.
+            let _ = sender.send(Msg::Line(Command::Close { window: None }));
         })
         .expect("stdin reader thread must start");
     receiver

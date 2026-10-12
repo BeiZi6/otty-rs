@@ -8,6 +8,9 @@ const projects = globalThis.OttyProjects;
 const lastTabByFolder = new Map();
 const BADGES = ['running', 'completed', 'error'];
 
+// What a dragged tab carries, so another window can take it.
+const TAB_MIME = 'application/x-otty-tab';
+
 let folders = [];
 let draggedTabId = null;
 let renaming = false;
@@ -53,34 +56,58 @@ function activateFolder(folder) {
   activateTab((folder.tabs.find((item) => item.id === last) || folder.tabs[0]).id);
 }
 
+// A tab dragged in from another window. Only its type can be read until the drop.
+function foreignTab(event) {
+  return !draggedTabId && event.dataTransfer?.types.includes(TAB_MIME);
+}
+
 function bindTabDrag(item, tab) {
   item.draggable = true;
   item.addEventListener('dragstart', (event) => {
     draggedTabId = tab.id;
     event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', tab.id);
+    event.dataTransfer.setData(TAB_MIME, tab.id);
     item.classList.add('dragging');
   });
-  item.addEventListener('dragend', () => {
+  item.addEventListener('dragend', (event) => {
     draggedTabId = null;
     renderTabs();
+    // Let go where no window took it: the tab becomes a window there.
+    const outside = event.clientX < 0 || event.clientY < 0
+      || event.clientX > window.innerWidth || event.clientY > window.innerHeight;
+    if (outside && event.dataTransfer.dropEffect === 'none') {
+      moveTabToNewWindow(tab, { x: event.screenX, y: event.screenY });
+    }
   });
   item.addEventListener('dragover', (event) => {
-    if (draggedTabId && draggedTabId !== tab.id) {
+    if (foreignTab(event) || (draggedTabId && draggedTabId !== tab.id)) {
       event.preventDefault();
       item.classList.add('drop-target');
     }
   });
   item.addEventListener('dragleave', () => item.classList.remove('drop-target'));
   item.addEventListener('drop', (event) => {
-    if (!draggedTabId) return;
+    const id = draggedTabId || event.dataTransfer.getData(TAB_MIME);
+    if (!id) return;
     event.preventDefault();
     event.stopPropagation();
     const rect = item.getBoundingClientRect();
     const after = event.clientX >= rect.left + rect.width / 2;
-    request('tab.move', { tab: draggedTabId, target: tab.id, after }).catch(report);
+    request('tab.move', { tab: id, target: tab.id, after }).catch(report);
   });
 }
+
+// Dropped anywhere else in the window, another window's tab goes to the end.
+window.addEventListener('dragover', (event) => {
+  if (!foreignTab(event)) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+});
+window.addEventListener('drop', (event) => {
+  if (!foreignTab(event)) return;
+  event.preventDefault();
+  request('tab.move', { tab: event.dataTransfer.getData(TAB_MIME) }).catch(report);
+});
 
 function tabIconSrc(name) {
   const stem = /^[a-z0-9-]+$/.test(name || '') ? name : 'terminal';

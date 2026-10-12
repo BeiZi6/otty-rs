@@ -10,7 +10,7 @@ use std::path::Path;
 
 use otty_config::theme::{slugify, Mode, Theme};
 use otty_config::{bundled_resources, Catalog, Config, KeyKind, SaveScope, Value as Setting};
-use otty_core::{expand_path, PaneId, TabId};
+use otty_core::{expand_path, PaneId, TabId, WindowId};
 use otty_render::theme::Chrome;
 use otty_state::Store;
 use otty_term::{find_next, Event, FindHit, Progress};
@@ -59,8 +59,10 @@ pub struct Backend {
     pub store: Option<Store>,
     /// Events owed to the frontend, in order. The caller drains them.
     pub out: Vec<Value>,
-    /// The window is gone: `quit` ran, or its last tab closed.
+    /// The app is done: `quit` ran, or the last window closed.
     pub quit: bool,
+    /// Where on screen a torn-off tab's window should open.
+    pub placed: HashMap<WindowId, (i64, i64)>,
     /// Cwds of closed tabs, newest last.
     closed: Vec<Option<String>>,
     /// The tabs as of the last `settle`, so a tab that vanished can be reopened.
@@ -173,6 +175,7 @@ impl Backend {
             store: None,
             out: Vec::new(),
             quit: false,
+            placed: HashMap::new(),
             closed: Vec::new(),
             tabs: Vec::new(),
             last_cwd: None,
@@ -196,21 +199,42 @@ impl Backend {
         self.d.app.active_window().map(|w| w.tabs()).unwrap_or_default()
     }
 
-    /// The panes the frontend is showing: the active tab's, or its zoomed one.
-    pub fn visible(&self) -> Vec<PaneId> {
-        self.d
-            .app
-            .active_window()
-            .and_then(|w| w.active_tab())
-            .map(|t| t.zoomed.map_or_else(|| t.tree.panes(), |z| vec![z]))
-            .unwrap_or_default()
+    /// Every tab of every window, with the window it is in.
+    fn all_tabs(&self) -> impl Iterator<Item = (WindowId, &Tab)> {
+        self.d.app.windows().iter().flat_map(|w| w.tabs().iter().map(move |t| (w.id, t)))
     }
 
-    /// The full snapshot. Cheap enough to build every tick and compare.
+    pub fn windows(&self) -> Vec<WindowId> {
+        self.d.app.windows().iter().map(|w| w.id).collect()
+    }
+
+    /// The panes the frontend is showing, and where: each window's active
+    /// tab's, or its zoomed one.
+    pub fn visible(&self) -> Vec<(WindowId, PaneId)> {
+        let shown = |t: &Tab| t.zoomed.map_or_else(|| t.tree.panes(), |z| vec![z]);
+        let windows = self.d.app.windows().iter();
+        windows.flat_map(|w| w.active_tab().map(shown).unwrap_or_default().into_iter().map(|p| (w.id, p))).collect()
+    }
+
+    /// The user closed a window: its tabs and their sessions go with it.
+    pub fn close_window(&mut self, window: &str) {
+        if let Ok(id) = window.parse() {
+            self.d.app.close_window(id);
+        }
+    }
+
+    /// The active window's snapshot.
+    #[cfg(test)]
     pub fn state<P: Panes>(&mut self, io: &P) -> Value {
+        let active = self.d.app.active_window().map_or(WindowId::new(0), |w| w.id);
+        self.state_of(io, active)
+    }
+
+    /// One window's full snapshot. Cheap enough to build every tick and compare.
+    pub fn state_of<P: Panes>(&mut self, io: &P, id: WindowId) -> Value {
         let Self { d, projects, icons, .. } = self;
         let app = &d.app;
-        let window = app.active_window();
+        let window = app.windows().iter().find(|w| w.id == id);
         let (mut tabs, mut panes) = (Vec::new(), Map::new());
         for t in window.map(|w| w.tabs()).unwrap_or_default() {
             let focused = app.pane(t.focused);
@@ -268,8 +292,12 @@ impl Backend {
                 panes.insert(id.slug(), row);
             }
         }
+        // ponytail: the tab grouping, the dividers and the input mode are one
+        // per app in `Dispatcher`, so every window reports the same; move them
+        // onto `Window` when two windows need to differ.
         json!({
             "type": "state",
+            "window": id.slug(),
             "activeTab": window.and_then(|w| w.active_tab()).map(|t| t.id.slug()),
             "tabs": tabs,
             "panes": panes,
@@ -347,22 +375,18 @@ impl Backend {
     /// Bring everything outside the model back in step with it. Runs after
     /// every request and every tick; a no-op when nothing moved.
     pub fn settle<P: Panes>(&mut self, io: &mut P) {
-        // ponytail: one bridge is one window, and the protocol has no "open a
-        // window" event, so `new_window` and friends land as tabs. Give the
-        // frontend that event and stop merging.
-        if self.d.app.windows().len() > 1 {
-            let focused = self.d.focused_pane_id();
-            // Merge into the first window, so the newcomers go last.
-            let home = self.d.app.windows()[0].active_tab().map(|t| t.focused);
-            if let Some(pane) = home {
-                self.d.app.reveal_pane(pane);
+        // A window whose last tab closed or moved away is gone.
+        let active = self.d.app.active_window().map(|w| w.id);
+        for id in self.windows() {
+            if self.d.app.windows().iter().any(|w| w.id == id && w.tabs().is_empty()) {
+                self.d.app.close_window(id);
             }
-            self.d.app.merge_all_windows();
-            if let Some(pane) = focused {
-                self.d.app.reveal_pane(pane);
-            }
-            self.d.pip = None;
         }
+        if let Some(id) = active {
+            self.d.app.focus_window(id);
+        }
+        let windows = self.windows();
+        self.placed.retain(|id, _| windows.contains(id));
 
         // A new pane starts where the user was.
         for id in self.d.app.all_panes() {
@@ -374,7 +398,7 @@ impl Backend {
         let cwd_of = |id: PaneId| app.pane(id).and_then(|p| p.cwd.clone());
         self.last_cwd = self.d.focused_pane_id().and_then(cwd_of);
 
-        let tabs: Vec<_> = self.tab_list().iter().map(|t| (t.id, cwd_of(t.focused))).collect();
+        let tabs: Vec<_> = self.all_tabs().map(|(_, t)| (t.id, cwd_of(t.focused))).collect();
         for (id, cwd) in std::mem::take(&mut self.tabs) {
             if !tabs.iter().any(|(t, _)| *t == id) {
                 self.closed.push(cwd);
@@ -408,14 +432,23 @@ impl Backend {
                 io.write(pane, format!("{text}\r").as_bytes());
             }
         }
-        self.quit |= self.d.quit || self.tab_list().is_empty();
+        self.quit |= self.d.quit || windows.is_empty();
     }
 
-    /// Answer one `request`. `Err` is the `error` of an `ok:false` response.
+    /// Answer one `request` from the active window. `Err` is the `error` of an
+    /// `ok:false` response.
     pub fn request<P: Panes>(&mut self, io: &mut P, method: &str, params: &Value) -> Answer {
         let answer = self.run(io, method, params);
         self.settle(io);
         answer
+    }
+
+    /// [`Backend::request`] from `window`, which becomes the active one.
+    pub fn request_in<P: Panes>(&mut self, io: &mut P, window: Option<&str>, method: &str, params: &Value) -> Answer {
+        if let Some(id) = window.and_then(|w| w.parse().ok()) {
+            self.d.app.focus_window(id);
+        }
+        self.request(io, method, params)
     }
 
     fn pane(&self, p: &Value) -> Result<PaneId, String> {
@@ -429,14 +462,13 @@ impl Backend {
         }
     }
 
-    /// The tab named by `p[key]`, as `(id, focused pane)`.
+    /// The tab named by `p[key]`, in any window, as `(id, focused pane)`.
     fn tab(&self, p: &Value, key: &str) -> Result<(TabId, PaneId), String> {
         let s = text(p, key)?;
         let id = s.parse::<TabId>().ok();
-        self.tab_list()
-            .iter()
-            .find(|t| Some(t.id) == id)
-            .map(|t| (t.id, t.focused))
+        self.all_tabs()
+            .find(|(_, t)| Some(t.id) == id)
+            .map(|(_, t)| (t.id, t.focused))
             .ok_or_else(|| format!("no tab `{s}`"))
     }
 
@@ -494,21 +526,51 @@ impl Backend {
                 Value::Null
             }
             "tab.close" => {
-                let (id, _) = self.tab(p, "tab")?;
+                let (id, pane) = self.tab(p, "tab")?;
+                // The tab may be another window's; the asking one stays active.
+                let asking = self.d.app.active_window().map(|w| w.id);
+                self.d.app.reveal_pane(pane);
                 self.d.app.active_window_mut().and_then(|w| w.take_tab(id));
+                asking.map(|window| self.d.app.focus_window(window));
                 Value::Null
             }
             "tab.move" => {
-                let ((id, _), (target, _)) = (self.tab(p, "tab")?, self.tab(p, "target")?);
-                let after = p["after"].as_bool().unwrap_or(false) as usize;
+                let (id, pane) = self.tab(p, "tab")?;
+                let here = self.d.app.active_window().map(|w| w.id).ok_or("no window")?;
+                let local = self.d.app.window_of(pane) == Some(here);
                 let active = self.d.focused_pane_id();
-                let rest = self.tab_list().iter().filter(|t| t.id != id);
-                if let Some(at) = rest.map(|t| t.id).position(|t| t == target) {
-                    self.d.app.active_window_mut().map(|w| w.move_tab(id, at + after));
-                    // `move_tab` activates what it moved; a drag does not.
-                    active.map(|pane| self.d.app.reveal_pane(pane));
+                let mut rest = self.tab_list().iter().filter(|t| t.id != id).map(|t| t.id);
+                // No target: the end of this window.
+                let at = match p["target"].as_str() {
+                    Some(_) => {
+                        let (target, _) = self.tab(p, "target")?;
+                        let after = p["after"].as_bool().unwrap_or(false) as usize;
+                        rest.position(|t| t == target).ok_or("the target tab is in another window")? + after
+                    }
+                    None => rest.count(),
+                };
+                self.d.app.move_tab_to_window(id, here, at);
+                // A tab dragged in from another window arrives active; one
+                // dragged along its own strip leaves the active tab alone.
+                if let (true, Some(pane)) = (local, active) {
+                    self.d.app.reveal_pane(pane);
                 }
                 Value::Null
+            }
+            "tab.detach" => {
+                let (_, pane) = self.tab(p, "tab")?;
+                let home = self.d.app.window_of(pane);
+                // A window's only tab is already a window of its own.
+                if self.all_tabs().filter(|(window, _)| Some(*window) == home).count() < 2 {
+                    return Ok(Value::Null);
+                }
+                self.d.app.reveal_pane(pane);
+                self.d.activate("move_tab_to_new_window");
+                let window = self.d.app.window_of(pane).filter(|w| Some(*w) != home).ok_or("tab could not be moved")?;
+                if let (Some(x), Some(y)) = (p["x"].as_i64(), p["y"].as_i64()) {
+                    self.placed.insert(window, (x, y));
+                }
+                json!({"window": window.slug()})
             }
             "tab.rename" => {
                 let (_, pane) = self.tab(p, "tab")?;
@@ -961,8 +1023,8 @@ mod tests {
 
         let state = b.state(&io);
         let keys = |v: &Value| v.as_object().unwrap().keys().cloned().collect::<Vec<_>>();
-        assert_eq!(keys(&state), ["activeTab", "dividers", "mode", "panes", "tabGroup", "tabs", "type"]);
-        assert_eq!(state["activeTab"], "tab-2");
+        assert_eq!(keys(&state), ["activeTab", "dividers", "mode", "panes", "tabGroup", "tabs", "type", "window"]);
+        assert_eq!((&state["window"], &state["activeTab"]), (&json!("window-1"), &json!("tab-2")));
         assert_eq!((&state["tabGroup"], &state["dividers"], &state["mode"]), (&json!("none"), &json!([]), &json!("shell")));
         assert_eq!(state["tabs"][0]["tree"], json!({"pane": "pane-1"}));
         let mut tab = state["tabs"][1].clone();
@@ -992,7 +1054,7 @@ mod tests {
         let state = b.state(&io);
         assert_eq!(state["tabs"][1]["tree"]["ratio"], 30);
         assert_eq!(state["tabs"][1]["zoomed"], "pane-2");
-        assert_eq!(b.visible(), [PaneId::new(2)]);
+        assert_eq!(b.visible(), [(WindowId::new(1), PaneId::new(2))]);
     }
 
     #[test]
@@ -1085,17 +1147,65 @@ mod tests {
         assert!(b.quit && io.live.is_empty());
     }
 
+    /// Each window's tab ids, in window order.
+    fn tabs_by_window(b: &mut Backend, io: &Fake) -> Vec<(String, Vec<String>)> {
+        b.windows()
+            .into_iter()
+            .map(|id| {
+                let state = b.state_of(io, id);
+                let tabs = state["tabs"].as_array().unwrap().iter().map(|t| t["id"].as_str().unwrap().to_owned());
+                (state["window"].as_str().unwrap().to_owned(), tabs.collect())
+            })
+            .collect()
+    }
+
     #[test]
-    fn a_second_window_folds_into_a_tab_at_the_end() {
+    fn a_tab_moves_between_windows_with_its_sessions_and_an_empty_window_closes() {
         let (_dir, mut b, mut io) = backend();
-        b.request(&mut io, "tab.new", &json!({})).unwrap();
-        b.request(&mut io, "tab.activate", &json!({"tab": "tab-1"})).unwrap();
+        b.request(&mut io, "tab.new", &json!({"cwd": "/work"})).unwrap();
+        b.request(&mut io, "pane.split", &json!({"direction": "right"})).unwrap();
         b.request(&mut io, "action.run", &json!({"id": "new_window"})).unwrap();
-        let state = b.state(&io);
-        let ids: Vec<_> = state["tabs"].as_array().unwrap().iter().map(|t| t["id"].clone()).collect();
-        assert_eq!(ids, ["tab-1", "tab-2", "tab-3"]);
-        assert_eq!(state["activeTab"], "tab-3");
-        assert_eq!(b.d.app.counts().0, 1);
+        let shape = |ws: &[(&str, &[&str])]| -> Vec<(String, Vec<String>)> {
+            ws.iter().map(|(w, tabs)| (w.to_string(), tabs.iter().map(|t| t.to_string()).collect())).collect()
+        };
+        assert_eq!(tabs_by_window(&mut b, &io), shape(&[("window-1", &["tab-1", "tab-2"]), ("window-2", &["tab-3"])]));
+        // Both windows are on screen, each showing its own active tab's panes.
+        let shown = [(WindowId::new(1), PaneId::new(2)), (WindowId::new(1), PaneId::new(3)), (WindowId::new(2), PaneId::new(4))];
+        assert_eq!(b.visible(), shown);
+        let sessions = io.live.clone();
+
+        // Dropped on window 2's tab: it lands after it, active, sessions untouched.
+        let drop = json!({"tab": "tab-2", "target": "tab-3", "after": true});
+        b.request_in(&mut io, Some("window-2"), "tab.move", &drop).unwrap();
+        assert_eq!(tabs_by_window(&mut b, &io), shape(&[("window-1", &["tab-1"]), ("window-2", &["tab-3", "tab-2"])]));
+        let state = b.state_of(&io, WindowId::new(2));
+        assert_eq!((&state["activeTab"], &state["tabs"][1]["cwd"]), (&json!("tab-2"), &json!("/work")));
+        assert_eq!(state["tabs"][1]["tree"]["first"], json!({"pane": "pane-2"}));
+        assert_eq!(io.live, sessions, "no shell was restarted");
+
+        // Dropped on window 1 with no target: the end of it. Window 2 keeps tab-3.
+        b.request_in(&mut io, Some("window-1"), "tab.move", &json!({"tab": "tab-2"})).unwrap();
+        assert_eq!(tabs_by_window(&mut b, &io), shape(&[("window-1", &["tab-1", "tab-2"]), ("window-2", &["tab-3"])]));
+        let cross = json!({"tab": "tab-2", "target": "tab-3"});
+        assert!(b.request_in(&mut io, Some("window-1"), "tab.move", &cross).is_err(), "a target must be in the asking window");
+
+        // Torn off: a new window where it was dropped. A window's only tab stays put.
+        let torn = b.request_in(&mut io, Some("window-1"), "tab.detach", &json!({"tab": "tab-2", "x": 40, "y": 60})).unwrap();
+        assert_eq!(torn, json!({"window": "window-3"}));
+        assert_eq!(b.placed.get(&WindowId::new(3)), Some(&(40, 60)));
+        assert_eq!(b.request(&mut io, "tab.detach", &json!({"tab": "tab-2"})).unwrap(), Value::Null);
+        assert_eq!(b.windows().len(), 3);
+
+        // The last tab leaving a window closes it; closing a window ends its sessions.
+        b.request_in(&mut io, Some("window-1"), "tab.move", &json!({"tab": "tab-3"})).unwrap();
+        assert_eq!(tabs_by_window(&mut b, &io), shape(&[("window-1", &["tab-1", "tab-3"]), ("window-3", &["tab-2"])]));
+        b.close_window("window-3");
+        b.settle(&mut io);
+        assert_eq!(io.live.iter().map(|(id, _)| id.get()).collect::<Vec<_>>(), [1, 4]);
+        assert!(!b.quit);
+        b.close_window("window-1");
+        b.settle(&mut io);
+        assert!(b.quit && io.live.is_empty());
     }
 
     #[test]

@@ -129,7 +129,7 @@ function createPaneView(id) {
       const size = `${width}x${height}`;
       if (width < 1 || height < 1 || size === view.size) return;
       view.size = size;
-      window.otty.send({ type: 'resize', pane: id, width, height });
+      window.otty.send({ type: 'resize', pane: id, width, height, scale });
     }, 45);
   });
   view.observer.observe(el);

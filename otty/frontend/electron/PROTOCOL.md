@@ -8,19 +8,29 @@ it in the same commit as the code.
 
 ## Transport
 
-Electron main spawns **one `otty-bridge` per BrowserWindow** and talks JSON
-lines over stdio: one JSON object per line, UTF-8, both ways. stderr is logs.
-Env: `OTTY_SCALE_FACTOR` (device pixel ratio), `OTTY_CWD` (first tab's cwd).
+Electron main spawns **one `otty-bridge` for the app** and talks JSON lines
+over stdio: one JSON object per line, UTF-8, both ways. stderr is logs.
+Env: `OTTY_SCALE_FACTOR` (the primary display's pixel ratio, used until a pane
+reports its own), `OTTY_CWD` (first tab's cwd).
+
+The backend owns the windows too. It announces each with `window-open` — the
+first one included — and main shows a BrowserWindow for it; `window-close` takes
+one away. A window is `window-1`, `window-2`, …
 
 ## Frontend → backend
 
 ```jsonc
 {"type":"input",  "pane":"pane-1", "text":"ls\n"}      // key text, same encoding TerminalView::handle_key takes
 {"type":"paste",  "pane":"pane-1", "text":"…"}         // bracketed when the app asked for it
-{"type":"resize", "pane":"pane-1", "width":800, "height":600}   // that pane's canvas, physical px
-{"type":"request","id":7, "method":"tab.new", "params":{}}
-{"type":"close"}
+{"type":"resize", "pane":"pane-1", "width":800, "height":600, "scale":1.5}   // that pane's canvas, physical px; scale = its display's pixel ratio
+{"type":"request","id":7, "window":"window-1", "method":"tab.new", "params":{}}
+{"type":"close", "window":"window-2"}                  // the user closed that window
+{"type":"close"}                                       // the app is quitting
 ```
+
+A request's `window` is the window it comes from: it becomes the active one,
+which is what "the focused pane" and "this window" mean in the methods below.
+Main adds it; a renderer never names its own window.
 
 Every `request` gets exactly one
 `{"type":"response","id":7,"ok":true,"result":…}` or
@@ -36,7 +46,8 @@ Ids are slugs: `tab-2`, `pane-3`. `pane` omitted = the focused pane.
 | `action.run` | `{id}` — any id in `otty_config::actions::ACTIONS` | `{handled:bool}` |
 | `tab.new` | `{cwd?}` | `{tab,pane}` |
 | `tab.activate` / `tab.close` | `{tab}` | `null` |
-| `tab.move` | `{tab,target,after:bool}` | `null` |
+| `tab.move` | `{tab,target?,after?:bool}` — `tab` may be another window's and moves here, arriving active; no `target` = the end of this window | `null` |
+| `tab.detach` | `{tab,x?,y?}` — the tab becomes a window of its own, at that screen point; a window's only tab stays | `{window}` or `null` |
 | `tab.rename` | `{tab,title}` (empty title clears) | `null` |
 | `tab.reopen` | `{}` — last closed, stack of 12 | `{tab,pane}` or `null` |
 | `pane.split` | `{pane?,direction:"right"\|"left"\|"up"\|"down"}` | `{pane}` |
@@ -74,8 +85,10 @@ the frontend must show that plainly and keep working.
 ```jsonc
 {"type":"ready", "version":"1.5.4", "chrome":{…}, "layout":"sidebar-left",
  "sidebar_visible":true, "platform":"windows"}
-{"type":"state", …}                      // full snapshot, sent after every model change
-{"type":"frame", "pane":"pane-1", "width":800, "height":600, "pixels":"<base64 RGBA>"}
+{"type":"window-open", "window":"window-2", "x":null, "y":null}   // x,y: where a torn-off tab was dropped
+{"type":"window-close", "window":"window-2"}                      // its last tab closed or moved away
+{"type":"state", "window":"window-1", …}  // one window's full snapshot, sent when it changes
+{"type":"frame", "window":"window-1", "pane":"pane-1", "width":800, "height":600, "pixels":"<base64 RGBA>"}
 {"type":"chrome", "chrome":{…}}          // theme changed
 {"type":"config", "key":"font-size"}     // a setting changed
 {"type":"bell", "pane":"pane-1"}
@@ -86,7 +99,8 @@ the frontend must show that plainly and keep working.
 {"type":"quit"}
 ```
 
-Frames are only sent for panes of the active tab. `chrome` is
+An event that names a `window` is for that window; the rest go to all of them.
+Frames are only sent for panes of each window's active tab. `chrome` is
 `otty_render::theme::Chrome` serialised as today (colours are `0xRRGGBBAA` numbers).
 
 ### `state`
@@ -94,6 +108,7 @@ Frames are only sent for panes of the active tab. `chrome` is
 ```jsonc
 {
   "type": "state",
+  "window": "window-1",
   "activeTab": "tab-1",
   "tabs": [{
     "id": "tab-1",
@@ -163,4 +178,5 @@ with the feature name (`.palette-…`).
 
 - ponytail: frames are whole-pane RGBA in base64 over stdio. Fine at one or two
   panes; move to a binary pipe or dirty rows when a profile says so.
-- One bridge per window, so a tab cannot be dragged between windows yet.
+- `tabGroup`, `dividers` and `mode` are one per app, so every window reports
+  the same; they move onto the window when two windows need to differ.
