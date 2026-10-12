@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const { pathToFileURL } = require('node:url');
 const { createCorrelator } = require('./correlator');
 const { accelerator } = require('./keymap');
+const { describeFont } = require('./font-files');
 
 // One bridge per window (PROTOCOL.md "Transport"); the backend owns tabs and panes.
 const sessions = new Map();
@@ -25,6 +26,14 @@ function enginePath() {
   return candidates.find((candidate) => fs.existsSync(candidate));
 }
 
+function listLicensedFonts() {
+  try {
+    return fs.readdirSync(path.join(workspace, 'resources', 'fonts', 'licensed')).map(describeFont).filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 // Adding a file to renderer/features/ is the whole registration.
 function listFeatures() {
   let names = [];
@@ -36,6 +45,7 @@ function listFeatures() {
   return {
     js: names.filter((name) => name.endsWith('.js') && !name.endsWith('.test.js')),
     css: names.filter((name) => name.endsWith('.css')),
+    fonts: listLicensedFonts(),
   };
 }
 

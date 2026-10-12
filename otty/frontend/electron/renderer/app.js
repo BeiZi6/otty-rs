@@ -126,7 +126,11 @@ globalThis.OttyFeatures = {
 };
 
 async function loadFeatures() {
-  const { js, css } = await window.otty.features();
+  const { js, css, fonts = [] } = await window.otty.features();
+  for (const { file, family, weight, style } of fonts) {
+    const url = `url("../../../resources/fonts/licensed/${encodeURIComponent(file)}")`;
+    new FontFace(family, url, { weight, style }).load().then((face) => document.fonts.add(face), console.error);
+  }
   for (const name of css) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';

@@ -13,6 +13,7 @@ installers**, not written for this rebuild. Each file was extracted from
 | `terminfo/` | Compiled `xterm-ghostty` (78) and `alacritty*` (61) entries, offered by Settings → TERM via `$TERMINFO_DIRS` | `Resources/terminfo/` |
 | `editors/` | Config syntax highlighting for Vim/Neovim and `bat` | `Resources/editors/` |
 | `fonts/` | JetBrains Mono, Office Code Pro, Symbols Nerd Font Mono | `Resources/fonts/` |
+| `fonts/licensed/` | **Not recovered, gitignored.** Drop licensed `StyreneB-*`, `StyreneA-*` and `TiemposText-*` files (`.otf` `.ttf` `.woff2`; weight and `Italic` read from the name) here and the Electron frontend loads them instead of falling back. See `docs/TYPOGRAPHY.md`. | — |
 | `view-icons/`, `tab-icons/` | The Details-Panel and tab icon sets | `Resources/view-icons/`, `Resources/tab-icons/` |
 | `view-sandbox/` | `PATH` shims that refuse to open a GUI window from a Details-Panel view | `Resources/view-sandbox/` |
 | `CREDITS.md` | The vendor's own dependency and licence acknowledgements | `Resources/` |

@@ -24,3 +24,6 @@ output/
 otty/resources/completions-client.db
 *.db-wal
 *.db-shm
+
+# Licensed faces (Styrene, Tiempos). Commercial: local only, never committed.
+otty/resources/fonts/licensed/
