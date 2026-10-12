@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:">
   <title>Otty</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -19,12 +20,12 @@
         <img src="../../../resources/tab-icons/otty.svg" alt="">
         <span>OTTY</span>
       </div>
-      <div class="window-label" id="window-title">Terminal</div>
+      <button class="icon-button" id="app-menu" aria-label="Application menu" aria-haspopup="menu" title="Menu">≡</button>
       <div class="tab-strip">
         <div class="tab-list" id="tab-list" role="tablist" aria-label="Sessions in this project"></div>
         <button class="icon-button new-tab-button" id="new-tab-top" aria-label="New session" title="New session in this project">+</button>
       </div>
-      <div class="titlebar-spacer"></div>
+      <div class="titlebar-right" id="slot-titlebar-right"></div>
       <button class="icon-button sidebar-toggle" id="sidebar-toggle" aria-label="Hide projects panel" title="Hide projects panel">
         <span class="sidebar-glyph" aria-hidden="true"></span>
       </button>
@@ -37,39 +38,28 @@
           <button class="icon-button new-tab-button" id="new-tab-side" aria-label="Open project" title="Open a project folder">+</button>
         </div>
         <div class="sidebar-tabs" id="sidebar-tabs" role="list" aria-label="Projects"></div>
-        <div class="sidebar-divider"></div>
-        <div class="sidebar-foot">
-          <span class="local-dot"></span>
-          <span>LOCAL SESSION</span>
-        </div>
+        <div class="sidebar-foot" id="slot-sidebar-foot"></div>
       </aside>
 
-      <main class="terminal-pane">
-        <div class="terminal-surface" id="terminal-surface" aria-label="Terminal">
-          <canvas id="terminal-grid" aria-label="Terminal output"></canvas>
-          <textarea id="ime-capture" aria-label="Terminal input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
-          <div class="engine-error hidden" id="engine-error" role="alert"></div>
-        </div>
-        <footer class="statusbar">
-          <div class="status-left">
-            <span class="status-led"></span>
-            <span id="connection-status">CONNECTING</span>
-            <span class="status-separator"></span>
-            <span class="status-location" id="status-path">—</span>
-          </div>
-          <div class="status-right">
-            <span id="grid-size">— × —</span>
-            <span class="status-separator"></span>
-            <span>UTF-8</span>
-            <span class="status-separator"></span>
-            <span>OTTY 1.5.4</span>
-          </div>
-        </footer>
+      <main class="terminal-surface" id="terminal-surface" aria-label="Terminal">
+        <div class="pane-overlay" id="slot-pane-overlay"></div>
+        <textarea id="ime-capture" aria-label="Terminal input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+        <div class="notice hidden" id="notice" role="alert"></div>
       </main>
+
+      <aside class="right-panel" id="slot-right-panel" aria-label="Side panel">
+        <div class="panel-resizer" id="right-panel-resizer" role="separator" aria-orientation="vertical" aria-label="Resize side panel"></div>
+      </aside>
     </div>
+
+    <div class="overlay-layer" id="slot-overlay"></div>
   </div>
   <script src="../project-groups.js"></script>
   <script src="../ime-input.js"></script>
+  <script src="../keymap.js"></script>
+  <script src="../pane-geometry.js"></script>
+  <script src="tabs.js"></script>
+  <script src="panes.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,88 @@
+.quickly {
+  display: flex;
+  flex-direction: column;
+  width: min(640px, 90vw);
+  max-height: 60vh;
+  overflow: hidden;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  background: var(--overlay-bg);
+  color: var(--overlay-fg);
+  box-shadow: var(--overlay-shadow);
+  font-family: var(--font-ui);
+}
+
+.quickly-input {
+  margin: 8px 8px 6px;
+  padding: 7px 9px;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  user-select: text;
+}
+
+.quickly-input:focus { border-color: var(--accent); }
+
+.quickly-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 8px 6px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.quickly-chip {
+  padding: 2px 7px;
+  border: 1px solid var(--overlay-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.quickly-chip[aria-pressed="true"] { border-color: var(--accent); color: var(--overlay-fg); }
+
+.quickly-key { margin-left: 5px; color: var(--muted); font-family: var(--font-ui); font-size: 10px; }
+
+.quickly-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.quickly-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.quickly-row[aria-selected="true"] { background: var(--tab-active-bg); color: var(--tab-active-fg); }
+
+.quickly-title { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.quickly-subtitle {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quickly-hit { background: none; color: var(--accent); font-weight: 600; }
+
+.quickly-kind { margin-left: auto; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+
+.quickly-status { padding: 6px 12px; color: var(--muted); }
+.quickly-status:empty { display: none; }

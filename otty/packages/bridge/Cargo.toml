@@ -1,6 +1,6 @@
 [package]
 name = "otty-bridge"
-description = "JSONL adapter from Electron to Otty's Rust terminal view."
+description = "The Electron frontend's backend: one window's model, sessions and pixels over JSON lines."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -17,7 +17,14 @@ path = "src/main.rs"
 base64 = { workspace = true }
 otty-config = { workspace = true }
 otty-core = { workspace = true }
+otty-agent = { workspace = true }
+otty-ipc = { workspace = true }
 otty-render = { workspace = true }
+otty-state = { workspace = true }
+otty-term = { workspace = true }
 otty-ui = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

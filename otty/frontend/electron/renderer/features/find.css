@@ -1,0 +1,47 @@
+.find-bar {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  background: var(--overlay-bg);
+  color: var(--overlay-fg);
+  box-shadow: var(--overlay-shadow);
+  font-family: var(--font-ui);
+  pointer-events: auto;
+}
+
+.find-input {
+  width: 180px;
+  padding: 3px 6px;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  user-select: text;
+}
+
+.find-input:focus { border-color: var(--accent); }
+
+.find-info { min-width: 64px; padding: 0 4px; color: var(--muted); white-space: nowrap; }
+
+.find-toggle, .find-button {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.find-toggle { font-family: var(--font-mono); font-size: 11px; }
+.find-toggle:hover, .find-button:hover { background: var(--tab-hover-bg); color: var(--overlay-fg); }
+.find-toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }

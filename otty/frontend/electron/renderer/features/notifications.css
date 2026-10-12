@@ -1,0 +1,40 @@
+.notifications {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(320px, calc(100vw - 32px));
+  pointer-events: auto;
+}
+
+.notifications-toast button {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--overlay-border);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--overlay-bg);
+  box-shadow: var(--overlay-shadow);
+  color: var(--overlay-fg);
+  font: 12px/1.4 var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.notifications-toast span {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.notifications-error button { border-left-color: var(--tab-indicator); }
+.notifications-error span { font-family: var(--font-mono); font-size: 11px; }

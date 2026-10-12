@@ -1,0 +1,108 @@
+.settings {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  width: min(960px, 92vw);
+  height: min(680px, 86vh);
+  overflow: hidden;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  background: var(--overlay-bg);
+  box-shadow: var(--overlay-shadow);
+  color: var(--overlay-fg);
+  font: 12px/1.45 var(--font-ui);
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding: 10px;
+  border-right: 1px solid var(--overlay-border);
+  background: var(--sidebar-bg);
+  color: var(--sidebar-fg);
+}
+.settings-groups { display: flex; flex: 1 1 auto; flex-direction: column; gap: 1px; min-height: 0; overflow-y: auto; }
+.settings-group {
+  padding: 5px 8px;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.settings-group:hover { background: var(--tab-hover-bg); }
+.settings-group[aria-current] { background: var(--tab-active-bg); color: var(--tab-active-fg); }
+
+.settings-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.settings-header { display: flex; flex: 0 0 auto; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--overlay-border); }
+.settings-heading { flex: 1 1 auto; margin: 0; overflow: hidden; font-size: 14px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.settings-body { flex: 1 1 auto; min-height: 0; padding: 4px 14px 14px; overflow-y: auto; }
+.settings-field { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; white-space: nowrap; }
+.settings-msg { margin: 8px 0; color: var(--muted); }
+.settings-msg:empty { display: none; }
+
+.settings input:not([type=checkbox], [type=color]), .settings select, .settings textarea {
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--overlay-border);
+  border-radius: 4px;
+  outline: none;
+  background: var(--window-bg);
+  color: var(--overlay-fg);
+  font: 12px/1.4 var(--font-ui);
+}
+.settings textarea, .settings input[type=text] { font-family: var(--font-mono); }
+.settings input[type=checkbox] { accent-color: var(--accent); }
+.settings input[type=color] { width: 26px; height: 24px; padding: 0; border: 0; background: none; }
+.settings :is(input, select, textarea, button):focus-visible { outline: 1px solid var(--accent); outline-offset: 0; }
+.settings-input { width: 100%; }
+
+.settings-row { display: flex; align-items: flex-start; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--divider); }
+.settings-about { flex: 1 1 auto; min-width: 0; }
+.settings-key { font-family: var(--font-mono); font-weight: 650; user-select: text; }
+.settings-doc { margin: 3px 0 0; color: var(--muted); user-select: text; }
+.settings-meta { display: flex; gap: 10px; margin: 3px 0 0; color: var(--muted); font-size: 10px; }
+.settings-origin { overflow: hidden; font-family: var(--font-mono); text-overflow: ellipsis; white-space: nowrap; }
+.settings-note { color: var(--accent); }
+.settings-control { display: flex; flex: 0 0 260px; align-items: flex-start; justify-content: flex-end; gap: 6px; }
+.settings-control :is(input[type=text], input[type=number], select, textarea) { flex: 1 1 auto; width: 0; }
+
+.settings-button, .settings-chord, .settings-unbind {
+  padding: 3px 8px;
+  border: 1px solid var(--overlay-border);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.settings-button:hover, .settings-chord:hover, .settings-unbind:hover { background: var(--tab-hover-bg); }
+
+.settings-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 10px 0; }
+.settings-theme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.settings-theme:hover { background: var(--tab-hover-bg); }
+.settings-theme[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.settings-swatch { flex: 0 0 14px; width: 14px; height: 14px; border: 1px solid var(--muted); border-radius: 50%; background: #f4f4f1; }
+.settings-theme-dark .settings-swatch { background: #1c1c1e; }
+
+.settings-binding { display: flex; align-items: center; gap: 4px; padding: 4px 0; border-bottom: 1px solid var(--divider); }
+.settings-binding-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.settings-chord { font-family: var(--font-mono); font-size: 11px; }
+.settings-unbind { margin-right: 6px; padding: 3px 5px; border-color: transparent; color: var(--muted); }
+.settings-add { color: var(--muted); }
+.settings-recording { border-color: var(--accent); color: var(--accent); }

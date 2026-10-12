@@ -5,8 +5,8 @@
   "description": "Cross-platform Electron frontend for Otty's Rust terminal engine",
   "main": "main.js",
   "scripts": {
-    "check": "node --check main.js && node --check preload.js && node --check tab-order.js && node --check project-groups.js && node --check ime-input.js && node --check renderer/app.js",
-    "test": "node --test tab-order.test.js project-groups.test.js ime-input.test.js",
+    "check": "node -e \"const fs=require('fs'),cp=require('child_process');for(const d of ['.','renderer','renderer/features'])for(const f of fs.readdirSync(d))if(f.endsWith('.js'))cp.execFileSync(process.execPath,['--check',d+'/'+f],{stdio:'inherit'})\"",
+    "test": "node --test",
     "build:engine": "cargo build -p otty-bridge",
     "dev": "npm run build:engine && electron .",
     "start": "npm run dev"

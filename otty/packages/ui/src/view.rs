@@ -78,6 +78,18 @@ impl TerminalView {
         pixel_size: (u32, u32),
         scale: f32,
     ) -> Result<Self, ViewError> {
+        Self::new_in(config, pane, pixel_size, scale, None)
+    }
+
+    /// [`TerminalView::new`], with the shell started in `cwd` when that is a
+    /// directory. Anything else falls back to the configured one.
+    pub fn new_in(
+        config: &Config,
+        pane: PaneId,
+        pixel_size: (u32, u32),
+        scale: f32,
+        cwd: Option<&std::path::Path>,
+    ) -> Result<Self, ViewError> {
         let theme = config.active_theme(false);
         let palette = Palette::from_theme(&theme);
         let chrome = Chrome::from_theme(&theme);
@@ -88,7 +100,10 @@ impl TerminalView {
         let cols = ((pixel_size.0 as f32 / cell.width).floor().max(1.0)) as u16;
         let rows = ((pixel_size.1 as f32 / cell.height).floor().max(1.0)) as u16;
 
-        let pty = pty_config(config, cols, rows);
+        let mut pty = pty_config(config, cols, rows);
+        if let Some(dir) = cwd.filter(|d| d.is_dir()) {
+            pty.cwd = Some(dir.to_path_buf());
+        }
         let session = Session::spawn(pane, &pty, term_config(config))?;
 
         let mut app = App::new();
@@ -287,6 +302,28 @@ impl TerminalView {
         &self.events
     }
 
+    /// The events since the last call, handed over. A caller that reads events
+    /// this way is also what keeps the list from growing for the pane's life.
+    pub fn take_events(&mut self) -> Vec<otty_term::Event> {
+        std::mem::take(&mut self.events)
+    }
+
+    /// Scrollback plus the screen, one string per grid line, for Find.
+    pub fn history_lines(&self) -> Vec<String> {
+        otty_term::grid_lines(self.session.terminal().grid())
+    }
+
+    /// Whether the shell has exited, so the pane can close.
+    pub fn exited(&mut self) -> bool {
+        self.session.status().is_some()
+    }
+
+    /// Pasted text, fenced when the program asked for bracketed paste.
+    pub fn paste(&mut self, text: &str) -> Result<(), PtyError> {
+        let bracketed = self.session.terminal().modes.get(otty_term::Modes::BRACKETED_PASTE);
+        self.write(&otty_term::encode_paste(text.as_bytes(), bracketed))
+    }
+
     /// What the shell last reported as its working directory, when it reports one.
     pub fn working_directory(&self) -> Option<&std::path::Path> {
         self.cwd.as_deref()
@@ -421,6 +458,9 @@ impl TerminalView {
         let (glyphs, cell) = load_glyphs(config, font_px)?;
         self.glyphs = Box::new(glyphs);
         self.cell = cell;
+        // Same buffer, different cell: the row hashes describe the old glyphs,
+        // so start the rasteriser over or unchanged rows keep their old pixels.
+        self.raster = GridRasterizer::new(self.buffer.0.max(1), self.buffer.1.max(1));
         self.resize(self.buffer.0, self.buffer.1, true);
         Ok(())
     }

@@ -1,0 +1,81 @@
+.fileview {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--window-bg);
+  color: var(--tab-active-fg);
+  font: 12px/1.5 var(--font-ui);
+  pointer-events: auto;
+  user-select: text;
+}
+
+.fileview-path {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--divider);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileview-body { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.fileview-msg { margin: 0; padding: 10px 12px; color: var(--muted); }
+.fileview-msg:empty { display: none; }
+
+.fileview-code { display: flex; align-items: flex-start; min-width: max-content; }
+.fileview-code pre { margin: 0; padding: 8px 12px; font: 12px/1.5 var(--font-mono); tab-size: 4; }
+.fileview-gutter {
+  position: sticky;
+  left: 0;
+  border-right: 1px solid var(--divider);
+  background: var(--window-bg);
+  color: var(--muted);
+  text-align: right;
+  user-select: none;
+}
+.fileview-text { flex: 1 1 auto; outline: none; }
+
+.fileview-filter {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  padding: 7px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  outline: none;
+  background: var(--window-bg);
+  color: inherit;
+  font: inherit;
+}
+.fileview-filter:focus-visible { border-bottom-color: var(--accent); }
+
+.fileview-list { margin: 0; padding: 4px 0; list-style: none; }
+.fileview-list button {
+  width: 100%;
+  padding: 3px 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: 12px/1.5 var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+}
+.fileview-list button:hover, .fileview-list button:focus-visible { outline: none; background: var(--tab-hover-bg); }
+
+.fileview-button {
+  margin: 0 12px;
+  padding: 5px 12px;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  background: var(--tab-active-bg);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.fileview-button:hover { background: var(--tab-hover-bg); }

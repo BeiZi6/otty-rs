@@ -4020,12 +4020,17 @@ name = "otty-bridge"
 version = "1.5.4"
 dependencies = [
  "base64 0.22.1",
+ "otty-agent",
  "otty-config",
  "otty-core",
+ "otty-ipc",
  "otty-render",
+ "otty-state",
+ "otty-term",
  "otty-ui",
  "serde",
  "serde_json",
+ "tempfile",
 ]
 
 [[package]]

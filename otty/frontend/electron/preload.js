@@ -1,19 +1,22 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('otty', {
-  input: (tabId, text) => ipcRenderer.send('engine:input', { tabId, text }),
-  resize: (tabId, width, height) => ipcRenderer.send('engine:resize', { tabId, width, height }),
+  // → {ok:true,result} | {ok:false,error}; the renderer core turns it into a Promise<result>.
+  request: (method, params) => ipcRenderer.invoke('bridge:request', method, params),
+  // input | paste | resize, addressed to a pane.
+  send: (command) => ipcRenderer.send('bridge:send', command),
+  onEvent: (listener) => subscribe('bridge:event', listener),
+  onAction: (listener) => subscribe('action', listener),
+  features: () => ipcRenderer.invoke('features:list'),
+  readClipboard: () => ipcRenderer.invoke('clipboard:read'),
+  writeClipboard: (text) => ipcRenderer.send('clipboard:write', text),
+  popupMenu: (items) => ipcRenderer.send('menu:popup', items),
+  appMenu: () => ipcRenderer.send('menu:app'),
   windowAction: (action) => ipcRenderer.send('window:action', action),
-  newTab: () => ipcRenderer.send('tabs:new'),
+  newWindow: (cwd) => ipcRenderer.send('window:new', cwd),
   openProject: () => ipcRenderer.invoke('projects:open'),
-  activateTab: (tabId) => ipcRenderer.send('tabs:activate', tabId),
-  closeTab: (tabId) => ipcRenderer.send('tabs:close', tabId),
-  reopenTab: () => ipcRenderer.send('tabs:reopen'),
-  moveTab: (tabId, targetId, after) => ipcRenderer.send('tabs:move', { tabId, targetId, after }),
-  toggleTabsPanel: () => ipcRenderer.send('tabs:toggle-panel'),
-  onEngineEvent: (listener) => subscribe('engine:event', listener),
-  onTabsState: (listener) => subscribe('tabs:state', listener),
-  onTabActivated: (listener) => subscribe('tabs:activated', listener),
+  pathForFile: (file) => webUtils.getPathForFile(file),
+  isDirectory: (target) => ipcRenderer.invoke('path:is-directory', target),
 });
 
 function subscribe(channel, listener) {
