@@ -43,7 +43,7 @@ Ids are slugs: `tab-2`, `pane-3`. `pane` omitted = the focused pane.
 
 | method | params | result |
 |---|---|---|
-| `action.run` | `{id}` — any id in `otty_config::actions::ACTIONS` | `{handled:bool}` |
+| `action.run` | `{id}` — any id in `otty_config::actions::ACTIONS`. `agent_fork_<split_right\|…\|new_tab\|new_window>` forks the focused pane's agent conversation there | `{handled:bool}` |
 | `tab.new` | `{cwd?}` | `{tab,pane}` |
 | `tab.activate` / `tab.close` | `{tab}` | `null` |
 | `tab.move` | `{tab,target?,after?:bool}` — `tab` may be another window's and moves here, arriving active; no `target` = the end of this window | `null` |
@@ -60,7 +60,7 @@ Ids are slugs: `tab-2`, `pane-3`. `pane` omitted = the focused pane.
 | `find.next` | `{pane?,query,from?:{line,col},backwards?:bool}` | `{line,col}` or `null` |
 | `palette.list` | `{query}` | `[{id,title,scope,shortcut}]` |
 | `quickly.query` | `{filter,query}` filter ∈ all, opened, recent, folders, ssh, agents, current, recipes, files | `[{title,subtitle,kind,value}]` |
-| `quickly.open` | `{kind,value}` | `null` |
+| `quickly.open` | `{kind,value,target?}` — a row of `quickly.query`. `recipe` and any `.ottyrecipe` path open as `recipe.open` does; `agent` (`value` = `agent:session`) resumes the conversation in a new tab, a split (`target:"split-right"`) or, with `target:"fork"`, forks it; `url` opens externally | `null` |
 | `recipe.list` | `{}` — the library, `~/.config/otty/recipes` | `[{name,path,scope}]` |
 | `recipe.save` | `{name,scope:"tab"\|"window"\|"commands",content?:"layout"\|"commands",commands?:[string],path?,portable?:bool}` — `path` exports a file instead of saving to the library | `{path}` |
 | `recipe.open` | `{name}` from the library, or `{path,trust?:"once"\|"always"}` | `{opened:bool}` — `false` with a `recipe-trust` event when the file must be trusted first |
@@ -138,7 +138,10 @@ Frames are only sent for panes of each window's active tab. `chrome` is
 }
 ```
 
-`axis:"horizontal"` = side by side. A leaf is `{"pane":id}`.
+`axis:"horizontal"` = side by side. A leaf is `{"pane":id}`. A pane that is not
+a terminal says what it shows (`kind` `file` / `folder` with `path`, `url` with
+`url`); one with `ssh` in the foreground has `"ssh":"<host>"`, and its tab's
+`icon` is `server`.
 
 ## Renderer feature contract
 

@@ -77,6 +77,8 @@ pub struct Backend {
     /// The focused pane's cwd as of the last `settle`; a new pane starts there.
     last_cwd: Option<String>,
     icons: HashMap<PaneId, &'static str>,
+    /// The panes with an `ssh` in the foreground, and the host it reached.
+    remote: HashMap<PaneId, String>,
     /// Claude Code's config directory, whose transcripts Open Quickly lists.
     /// `None` in tests.
     pub agent_home: Option<PathBuf>,
@@ -150,6 +152,23 @@ fn osc7_path(url: &str) -> String {
     }
 }
 
+/// The host an `ssh` process is connected to: `Some` for any `ssh`, empty
+/// where the platform reports the process name without its arguments.
+fn ssh_host(command: &str) -> Option<String> {
+    let command = command.trim();
+    // A quoted program is a path with spaces in it.
+    let (program, rest) = match command.strip_prefix('"') {
+        Some(quoted) => quoted.split_once('"')?,
+        None => command.split_once(char::is_whitespace).unwrap_or((command, "")),
+    };
+    if !Path::new(program).file_stem()?.to_str()?.eq_ignore_ascii_case("ssh") {
+        return None;
+    }
+    let args: Vec<String> = rest.split_whitespace().map(str::to_owned).collect();
+    let scan = otty_ssh::scan(&args);
+    Some(scan.host.or(scan.destination).unwrap_or_default())
+}
+
 /// `git` in `dir`, when it is a repository and git is installed.
 fn git(dir: &str, args: &[&str]) -> Option<String> {
     let mut cmd = std::process::Command::new("git");
@@ -199,6 +218,7 @@ impl Backend {
             last_cwd: None,
             icons: HashMap::new(),
             projects: HashMap::new(),
+            remote: HashMap::new(),
             agent_home: None,
             recipes: recipe::library_dir(),
             support: otty_core::app_support_dir(),
@@ -255,7 +275,7 @@ impl Backend {
 
     /// One window's full snapshot. Cheap enough to build every tick and compare.
     pub fn state_of<P: Panes>(&mut self, io: &P, id: WindowId) -> Value {
-        let Self { d, projects, icons, .. } = self;
+        let Self { d, projects, icons, remote, .. } = self;
         let app = &d.app;
         let window = app.windows().iter().find(|w| w.id == id);
         let (mut tabs, mut panes) = (Vec::new(), Map::new());
@@ -275,6 +295,8 @@ impl Backend {
                 _ => focused
                     .and_then(|p| p.agent.as_ref())
                     .and_then(|(name, _)| otty_agent::icon_for_process(name))
+                    // A session on another machine wears the device icon.
+                    .or(remote.contains_key(&t.focused).then_some("server"))
                     .or(icons.get(&t.focused).copied())
                     .unwrap_or("terminal"),
             };
@@ -311,6 +333,9 @@ impl Backend {
                     PaneKind::File { path, .. } => (row["kind"], row["path"]) = (json!("file"), json!(path)),
                     PaneKind::Folder { path, .. } => (row["kind"], row["path"]) = (json!("folder"), json!(path)),
                     PaneKind::Url { url } => (row["kind"], row["url"]) = (json!("url"), json!(url)),
+                }
+                if let Some(host) = remote.get(&id) {
+                    row["ssh"] = json!(host);
                 }
                 panes.insert(id.slug(), row);
             }
@@ -378,13 +403,15 @@ impl Backend {
     /// Tab icons follow the foreground process, which costs a process walk —
     /// so on the caller's clock, not on every snapshot.
     pub fn refresh_icons<P: Panes>(&mut self, io: &P) {
-        self.icons = self
-            .d
-            .app
-            .all_panes()
-            .into_iter()
-            .map(|id| (id, otty_agent::icon_for_processes(&io.processes(id))))
-            .collect();
+        self.icons.clear();
+        self.remote.clear();
+        for id in self.d.app.all_panes() {
+            let processes = io.processes(id);
+            self.icons.insert(id, otty_agent::icon_for_processes(&processes));
+            if let Some(host) = processes.iter().find_map(|command| ssh_host(command)) {
+                self.remote.insert(id, host);
+            }
+        }
     }
 
     /// Close a pane, and its tab when that was the last one in it.
@@ -1223,6 +1250,8 @@ mod tests {
         themes: Vec<String>,
         fonts: usize,
         scrolls: Vec<(Option<usize>, i32)>,
+        /// What every pane has in the foreground; `claude` when not set.
+        processes: Option<Vec<String>>,
     }
 
     impl PaneIo for Fake {
@@ -1240,7 +1269,7 @@ mod tests {
             Some(false)
         }
         fn processes(&self, _: PaneId) -> Vec<String> {
-            vec!["claude".to_owned()]
+            self.processes.clone().unwrap_or_else(|| vec!["claude".to_owned()])
         }
         fn tty(&self, _: PaneId) -> Option<String> {
             None
@@ -1628,6 +1657,26 @@ mod tests {
         assert!(b.request(&mut io, "quickly.open", &bad).is_err());
         assert!(b.request(&mut io, "quickly.open", &json!({"kind": "agent", "value": "cursor:abc", "target": "fork"})).is_err());
         assert_eq!(io.written.len(), 3);
+    }
+
+    #[test]
+    fn a_pane_with_ssh_in_the_foreground_is_a_remote_session() {
+        assert_eq!(ssh_host("ssh web1").as_deref(), Some("web1"));
+        let windows = r#""C:\Program Files\Git\usr\bin\ssh.exe" -p 2222 deploy@web1 uptime"#;
+        assert_eq!(ssh_host(windows).as_deref(), Some("web1"));
+        assert_eq!(ssh_host("/usr/bin/ssh").as_deref(), Some(""), "a bare name is still ssh");
+        assert_eq!((ssh_host("ssh-agent -s"), ssh_host("sshd"), ssh_host("vim ssh")), (None, None, None));
+
+        let (_dir, mut b, mut io) = backend();
+        io.processes = Some(vec!["bash".to_owned(), "ssh -J bastion deploy@web1".to_owned()]);
+        b.refresh_icons(&io);
+        let state = b.state(&io);
+        assert_eq!((&state["tabs"][0]["icon"], &state["panes"]["pane-1"]["ssh"]), (&json!("server"), &json!("web1")));
+        // Back at the local prompt, it is a terminal again.
+        io.processes = Some(vec!["bash".to_owned()]);
+        b.refresh_icons(&io);
+        let state = b.state(&io);
+        assert_eq!((&state["tabs"][0]["icon"], &state["panes"]["pane-1"]["ssh"]), (&json!("terminal"), &Value::Null));
     }
 
     #[test]

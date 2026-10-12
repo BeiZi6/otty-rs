@@ -2813,6 +2813,7 @@ dependencies = [
  "otty-core",
  "otty-ipc",
  "otty-render",
+ "otty-ssh",
  "otty-state",
  "otty-term",
  "otty-ui",

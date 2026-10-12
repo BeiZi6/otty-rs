@@ -18,6 +18,7 @@ base64 = { workspace = true }
 otty-config = { workspace = true }
 otty-core = { workspace = true }
 otty-agent = { workspace = true }
+otty-ssh = { workspace = true }
 otty-ipc = { workspace = true }
 otty-render = { workspace = true }
 otty-state = { workspace = true }

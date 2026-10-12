@@ -581,7 +581,7 @@ Otty 不替你跑 agent。它插进你已经在跑的 CLI：徽章、通知、re
 - **官网:** FEATURES §5 写 Remote development 仍 In Development。已交付：ssh 包装、terminfo 探测（`otty ssh terminfo` / `doctor`）、转发 shell integration、Devices 徽章、Open Quickly SSH filter。
 - **DMG:** `otty_ssh_config` 23 符号。`otty-helper` 四份（darwin/linux × arm64/x64 musl），上传到远端。`HostStreamTransport` 3 个 impl 符号：session 可以是「这边的 pty」或「那边的流」。
 - **原实现:** 本地 `ssh` 仍是普通 PTY。helper 提供远端 stat/传文件。真正的远程 pane 传输层在 `HostStreamTransport`，文档没写完。
-- **当前:** `otty-ssh` 解析 config、helper 协议有（24 测）。只有本地 PTY。无 Devices 徽章。
+- **当前:** `otty-ssh` 解析 config、helper 协议有（24 测）。只有本地 PTY。Open Quickly → SSH 列 `~/.ssh/config` 的 Host，↩ 开新 tab 敲 `ssh host`。前台进程里有 `ssh` 的 pane 在 `state` 里带 `"ssh":"<host>"`（`otty_ssh::scan` 从命令行取主机；Unix 只拿得到进程名，主机为空），它的 tab 图标换成设备图标 `server`。原版的 Devices 徽章下拉、terminfo 探测接线、shell integration 转发没做。真正的远程 pane（`HostStreamTransport`）仍随 U03/U06 skip。
 - **落点:** 先接 Open Quickly SSH（↩ 在当前 pane 跑 `ssh host`）和 Devices 徽章。`HostStreamTransport` 等 U03/U06 不再 skip 再做。
 - **完成:** Open Quickly → SSH 能列出 `~/.ssh/config` 里一个 Host，↩ 连上；远端会话 tab 有设备徽章。
 
